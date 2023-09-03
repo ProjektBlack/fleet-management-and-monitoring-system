@@ -1,0 +1,19 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "FMMS is a Capstone project for Green Movers Services. It is a web-based relational database management system.",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js", 
+    "dev": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "Jaden Ali San Diego, Joshua Luigi Delos Santos",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.5.0",
+    "nodemon": "^3.0.1"
+  }
+}
