@@ -4,9 +4,11 @@ import mongoose from "mongoose"; //mongoose is the substsitute for sql
 //import variables - helps keep the code short
 import { PORT, dbUrl } from "./config.js";
 //import models
-import { Truck } from "./models/truckModel.jsx";
+import { Truck } from "./models/truckModel.js";
 //starting your server
 const app = express();
+//parsing
+app.use(express.json());
 app.get("/", (request, response) => {
     console.log(request) //details about the request
     return response.status(200).send("Request successful.") //the server "responding" by sending the requested file
@@ -16,7 +18,7 @@ app.post('/trucks', async (request, response) => {
     try {
         //check if all properties are there
         if (
-            !request.body.TruckId ||
+            !request.body.TruckID ||
             !request.body.PlateNo ||
             !request.body.TruckType ||
             !request.body.Revenue ||
@@ -33,8 +35,8 @@ app.post('/trucks', async (request, response) => {
         }
         //create new truck record
         const newTruck = {
-            TruckId: request.body.TruckId,
-            PlateNumber: request.body.PlateNo,
+            TruckID: request.body.TruckID,
+            PlateNo: request.body.PlateNo,
             TruckType: request.body.TruckType,
             Revenue: request.body.Revenue,
             Depreciation: request.body.Depreciation,
