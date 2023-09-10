@@ -13,7 +13,18 @@ app.get("/", (request, response) => {
     console.log(request) //details about the request
     return response.status(200).send("Request successful.") //the server "responding" by sending the requested file
 });
-//creating a new file/data
+//cors issue - allows different domains such as lh:5173 (specified below) to access the api
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173'); // Replace with your frontend's URL
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+    next();
+});
+//creating a new file/data (post function)
 app.post('/trucks', async (request, response) => {
     try {
         //check if all properties are there
@@ -52,6 +63,19 @@ app.post('/trucks', async (request, response) => {
         response.status(500).send({ message: error.message })
     }
 });
+//get books from database
+app.get('/trucks', async (request, response) => {
+    try {
+        const trucks = await Truck.find({});
+        return response.status(200).json({
+            count: trucks.length,
+            data: trucks
+        });
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+})
 //connect to db
 mongoose
     .connect(dbUrl) //connects to mongodbatlas, connects to our database    

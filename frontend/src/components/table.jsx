@@ -1,6 +1,6 @@
 import React from "react";
 
-const TruckTable = (props) => {
+const Table = (props) => {
     return (
         <table className="table">
             <thead>
@@ -35,4 +35,4 @@ const TruckTable = (props) => {
     )
 }
 
-export default TruckTable;
+export default Table;
