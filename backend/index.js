@@ -20,7 +20,7 @@ app.get("/", (request, response) => {
     return response.status(200).send("Request successful.") //the server "responding" by sending the requested file
 });
 //for stockID database
-app.post('/temps', async (request, response) => {
+app.post('/tempstock', async (request, response) => {
     try {   
         //check if all properties are there
         if (
@@ -52,6 +52,7 @@ app.post('/temps', async (request, response) => {
         response.status(500).send({ message: error.message })
     }
 });
+//get stock 
 app.get('/stock', async (request, response) => {
     try {
         const StockDatabase = await Stock.find({});
@@ -64,8 +65,68 @@ app.get('/stock', async (request, response) => {
         response.status(500).send({ message: error.message })
     }
 })
+//for getting stock by id 
+app.get('/stock/:id', async (request, response) => {
+    try {
+        const { id } = request.params;
+        const stock = await Stock.findById(id);
+        return response.status(200).json(stock);
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+})
+//updating stock
+app.put('/stock/:id', async (request, response) => {
+    try{
+        if(
+        !request.body.StockID ||
+        !request.body.StockOutNo ||
+        !request.body.StockDate ||
+        !request.body.Qty ||
+        !request.body.Particular ||
+        !request.body.MarketPrice 
+        ){
+        return response.status(400).send({
+            message: 'Please send all required fields.'
+        });
+    }
+    
+    const {id} =request.params;
+
+    const result = await Stock.findByIdAndUpdate(id, request.body);
+
+    if (!result){
+        return response.status(404).json({message: 'Stock not found'});
+    }
+
+    return response.status(200).send({message: 'Stock updated successfully'})
+
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+});
+//deleting stock
+app.delete('/stock/:id', async (request, response) => {
+    try{
+    const {id} =request.params;
+
+    const result = await Stock.findByIdAndDelete(id);
+
+    if (!result){
+        return response.status(404).json({message: 'Stock not found'});
+    }
+
+    return response.status(200).send({message: 'Stock deleted successfully'})
+
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+});
 //for routeID database
-app.post('/temps', async (request, response) => {
+app.post('/tempsroute', async (request, response) => {
     try {   
         //check if all properties are there
         if (
@@ -107,8 +168,68 @@ app.get('/route', async (request, response) => {
         response.status(500).send({ message: error.message })
     }
 })
+//for route get 1 by id
+app.get('/route/:id', async (request, response) => {
+    try {
+        
+        const { id } = request.params;
+        const route = await Route.findById(id);
+        return response.status(200).json(route);
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+})
+//updating route
+app.put('/route/:id', async (request, response) => {
+    try{
+        if(
+            !request.body.RouteID ||
+            !request.body.InitialLoc ||
+            !request.body.Destination ||
+            !request.body.Distance ||
+            !request.body.Duration
+        ){
+        return response.status(400).send({
+            message: 'Please send all required fields.'
+        });
+    }
+    
+    const {id} =request.params;
+
+    const result = await Route.findByIdAndUpdate(id, request.body);
+
+    if (!result){
+        return response.status(404).json({message: 'Route not found'});
+    }
+
+    return response.status(200).send({message: 'Route updated successfully'})
+
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+});
+//deleting route
+app.delete('/route/:id', async (request, response) => {
+    try{
+    const {id} =request.params;
+
+    const result = await Route.findByIdAndDelete(id);
+
+    if (!result){
+        return response.status(404).json({message: 'Route not found'});
+    }
+
+    return response.status(200).send({message: 'Route deleted successfully'})
+
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+});
 //for shipmentID database
-app.post('/temps', async (request, response) => {
+app.post('/tempshipment', async (request, response) => {
     try {   
         //check if all properties are there
         if (
@@ -144,39 +265,65 @@ app.get('/shipment', async (request, response) => {
         response.status(500).send({ message: error.message })
     }
 })
-//for routeID database
-app.post('/temps', async (request, response) => {
-    try {   
-        //check if all properties are there
-        if (
-            !request.body.RouteID ||
-            !request.body.InitialLoc ||
-            !request.body.Destination ||
-            !request.body.Distance ||
-            !request.body.Duration
-        ) {
-            //return a message saying that the properties are incomplete
-            return response.status(400).send({
-                message: 'Please send all required fields.'
-            });
-        }
-        //create new route record
-        const newRoute = {
-            RouteID: request.body.RouteID,
-            InitialLoc: request.body.InitialLoc,
-            Destination: request.body.Destination,
-            Distance: request.body.Distance,
-            Duration: request.body.Duration
-        }
-        const route = await Route.create(newRoute);
-        return response.status(201).send(route);
+//for shipment get by id
+app.get('/shipment/:id', async (request, response) => {
+    try {
+        
+        const { id } = request.params;
+        const shipment = await Shipment.findById(id);
+        return response.status(200).json(shipment);
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+})
+//updating shipment
+app.put('/shipment/:id', async (request, response) => {
+    try{
+        if(
+            !request.body.ShipmentID ||
+            !request.body.ShipmentDate
+        ){
+        return response.status(400).send({
+            message: 'Please send all required fields.'
+        });
+    }
+    
+    const {id} =request.params;
+
+    const result = await Shipment.findByIdAndUpdate(id, request.body);
+
+    if (!result){
+        return response.status(404).json({message: 'Shipment not found'});
+    }
+
+    return response.status(200).send({message: 'Shipment updated successfully'})
+
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+});
+//deleting shipment
+app.delete('/shipment/:id', async (request, response) => {
+    try{
+    const {id} =request.params;
+
+    const result = await Shipment.findByIdAndDelete(id);
+
+    if (!result){
+        return response.status(404).json({message: 'Shipment not found'});
+    }
+
+    return response.status(200).send({message: 'Shipment deleted successfully'})
+
     } catch (error) {
         console.log(error.message);
         response.status(500).send({ message: error.message })
     }
 });
 //for expensesID database
-app.post('/temps', async (request, response) => {
+app.post('/tempsexpenses', async (request, response) => {
     try {   
         //check if all properties are there
         if (
@@ -242,8 +389,80 @@ app.get('/expenses', async (request, response) => {
         response.status(500).send({ message: error.message })
     }
 })
+//for getting expenses by id
+app.get('/expenses/:id', async (request, response) => {
+    try {
+        
+        const { id } = request.params;
+        const expenses = await Expenses.findById(id);
+        return response.status(200).json(expenses);
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+})
+//updating expenses
+app.put('/expenses/:id', async (request, response) => {
+    try{
+        if(
+            !request.body.ExpensesID ||
+            !request.body.ExpensesRevenue ||
+            !request.body.DepreciationExpenses ||
+            !request.body.ExpensesAmortization ||
+            !request.body.MaintenanceCost ||
+            !request.body.TruckRegis ||
+            !request.body.Sticker ||
+            !request.body.DriverSalary ||
+            !request.body.HelperSalary ||
+            !request.body.Trips ||
+            !request.body.TotalKm ||
+            !request.body.TotalExpense ||
+            !request.body.CostAve ||
+            !request.body.TollFee ||
+            !request.body.Diesel ||
+            !request.body.DieselpLiters ||
+            !request.body.OtherExpense
+        ){
+        return response.status(400).send({
+            message: 'Please send all required fields.'
+        });
+    }
+    
+    const {id} =request.params;
+
+    const result = await Expenses.findByIdAndUpdate(id, request.body);
+
+    if (!result){
+        return response.status(404).json({message: 'Expenses not found'});
+    }
+
+    return response.status(200).send({message: 'Expenses updated successfully'})
+
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+});
+//deleting expenses
+app.delete('/expenses/:id', async (request, response) => {
+    try{
+    const {id} =request.params;
+
+    const result = await Expenses.findByIdAndDelete(id);
+
+    if (!result){
+        return response.status(404).json({message: 'Expenses not found'});
+    }
+
+    return response.status(200).send({message: 'Expenses deleted successfully'})
+
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+});
 //for driverID database
-app.post('/temps', async (request, response) => {
+app.post('/tempsdriver', async (request, response) => {
     try {   
         //check if all properties are there
         if (
@@ -285,8 +504,68 @@ app.get('/driver', async (request, response) => {
         response.status(500).send({ message: error.message })
     }
 })
+//for getting driver id
+app.get('/driver/:id', async (request, response) => {
+    try {
+        
+        const { id } = request.params;
+        const driver = await Driver.findById(id);
+        return response.status(200).json(driver);
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+})
+//updating driver
+app.put('/driver/:id', async (request, response) => {
+    try{
+        if(
+            !request.body.DriverID ||
+            !request.body.DriverFirstName ||
+            !request.body.DriverLastName ||
+            !request.body.DriverContactNo ||
+            !request.body.DriverLicenseNo
+        ){
+        return response.status(400).send({
+            message: 'Please send all required fields.'
+        });
+    }
+    
+    const {id} =request.params;
+
+    const result = await Driver.findByIdAndUpdate(id, request.body);
+
+    if (!result){
+        return response.status(404).json({message: 'Driver not found'});
+    }
+
+    return response.status(200).send({message: 'Driver updated successfully'})
+
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+});
+//deleting driver
+app.delete('/driver/:id', async (request, response) => {
+    try{
+    const {id} =request.params;
+
+    const result = await Driver.findByIdAndDelete(id);
+
+    if (!result){
+        return response.status(404).json({message: 'Driver not found'});
+    }
+
+    return response.status(200).send({message: 'Driver deleted successfully'})
+
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+});
 //for customerID database
-app.post('/temps', async (request, response) => {
+app.post('/tempscustomer', async (request, response) => {
     try {   
         //check if all properties are there
         if (
@@ -294,7 +573,7 @@ app.post('/temps', async (request, response) => {
             !request.body.CustomerFirstName ||
             !request.body.CustomerLastName ||
             !request.body.CustomerContactNo ||
-            !request.body.DriverLicenseNo
+            !request.body.CustomerEmail
         ) {
             //return a message saying that the properties are incomplete
             return response.status(400).send({
@@ -328,8 +607,67 @@ app.get('/customer', async (request, response) => {
         response.status(500).send({ message: error.message })
     }
 })
-//creating a new file/data
-app.post('/temps', async (request, response) => {
+//for getting customer by id
+app.get('/customer/:id', async (request, response) => {
+    try {
+        const {id} = request.params;
+        const customer = await Customer.findById(id);
+        return response.status(200).json(customer);
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+})
+//updating customer
+app.put('/customer/:id', async (request, response) => {
+    try{
+        if(
+            !request.body.CustomerID ||
+            !request.body.CustomerFirstName ||
+            !request.body.CustomerLastName ||
+            !request.body.CustomerContactNo ||
+            !request.body.CustomerEmail
+        ){
+        return response.status(400).send({
+            message: 'Please send all required fields.'
+        });
+    }
+    
+    const {id} =request.params;
+
+    const result = await Customer.findByIdAndUpdate(id, request.body);
+
+    if (!result){
+        return response.status(404).json({message: 'Customer not found'});
+    }
+
+    return response.status(200).send({message: 'Customer updated successfully'})
+
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+});
+//deleting customer
+app.delete('/customer/:id', async (request, response) => {
+    try{
+    const {id} =request.params;
+
+    const result = await Customer.findByIdAndDelete(id);
+
+    if (!result){
+        return response.status(404).json({message: 'Customer not found'});
+    }
+
+    return response.status(200).send({message: 'Customer deleted successfully'})
+
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+});
+//creating for truck 
+app.post('/tempstruck', async (request, response) => {
     try {   
         //check if all properties are there
         if (
@@ -379,6 +717,69 @@ app.get('/truck', async (request, response) => {
         response.status(500).send({ message: error.message })
     }
 })
+//get truck by id
+app.get('/truck/:id', async (request, response) => {
+    try {
+        const {id} = request.params;
+        const truck = await Truck.findById(id);
+        return response.status(200).json(truck);
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+})
+//updating truck
+app.put('/truck/:id', async (request, response) => {
+    try{
+        if(
+            !request.body.TruckID ||
+            !request.body.PlateNo ||
+            !request.body.TruckType ||
+            !request.body.Revenue ||
+            !request.body.Depreciation ||
+            !request.body.Amortization ||
+            !request.body.TotalFeeExpenses ||
+            !request.body.FCIE ||
+            !request.body.REGISTRATION
+        ){
+        return response.status(400).send({
+            message: 'Please send all required fields.'
+        });
+    }
+    
+    const {id} =request.params;
+
+    const result = await Truck.findByIdAndUpdate(id, request.body);
+
+    if (!result){
+        return response.status(404).json({message: 'Truck not found'});
+    }
+
+    return response.status(200).send({message: 'Truck updated successfully'})
+
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+});
+//deleting truck
+app.delete('/truck/:id', async (request, response) => {
+    try{
+    const {id} =request.params;
+
+    const result = await Truck.findByIdAndDelete(id);
+
+    if (!result){
+        return response.status(404).json({message: 'Truck not found'});
+    }
+
+    return response.status(200).send({message: 'Truck deleted successfully'})
+
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message })
+    }
+});
 //connect to db
 mongoose
     .connect(dbUrl) //connects to mongodbatlas, connects to our database    
@@ -393,5 +794,5 @@ mongoose
         console.log(error);
     })
 
-//create database schema based on our model
+//created database schema based on our model
 
