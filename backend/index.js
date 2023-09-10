@@ -1,4 +1,4 @@
-//import modules
+//import modules now!
 import express, { request } from "express" //express is a backend framework
 import mongoose from "mongoose"; //mongoose is the substsitute for sql
 //import variables - helps keep the code short
