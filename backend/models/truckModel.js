@@ -1,5 +1,5 @@
 import mongoose, { mongo } from "mongoose";
-
+//commit
 const truckSchema = mongoose.Schema(
     {
         TruckID: {
@@ -40,4 +40,4 @@ const truckSchema = mongoose.Schema(
         }
     }
 )
-export const Truck = mongoose.model('Temp', truckSchema);
+export const Truck = mongoose.model('TruckDatabase', truckSchema);
