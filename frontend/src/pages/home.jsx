@@ -5,14 +5,14 @@ import Dashboard from "../components/dashboard";
 
 const Home = (props) => {
     return (
-        <div>
-            <div>
+        <div className="row">
+            <div className="col-2">
                 <Sidebar />
             </div>
-            <div>
+            <div className="col">
                 <Dashboard />
             </div>
-        </div>
+        </div >
     );
 }
 

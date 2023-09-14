@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios'
 import { Link } from "react-router-dom";
+//import components
+import Sidebar from "../components/sidebar";
 //no loading animation
 const ManageTruck = () => {
     //rendering load states
@@ -20,57 +22,63 @@ const ManageTruck = () => {
             })
     }, [])
     return (
-        <div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Plate Number</th>
-                        <th>Truck Type</th>
-                        <th>Revenue</th>
-                        <th>Depreciation</th>
-                        <th>Amortization</th>
-                        <th>Total Fee Expenses</th>
-                        <th>FCIE Registration</th>
-                        <th>Misc. Registration</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {/*renders the information*/}
-                    {trucks.map((truck, index) => (
-                        <tr key={truck.TruckID}>
-                            <td>
-                                {truck.TruckID}
-                            </td>
-                            <td>
-                                {truck.PlateNo}
-                            </td>
-                            <td>
-                                {truck.TruckType}
-                            </td>
-                            <td>
-                                {truck.Revenue}
-                            </td>
-                            <td>
-                                {truck.Depreciation}
-                            </td>
-                            <td>
-                                {truck.Amortization}
-                            </td>
-                            <td>
-                                {truck.TotalFeeExpenses}
-                            </td>
-                            <td>
-                                {truck.FCIE}
-                            </td>
-                            <td>
-                                {truck.REGISTRATION}
-                            </td>
+        <div className="row">
+            <div className="col-2">
+                <Sidebar />
+            </div>
+            <div className="col">
+                <table className="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Plate Number</th>
+                            <th>Truck Type</th>
+                            <th>Revenue</th>
+                            <th>Depreciation</th>
+                            <th>Amortization</th>
+                            <th>Total Fee Expenses</th>
+                            <th>FCIE Registration</th>
+                            <th>Misc. Registration</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {/*renders the information*/}
+                        {trucks.map((truck, index) => (
+                            <tr key={truck.TruckID}>
+                                <td>
+                                    {truck.TruckID}
+                                </td>
+                                <td>
+                                    {truck.PlateNo}
+                                </td>
+                                <td>
+                                    {truck.TruckType}
+                                </td>
+                                <td>
+                                    {truck.Revenue}
+                                </td>
+                                <td>
+                                    {truck.Depreciation}
+                                </td>
+                                <td>
+                                    {truck.Amortization}
+                                </td>
+                                <td>
+                                    {truck.TotalFeeExpenses}
+                                </td>
+                                <td>
+                                    {truck.FCIE}
+                                </td>
+                                <td>
+                                    {truck.REGISTRATION}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
+
     );
 }
 
