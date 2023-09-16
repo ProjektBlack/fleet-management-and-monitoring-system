@@ -1,3 +1,4 @@
+
 import mongoose, { mongo } from "mongoose";
 
 const truckSchema = mongoose.Schema(
