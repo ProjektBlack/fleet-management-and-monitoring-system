@@ -1,6 +1,6 @@
 import React from "react";
 
-//login page
+//login page - handle login logic - authenticate, then redirect to home page
 const Login = (props) => {
     return (
         <div>

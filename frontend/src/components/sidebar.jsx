@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 //user icon or name should change depending on the user
 const Sidebar = (props) => {
     return (
@@ -9,7 +10,9 @@ const Sidebar = (props) => {
             <ul className="list-unstyled ps-0">
                 <li className="mb-1">
                     <button className="btn btn-toggle align-items-center rounded" aria-expanded="true">
-                        Dashboard
+                        <Link to="/" style={{ textDecoration: "none", color: "black" }}>
+                            Dashboard
+                        </Link>
                     </button>
                 </li>
                 <li className="mb-1">
@@ -18,7 +21,7 @@ const Sidebar = (props) => {
                     </button>
                     <div className="collapse" id="dashboard-collapse">
                         <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                            <li><a href="#" className="link-dark rounded">Trucks</a></li>
+                            <li><Link to="/trucks" className="link-dark rounded">Trucks</Link></li>
                             <li><a href="#" className="link-dark rounded">Employees</a></li>
                             <li><a href="#" className="link-dark rounded">Customers</a></li>
                             <li><a href="#" className="link-dark rounded">Finances</a></li>
