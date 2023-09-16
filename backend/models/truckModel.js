@@ -1,5 +1,6 @@
+
 import mongoose, { mongo } from "mongoose";
-//commit
+
 const truckSchema = mongoose.Schema(
     {
         TruckID: {

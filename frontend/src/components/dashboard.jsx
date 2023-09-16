@@ -1,12 +1,12 @@
-import React from "react";
-import CardComponent from "./card";
+import React, { useEffect, useState } from "react";
+import CardComponent from "./Card";
 
 //first complex component
 const Dashboard = (props) => {
     return (
         //notifications
         //update using js, also, insert icons
-        //update to better css styles
+        //update to compartmentalize css
         <div className="p-4">
             <div className="row border-bottom pb-3 mb-4">
                 <div className="col-7" style={{ marginRight: '5%' }}>

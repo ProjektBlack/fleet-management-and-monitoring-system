@@ -25,7 +25,7 @@ app.use((req, res, next) => {
     next();
 });
 //creating a new file/data (post function)
-app.post('/trucks', async (request, response) => {
+app.post('/tempstruck', async (request, response) => {
     try {
         //check if all properties are there
         if (
