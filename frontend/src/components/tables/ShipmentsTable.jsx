@@ -4,21 +4,21 @@ import { Link } from "react-router-dom";
 //import components
 import Sidebar from "../Sidebar";
 import Spinner from "../Spinner";
-import { Customer } from "../../../../backend/models/models";
-
+import { Shipment } from "../../../../backend/models/models";
+//table's kinda squished - change layout later
 //general analysis of how this works
-const CustomersTable = () => {
+const ShipmentsTable = () => {
     // rendering load states
-    const [customers, setCustomers] = useState([]);
+    const [shipments, setShipments] = useState([]);
     const [loading, setLoading] = useState(false);
 
     // get data
     useEffect(() => {
         setLoading(true);
         axios
-            .get("http://localhost:2222/customer")
+            .get("http://localhost:2222/shipment")
             .then((response) => {
-                setCustomers(response.data.data);
+                setShipments(response.data.data);
                 setLoading(false);
             })
             .catch((error) => {
@@ -36,22 +36,16 @@ const CustomersTable = () => {
                     <table className="table">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Contact No.</th>
-                                <th>Email</th>
+                                <th>Shipment ID</th>
+                                <th>Date</th>
                             </tr>
                         </thead>
                         <tbody>
                             {/* renders the information */}
-                            {customers.map((customer, index) => (
-                                <tr key={customer.CustomerID}>
-                                    <td>{customer.CustomerID}</td>
-                                    <td>{customer.CustomerFirstName}</td>
-                                    <td>{customer.CustomerLastName}</td>
-                                    <td>{customer.CustomerContactNo}</td>
-                                    <td>{customer.CustomerEmail}</td>
+                            {shipments.map((shipment, index) => (
+                                <tr key={shipment.ShipmentID}>
+                                    <td>{shipment.ShipmentID}</td>
+                                    <td>{shipment.ShipmentDate}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -62,4 +56,4 @@ const CustomersTable = () => {
     );
 };
 
-export default CustomersTable;
+export default ShipmentsTable;

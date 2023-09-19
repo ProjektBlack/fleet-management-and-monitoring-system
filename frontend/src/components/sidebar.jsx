@@ -22,9 +22,12 @@ const Sidebar = (props) => {
                     <div className="collapse" id="dashboard-collapse">
                         <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                             <li><Link to="/trucks" className="link-dark rounded">Trucks</Link></li>
-                            <li><a href="#" className="link-dark rounded">Employees</a></li>
-                            <li><a href="#" className="link-dark rounded">Customers</a></li>
-                            <li><a href="#" className="link-dark rounded">Finances</a></li>
+                            <li><a href="/drivers" className="link-dark rounded">Drivers</a></li>
+                            <li><a href="/customers" className="link-dark rounded">Customers</a></li>
+                            <li><a href="/expenses" className="link-dark rounded">Expenses</a></li>
+                            <li><a href="/stocks" className="link-dark rounded">Stocks</a></li>
+                            <li><a href="/routes" className="link-dark rounded">Routes</a></li>
+                            <li><a href="/shipments" className="link-dark rounded">Shipments</a></li>
                         </ul>
                     </div>
                 </li>

@@ -4,21 +4,21 @@ import { Link } from "react-router-dom";
 //import components
 import Sidebar from "../Sidebar";
 import Spinner from "../Spinner";
-import { Customer } from "../../../../backend/models/models";
-
+import { Stock } from "../../../../backend/models/models";
+//table's kinda squished - change layout later
 //general analysis of how this works
-const CustomersTable = () => {
+const StocksTable = () => {
     // rendering load states
-    const [customers, setCustomers] = useState([]);
+    const [stocks, setStocks] = useState([]);
     const [loading, setLoading] = useState(false);
 
     // get data
     useEffect(() => {
         setLoading(true);
         axios
-            .get("http://localhost:2222/customer")
+            .get("http://localhost:2222/stock")
             .then((response) => {
-                setCustomers(response.data.data);
+                setStocks(response.data.data);
                 setLoading(false);
             })
             .catch((error) => {
@@ -36,22 +36,24 @@ const CustomersTable = () => {
                     <table className="table">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Contact No.</th>
-                                <th>Email</th>
+                                <th>Stock ID</th>
+                                <th>Out No.</th>
+                                <th>Date</th>
+                                <th>Qty</th>
+                                <th>Particular</th>
+                                <th>Market Price</th>
                             </tr>
                         </thead>
                         <tbody>
                             {/* renders the information */}
-                            {customers.map((customer, index) => (
-                                <tr key={customer.CustomerID}>
-                                    <td>{customer.CustomerID}</td>
-                                    <td>{customer.CustomerFirstName}</td>
-                                    <td>{customer.CustomerLastName}</td>
-                                    <td>{customer.CustomerContactNo}</td>
-                                    <td>{customer.CustomerEmail}</td>
+                            {stocks.map((stock, index) => (
+                                <tr key={stock.StockID}>
+                                    <td>{stock.StockID}</td>
+                                    <td>{stock.StockOutNo}</td>
+                                    <td>{stock.StockDate}</td>
+                                    <td>{stock.Qty}</td>
+                                    <td>{stock.Particular}</td>
+                                    <td>{stock.MarketPrice}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -62,4 +64,4 @@ const CustomersTable = () => {
     );
 };
 
-export default CustomersTable;
+export default StocksTable;

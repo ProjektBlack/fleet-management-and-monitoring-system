@@ -6,7 +6,6 @@ import Sidebar from "../Sidebar";
 import Spinner from "../Spinner";
 
 //general analysis of how this works
-//no loading animation
 const TruckTable = () => {
     //rendering load states
     const [trucks, setTrucks] = useState([]);
@@ -15,7 +14,7 @@ const TruckTable = () => {
     useEffect(() => {
         setLoading(true);
         axios
-            .get("http://localhost:2222/trucks")
+            .get("http://localhost:2222/truck")
             .then((response) => {
                 setTrucks(response.data.data);
                 setLoading(false);
