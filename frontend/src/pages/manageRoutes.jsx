@@ -1,10 +1,11 @@
 import React from "react";
 
-//import components
+//components
 import Sidebar from "../components/Sidebar";
-import TruckTable from "../components/tables/TruckTable";
+import RoutesTable from "../components/tables/RoutesTable"
+import { Route } from "react-router-dom";
 
-const ManageTruck = (props) => {
+const ManageRoutes = (props) => {
     return (
         <div>
             <div className="row">
@@ -14,7 +15,7 @@ const ManageTruck = (props) => {
                 <div className="col-10">
                     <div className="row d-flex mx-auto mb-4 mt-4">
                         <div className="col-9">
-                            <h1 style={{ marginTop: "10%" }}>Trucks</h1>
+                            <h1 style={{ marginTop: "10%" }}>Routes</h1>
                         </div>
                         <div className="col-1 p-4" style={{ borderStyle: 'solid', borderRadius: '5px', borderColor: '#D4D4D4', height: "75%", marginRight: "1%" }}>
                             <div className="row text-center">
@@ -47,12 +48,11 @@ const ManageTruck = (props) => {
             </div>
             <div className="row">
                 <div className="col" >
-                    <TruckTable />
+                    <RoutesTable />
                 </div>
             </div>
         </div >
-
     )
 }
 
-export default ManageTruck;
+export default ManageRoutes

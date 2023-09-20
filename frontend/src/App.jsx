@@ -6,28 +6,29 @@ import { Routes, Route } from 'react-router-dom'
 import CardComponent from "./components/Card";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./components/Dashboard";
-import CustomersTable from "./components/tables/CustomersTable";
-import ExpensesTable from "./components/tables/ExpensesTable";
-import StocksTable from "./components/tables/StocksTable";
-import DriversTable from "./components/tables/DriversTable";
-import RoutesTable from "./components/tables/RoutesTable";
-import ShipmentsTable from "./components/tables/ShipmentsTable";
 //import pages
 import Login from "./pages/login";
 import Home from "./pages/home";
 import ManageTruck from "./pages/manageTrucks";
+import ManageCustomers from "./pages/manageCustomers"
+import ManageDrivers from "./pages/manageDrivers"
+import ManageExpenses from "./pages/manageExpenses"
+import ManageRoutes from "./pages/manageRoutes"
+import ManageShipment from "./pages/manageShipments"
+import ManageStocks from "./pages/manageStocks"
+
 const App = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Home />} />
       <Route path="/trucks" element={<ManageTruck />} />
-      <Route path="/customers" element={<CustomersTable />} />
-      <Route path="/expenses" element={<ExpensesTable />} />
-      <Route path="/stocks" element={<StocksTable />} />
-      <Route path="/drivers" element={<DriversTable />} />
-      <Route path="/routes" element={<RoutesTable />} />
-      <Route path="/shipments" element={<ShipmentsTable />} />
+      <Route path="/customers" element={<ManageCustomers />} />
+      <Route path="/expenses" element={<ManageExpenses />} />
+      <Route path="/stocks" element={<ManageStocks />} />
+      <Route path="/drivers" element={<ManageDrivers />} />
+      <Route path="/routes" element={<ManageRoutes />} />
+      <Route path="/shipments" element={<ManageShipment />} />
       {/*
       to be added - just remove the comment after assembling the pages
       <Route path="/trucks" element={ } />

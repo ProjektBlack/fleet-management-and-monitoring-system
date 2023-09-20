@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 //user icon or name should change depending on the user
+//sidebar should shrink when screen is small
 const Sidebar = (props) => {
     return (
         <div className="flex-shrink-0 p-3 bg-white" style={{ width: '250px', height: '100vh', boxShadow: '1px 0px 10px gray', position: 'fixed' }}>

@@ -34,7 +34,7 @@ const Dashboard = (props) => {
                     </div>
                     <div className="row text-center">
                         <div className="col">
-                            <span>Completed</span>
+                            <span>Done</span>
                         </div>
                     </div>
                 </div>

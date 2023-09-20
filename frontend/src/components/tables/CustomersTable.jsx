@@ -32,7 +32,7 @@ const CustomersTable = () => {
             {loading ? (
                 <Spinner />
             ) : (
-                <div>
+                <div style={{ overflowX: "auto", marginLeft: "17%" }}>
                     <table className="table">
                         <thead>
                             <tr>
