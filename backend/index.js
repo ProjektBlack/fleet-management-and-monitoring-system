@@ -151,5 +151,4 @@ mongoose
         console.log(error);
     })
 
-//create database schema based on our model
 

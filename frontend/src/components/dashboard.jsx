@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import CardComponent from "./Card";
+import CardComponent from "./widgets/Card";
 
 //first complex component
 const Dashboard = (props) => {

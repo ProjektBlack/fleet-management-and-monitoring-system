@@ -26,39 +26,41 @@ const CustomersTable = () => {
                 setLoading(false);
             })
     }, [])
-
+    {/*adjust spinner position*/ }
     return (
-        <div>
-            {loading ? (
-                <Spinner />
-            ) : (
-                <div style={{ overflowX: "auto", marginLeft: "17%" }}>
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Contact No.</th>
-                                <th>Email</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {/* renders the information */}
-                            {customers.map((customer, index) => (
-                                <tr key={customer.CustomerID}>
-                                    <td>{customer.CustomerID}</td>
-                                    <td>{customer.CustomerFirstName}</td>
-                                    <td>{customer.CustomerLastName}</td>
-                                    <td>{customer.CustomerContactNo}</td>
-                                    <td>{customer.CustomerEmail}</td>
+        < div >
+            {
+                loading ? (
+                    <Spinner />
+                ) : (
+                    <div style={{ overflowX: "auto", marginLeft: "17%" }}>
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th>Contact No.</th>
+                                    <th>Email</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-        </div>
+                            </thead>
+                            <tbody>
+                                {/* renders the information */}
+                                {customers.map((customer, index) => (
+                                    <tr key={customer.CustomerID}>
+                                        <td>{customer.CustomerID}</td>
+                                        <td>{customer.CustomerFirstName}</td>
+                                        <td>{customer.CustomerLastName}</td>
+                                        <td>{customer.CustomerContactNo}</td>
+                                        <td>{customer.CustomerEmail}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )
+            }
+        </div >
     );
 };
 
