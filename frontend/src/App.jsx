@@ -6,9 +6,7 @@ import { Routes, Route } from 'react-router-dom'
 import CardComponent from "./components/widgets/Card";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./components/Dashboard";
-import CreateTruck from "./components/forms/TruckForm"
 //import pages
-import Test from "./pages/test";
 import Login from "./pages/login";
 import Home from "./pages/home";
 import ManageTruck from "./pages/manageTrucks";
@@ -18,11 +16,13 @@ import ManageExpenses from "./pages/manageExpenses"
 import ManageRoutes from "./pages/manageRoutes"
 import ManageShipment from "./pages/manageShipments"
 import ManageStocks from "./pages/manageStocks"
+//import forms
+import CreateTruck from "./components/forms/TruckForm"
 
 const App = () => {
   return (
     <Routes>
-      <Route path="/testing" element={<Test />} />
+      <Route path="/newTruck" element={<CreateTruck />} />
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Home />} />
       <Route path="/trucks" element={<ManageTruck />} />

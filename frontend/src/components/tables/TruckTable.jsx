@@ -29,7 +29,7 @@ const TruckTable = () => {
             {loading ? (
                 <Spinner />
             ) : (
-                <div style={{ overflowX: "auto", marginLeft: "17%", overflowY: "auto", maxHeight: "50vh" }}>
+                <div style={{ overflowX: "auto", marginLeft: "18%", overflowY: "auto", maxHeight: "50vh" }}>
                     <table className="table">
                         <thead>
                             <tr>

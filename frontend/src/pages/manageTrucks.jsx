@@ -1,9 +1,10 @@
 import React from "react";
-
+import { Link } from "react-router-dom";
 //import components
 import Sidebar from "../components/Sidebar";
 import TruckTable from "../components/tables/TruckTable";
-
+//add new buttons, edit button perhaps, access controls, general layout optimization
+//correct loading animation
 const ManageTruck = (props) => {
     return (
         <div>
@@ -13,34 +14,11 @@ const ManageTruck = (props) => {
                 </div>
                 <div className="col-10">
                     <div className="row d-flex mx-auto mb-4 mt-4">
-                        <div className="col-9">
+                        <div className="col-10">
                             <h1 style={{ marginTop: "10%" }}>Trucks</h1>
                         </div>
-                        <div className="col-1 p-4" style={{ borderStyle: 'solid', borderRadius: '5px', borderColor: '#D4D4D4', height: "75%", marginRight: "1%" }}>
-                            <div className="row text-center">
-                                <div className="col">
-                                    {/*update using js*/}
-                                    <h6 id="pendingTrips">0</h6>
-                                </div>
-                            </div>
-                            <div className="row text-center">
-                                <div className="col">
-                                    <span>Pending</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-1 p-4" style={{ borderStyle: 'solid', borderRadius: '5px', borderColor: '#D4D4D4', height: "75%" }}>
-                            <div className="row text-center">
-                                <div className="col">
-                                    {/*update using js*/}
-                                    <h6 id="completedTrips">0</h6>
-                                </div>
-                            </div>
-                            <div className="row text-center">
-                                <div className="col">
-                                    <span>Done</span>
-                                </div>
-                            </div>
+                        <div className="col">
+                            <Link to="/newTruck" className="btn btn-success" style={{ marginTop: "60%", marginLeft: "50%" }}>Add</Link>
                         </div>
                     </div>
                 </div>
