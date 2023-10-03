@@ -18,7 +18,9 @@ const ManageTruck = (props) => {
                             <h1 style={{ marginTop: "10%" }}>Trucks</h1>
                         </div>
                         <div className="col">
-                            <Link to="/newTruck" className="btn btn-success" style={{ marginTop: "60%", marginLeft: "50%" }}>Add</Link>
+                            <Link to="/newtruck" className="btn btn-outline-success" style={{ marginTop: "60%", marginLeft: "50%" }}>
+                                Create
+                            </Link>
                         </div>
                     </div>
                 </div>

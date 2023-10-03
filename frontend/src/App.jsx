@@ -18,13 +18,28 @@ import ManageShipment from "./pages/manageShipments"
 import ManageStocks from "./pages/manageStocks"
 //import forms
 import CreateTruck from "./components/forms/TruckForm"
+import CreateStock from "./components/forms/StockForm"
+import CreateShipment from "./components/forms/ShipmentForm"
+import CreateRoute from "./components/forms/RoutesForm"
+import CreateDriver from "./components/forms/DriversForm"
+import CreateCustomer from "./components/forms/CustomersForm"
+import CreateExpense from "./components/forms/ExpensesForm";
 
 const App = () => {
   return (
     <Routes>
-      <Route path="/newTruck" element={<CreateTruck />} />
+      {/*main*/}
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Home />} />
+      {/*forms*/}
+      <Route path="/newtruck" element={<CreateTruck />} />
+      <Route path="/newcustomer" element={<CreateCustomer />} />
+      <Route path="/newdriver" element={<CreateDriver />} />
+      <Route path="/newexpenses" element={<CreateExpense />} />
+      <Route path="/newroute" element={<CreateRoute />} />
+      <Route path="/newshipment" element={<CreateShipment />} />
+      <Route path="/newstock" element={<CreateStock />} />
+      {/*tables*/}
       <Route path="/trucks" element={<ManageTruck />} />
       <Route path="/customers" element={<ManageCustomers />} />
       <Route path="/expenses" element={<ManageExpenses />} />
