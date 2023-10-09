@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 //sidebar should shrink when screen is small
 const Sidebar = (props) => {
     return (
-        <div className="flex-shrink-0 p-3 bg-white" style={{ width: '250px', height: '100vh', boxShadow: '1px 0px 10px gray', position: 'fixed' }}>
+        <div className="flex-shrink-0 p-3 bg-white" style={{ width: '250px', height: '100vh', boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px", position: 'fixed' }}>
             <a href="/" className="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
                 <span className="fs-5 fw-semibold"><span style={{ color: "green" }}>Green Movers</span> Services</span>
             </a>

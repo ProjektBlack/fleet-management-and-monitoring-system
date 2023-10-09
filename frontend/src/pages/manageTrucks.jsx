@@ -5,7 +5,7 @@ import Sidebar from "../components/Sidebar";
 import TruckTable from "../components/tables/TruckTable";
 //add new buttons, edit button perhaps, access controls, general layout optimization
 //correct loading animation
-const ManageTruck = (props) => {
+const ManageTruck = () => {
     return (
         <div>
             <div className="row">

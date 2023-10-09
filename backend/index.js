@@ -1,27 +1,34 @@
-//import modules
-import express, { request } from "express" //express is a backend framework
-import mongoose from "mongoose"; //mongoose is the substsitute for sql
-//import variables - helps keep the code short
+// Import modules
+import express from "express";
+import mongoose from "mongoose";
+
+// Import variables
 import { PORT, dbUrl } from "./config.js";
-//import models
+
+// Import models
 import {
     Truck,
     Customer,
     Driver,
+    Helper,
     Expenses,
-    Route,
-    Shipment,
-    Stock,
-} from "./models/models.js"
-//starting your server
+    Trip, // Add Trip model
+    YearlyExpense, // Add YearlyExpense model
+    MonthlyExpense, // Add MonthlyExpense model
+} from "./models/models.js";
+
+// Starting your server
 const app = express();
-//parsing
+
+// Parsing
 app.use(express.json());
+
 app.get("/", (request, response) => {
-    console.log(request) //details about the request
-    return response.status(200).send("Request successful.") //the server "responding" by sending the requested file
+    console.log(request); // Details about the request
+    return response.status(200).send("Request successful."); // The server "responding" by sending the requested file
 });
-//cors issue - allows different domains such as lh:5173 (specified below) to access the api
+
+// CORS issue - allows different domains to access the API
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173'); // Replace with your frontend's URL
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -32,6 +39,22 @@ app.use((req, res, next) => {
     }
     next();
 });
+
+// Common function for handling singular get operations by id
+const getSingleRecord = async (model, req, res) => {
+    try {
+        const { id } = req.params;
+        const record = await model.findById(id);
+        if (!record) {
+            res.status(404).json({ message: `${model.modelName} not found` });
+        }
+        res.status(200).json(record);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send({ message: error.message });
+    }
+};
+
 // Define a common function for handling create operations
 const createRecord = async (model, req, res) => {
     try {
@@ -88,67 +111,69 @@ const deleteRecord = async (model, req, res) => {
     }
 };
 
-// Routes for Stock
-app.post('/tempstock', (req, res) => createRecord(Stock, req, res));
-app.get('/stock', (req, res) => getAllRecords(Stock, res));
-app.get('/stock/:id', (req, res) => updateRecord(Stock, req, res));
-app.put('/stock/:id', (req, res) => updateRecord(Stock, req, res));
-app.delete('/stock/:id', (req, res) => deleteRecord(Stock, req, res));
+// Routes for Trip
+app.post('/trips', (req, res) => createRecord(Trip, req, res));
+app.get('/trips', (req, res) => getAllRecords(Trip, res));
+app.get('/trips/:id', (req, res) => updateRecord(Trip, req, res));
+app.put('/trips/:id', (req, res) => updateRecord(Trip, req, res));
+app.delete('/trips/:id', (req, res) => deleteRecord(Trip, req, res));
+app.get('/trips/details/:id', (req, res) => getSingleRecord(Trip, req, res));
 
-// Routes for Route
-app.post('/tempsroute', (req, res) => createRecord(Route, req, res));
-app.get('/route', (req, res) => getAllRecords(Route, res));
-app.get('/route/:id', (req, res) => updateRecord(Route, req, res));
-app.put('/route/:id', (req, res) => updateRecord(Route, req, res));
-app.delete('/route/:id', (req, res) => deleteRecord(Route, req, res));
+// Routes for YearlyExpense
+app.post('/yearlyexpenses', (req, res) => createRecord(YearlyExpense, req, res));
+app.get('/yearlyexpenses', (req, res) => getAllRecords(YearlyExpense, res));
+app.get('/yearlyexpenses/:id', (req, res) => updateRecord(YearlyExpense, req, res));
+app.put('/yearlyexpenses/:id', (req, res) => updateRecord(YearlyExpense, req, res));
+app.delete('/yearlyexpenses/:id', (req, res) => deleteRecord(YearlyExpense, req, res));
 
-// Routes for Shipment
-app.post('/tempshipment', (req, res) => createRecord(Shipment, req, res));
-app.get('/shipment', (req, res) => getAllRecords(Shipment, res));
-app.get('/shipment/:id', (req, res) => updateRecord(Shipment, req, res));
-app.put('/shipment/:id', (req, res) => updateRecord(Shipment, req, res));
-app.delete('/shipment/:id', (req, res) => deleteRecord(Shipment, req, res));
-
-// Routes for Expenses
-app.post('/tempsexpenses', (req, res) => createRecord(Expenses, req, res));
-app.get('/expenses', (req, res) => getAllRecords(Expenses, res));
-app.get('/expenses/:id', (req, res) => updateRecord(Expenses, req, res));
-app.put('/expenses/:id', (req, res) => updateRecord(Expenses, req, res));
-app.delete('/expenses/:id', (req, res) => deleteRecord(Expenses, req, res));
+// Routes for MonthlyExpense
+app.post('/monthlyexpenses', (req, res) => createRecord(MonthlyExpense, req, res));
+app.get('/monthlyexpenses', (req, res) => getAllRecords(MonthlyExpense, res));
+app.get('/monthlyexpenses/:id', (req, res) => updateRecord(MonthlyExpense, req, res));
+app.put('/monthlyexpenses/:id', (req, res) => updateRecord(MonthlyExpense, req, res));
+app.delete('/monthlyexpenses/:id', (req, res) => deleteRecord(MonthlyExpense, req, res));
 
 // Routes for Driver
-app.post('/tempsdriver', (req, res) => createRecord(Driver, req, res));
-app.get('/driver', (req, res) => getAllRecords(Driver, res));
-app.get('/driver/:id', (req, res) => updateRecord(Driver, req, res));
-app.put('/driver/:id', (req, res) => updateRecord(Driver, req, res));
-app.delete('/driver/:id', (req, res) => deleteRecord(Driver, req, res));
+app.post('/drivers', (req, res) => createRecord(Driver, req, res));
+app.get('/drivers', (req, res) => getAllRecords(Driver, res));
+app.get('/drivers/:id', (req, res) => getSingleRecord(Driver, req, res));
+app.put('/drivers/:id', (req, res) => updateRecord(Driver, req, res));
+app.delete('/drivers/:id', (req, res) => deleteRecord(Driver, req, res));
 
 // Routes for Customer
-app.post('/tempscustomer', (req, res) => createRecord(Customer, req, res));
-app.get('/customer', (req, res) => getAllRecords(Customer, res));
-app.get('/customer/:id', (req, res) => updateRecord(Customer, req, res));
-app.put('/customer/:id', (req, res) => updateRecord(Customer, req, res));
-app.delete('/customer/:id', (req, res) => deleteRecord(Customer, req, res));
+app.post('/customers', (req, res) => createRecord(Customer, req, res));
+app.get('/customers', (req, res) => getAllRecords(Customer, res));
+app.get('/customers/:id', (req, res) => getSingleRecord(Customer, req, res));
+app.put('/customers/:id', (req, res) => updateRecord(Customer, req, res));
+app.delete('/customers/:id', (req, res) => deleteRecord(Customer, req, res));
 
-// Routes for Truck
-app.post('/tempstruck', (req, res) => createRecord(Truck, req, res));
-app.get('/truck', (req, res) => getAllRecords(Truck, res));
-app.get('/truck/:id', (req, res) => updateRecord(Truck, req, res));
-app.put('/truck/:id', (req, res) => updateRecord(Truck, req, res));
-app.delete('/truck/:id', (req, res) => deleteRecord(Truck, req, res));
+// Routes for Helper
+app.post('/helpers', (req, res) => createRecord(Helper, req, res));
+app.get('/helpers', (req, res) => getAllRecords(Helper, res));
+app.get('/helpers/:id', (req, res) => getSingleRecord(Helper, req, res));
+app.put('/helpers/:id', (req, res) => updateRecord(Helper, req, res));
+app.delete('/helpers/:id', (req, res) => deleteRecord(Helper, req, res));
 
-//connect to db
+app.post('/trucks', (req, res) => createRecord(Truck, req, res));
+app.get('/trucks', (req, res) => getAllRecords(Truck, res));
+app.get('/trucks/:id', (req, res) => getSingleRecord(Truck, req, res));
+app.put('/trucks/:id', (req, res) => updateRecord(Truck, req, res));
+app.delete('/trucks/:id', (req, res) => deleteRecord(Truck, req, res));
+
+app.post('/expenses', (req, res) => createRecord(Expenses, req, res));
+app.get('/expenses', (req, res) => getAllRecords(Expenses, res));
+app.get('/expenses/:id', (req, res) => getSingleRecord(Expenses, req, res));
+app.put('/expenses/:id', (req, res) => updateRecord(Expenses, req, res));
+app.delete('/expenses/:id', (req, res) => deleteRecord(Expenses, req, res));
+// Connect to the database
 mongoose
-    .connect(dbUrl) //connects to mongodbatlas, connects to our database    
+    .connect(dbUrl)
     .then(() => {
-        console.log("App connected to database.");
+        console.log("App connected to the database.");
         app.listen(PORT, () => {
-            //confirms that server is running
-            console.log(`App is listening to port: ${PORT}`)
+            console.log(`App is listening to port: ${PORT}`);
         });
     })
     .catch((error) => {
         console.log(error);
-    })
-
-
+    });
