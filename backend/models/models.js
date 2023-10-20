@@ -1,94 +1,104 @@
 import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
+/*comments:
+    data integrity: minimum and maximum limits
+*/
+//truck schema
+export const Truck = mongoose.model("Truck", new Schema({
+    truckType: {
+        type: String,
+        required: true
+    },
+    plateNumber: {
+        type: String,
+        required: true
+    },
+    expenses: {
 
-//customers
-const customerSchema = new Schema({
-    CustomerID: { type: Number, required: true },
-    CustomerFirstName: { type: String, required: true },
-    CustomerLastName: { type: String, required: true },
-    CustomerContactNo: { type: Number, required: true },
-    CustomerEmail: { type: String, required: true },
-});
+        type: Schema.Types.ObjectId,
+        ref: 'Expense'
 
-export const Customer = mongoose.model("CustomerDatabase", customerSchema);
+    },
+    trips: [ //multiple instances
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Trip'
+        }
+    ]
+}));
+//expenses and sub-objects
+export const Expenses = mongoose.model("Expense", new Schema({
+    yearlyExpenses: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'YearlyExpense'
+        }
+    ],
+    monthlyExpenses: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'MonthlyExpense'
+        }
+    ]
+}));
+export const YearlyExpense = mongoose.model("YearlyExpense", new Schema({
+    year: Number,
+    ltoReg: Number,
+    fcieReg: Number,
+    stickerReg: Number,
+    maintenance: Number
+}));
 
-//drivers
-const driverSchema = new Schema({
-    DriverID: { type: Number, required: true },
-    DriverFirstName: { type: String, required: true },
-    DriverLastName: { type: String, required: true },
-    DriverContactNo: { type: Number, required: true },
-    DriverLicenseNo: { type: String, required: true },
-});
+export const MonthlyExpense = mongoose.model("MonthlyExpense", new Schema({
+    month: String,
+    maintenance: Number,
+    dieselConsumption: Number
+}));
+//entities
+export const Driver = mongoose.model("Driver", new Schema({
+    name: String, //searchable using name
+    licenseNumber: String
+}));
 
-export const Driver = mongoose.model("DriverDatabase", driverSchema);
+export const Helper = mongoose.model("Helper", new Schema({
+    name: String,
+    contactNumber: String
+}));
 
-//expenses
-const expensesSchema = new Schema({
-    ExpensesID: { type: Number, required: true },
-    ExpensesRevenue: { type: Number, required: true },
-    DepreciationExpenses: { type: Number, required: true },
-    ExpensesAmortization: { type: Number, required: true },
-    MaintenanceCost: { type: Number, required: true },
-    TruckRegis: { type: Number, required: true },
-    Sticker: { type: Number, required: true },
-    DriverSalary: { type: Number, required: true },
-    HelperSalary: { type: Number, required: true },
-    Trips: { type: Number, required: true },
-    TotalKm: { type: Number, required: true },
-    TotalExpense: { type: Number, required: true },
-    CostAve: { type: Number, required: true },
-    TollFee: { type: Number, required: true },
-    Diesel: { type: Number, required: true },
-    DieselpLiters: { type: Number, required: true },
-    OtherExpense: { type: Number, required: true },
-});
+export const Customer = mongoose.model("Customer", new Schema({
+    name: String, //searchable using name
+    contactNumber: String,
+    location: String
+}));
 
-export const Expenses = mongoose.model("ExpensesDatabase", expensesSchema);
-
-//routes
-const routeSchema = new Schema({
-    RouteID: { type: Number, required: true },
-    InitialLoc: { type: String, required: true },
-    Destination: { type: String, required: true },
-    Distance: { type: Number, required: true },
-    Duration: { type: String, required: true },
-});
-
-export const Route = mongoose.model("RouteDatabase", routeSchema);
-
-//shipping
-const shipmentSchema = new Schema({
-    ShipmentID: { type: Number, required: true },
-    ShipmentDate: { type: Date, required: true },
-});
-
-export const Shipment = mongoose.model("ShipmentDatabase", shipmentSchema);
-
-//stock
-const stockSchema = new Schema({
-    StockID: { type: Number, required: true },
-    StockOutNo: { type: String, required: true },
-    StockDate: { type: Date, required: true },
-    Qty: { type: Number, required: true },
-    Particular: { type: String, required: true },
-    MarketPrice: { type: Number, required: true },
-});
-
-export const Stock = mongoose.model("StockDatabase", stockSchema);
-
-//trucks
-const truckSchema = new Schema({
-    TruckID: { type: Number, required: true },
-    PlateNo: { type: String, required: true },
-    TruckType: { type: String, required: true },
-    Revenue: { type: Number, required: true },
-    Depreciation: { type: Number, required: true },
-    Amortization: { type: Number, required: true },
-    TotalFeeExpenses: { type: Number, required: true },
-    FCIE: { type: Number, required: true },
-    REGISTRATION: { type: Number, required: true },
-});
-
-export const Truck = mongoose.model("TruckDatabase", truckSchema);
+export const Trip = mongoose.model("Trip", new Schema({
+    driver: {
+        type: Schema.Types.ObjectId,
+        ref: 'Driver',
+        required: true
+    },
+    customer: {
+        type: Schema.Types.ObjectId,
+        ref: 'Customer',
+        required: true
+    },
+    helper: {
+        type: Schema.Types.ObjectId,
+        ref: 'Helper',
+    },
+    date: {
+        type: Date,
+        required: true
+    },
+    timeDispatched: {
+        type: String,
+        required: true
+    },
+    timeReceived: {
+        type: String,
+    },
+    timeReturned: {
+        type: String,
+    }
+}));

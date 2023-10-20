@@ -1,62 +1,74 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios'
 import { Link } from "react-router-dom";
-//import components
 import Sidebar from "../Sidebar";
 import Spinner from "../Spinner";
 
-//general analysis of how this works
 const TruckTable = () => {
-    //rendering load states
     const [trucks, setTrucks] = useState([]);
     const [loading, setLoading] = useState(false);
-    //get data
-    useEffect(() => {
+
+    //fetches data from backend
+    const fetchData = async () => {
         setLoading(true);
-        axios
-            .get("http://localhost:2222/truck")
-            .then((response) => {
-                setTrucks(response.data.data);
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.log(error);
-                setLoading(false);
-            })
-    }, [])
+        try {
+            const response = await axios.get("http://localhost:2222/trucks");
+            setTrucks(response.data.data);
+            console.log(response.data.data);
+            setLoading(false);
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
+        }
+    };
+
+    //handles delete function
+    const handleDelete = async (id) => {
+        setLoading(true);
+        try {
+            const response = await axios.delete(`http://localhost:2222/trucks/${id}`);
+            if (response.status === 204) {
+                const newTrucks = trucks.filter((truck) => truck._id !== id);
+                setTrucks(newTrucks);
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    //fetches data on render and state change
+    useEffect(() => {
+        fetchData();
+    }, []);
+
     return (
         <div>
             {loading ? (
-                <Spinner />
+                <div className="border d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
+                    <Spinner />
+                </div>
             ) : (
-                <div style={{ overflowX: "auto", marginLeft: "18%", overflowY: "auto", maxHeight: "50vh" }}>
-                    <table className="table">
+                <div style={{ overflowX: "auto", overflowY: "auto", maxHeight: "50vh" }}>
+                    <table className="table table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Plate Number</th>
-                                <th>Truck Type</th>
-                                <th>Revenue</th>
-                                <th>Depreciation</th>
-                                <th>Amortization</th>
-                                <th>Total Fee Expenses</th>
-                                <th>FCIE Registration</th>
-                                <th>Misc. Registration</th>
+                                <th style={{ width: "20%" }}>Plate Number</th>
+                                <th style={{ width: "60%" }}>Truck Type</th>
+                                <th style={{ width: "20%" }}>Operations</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {/* renders the information */}
-                            {trucks.map((truck, index) => (
-                                <tr key={truck.TruckID}>
-                                    <td>{truck.TruckID}</td>
-                                    <td>{truck.PlateNo}</td>
-                                    <td>{truck.TruckType}</td>
-                                    <td>{truck.Revenue}</td>
-                                    <td>{truck.Depreciation}</td>
-                                    <td>{truck.Amortization}</td>
-                                    <td>{truck.TotalFeeExpenses}</td>
-                                    <td>{truck.FCIE}</td>
-                                    <td>{truck.REGISTRATION}</td>
+                            {trucks.map((truck) => (
+                                <tr key={truck.plateNumber}>
+                                    <td>{truck.plateNumber}</td>
+                                    <td>{truck.truckType}</td>
+                                    <td>
+                                        <Link className="btn btn-outline-success" to={`/trucks/details/${truck._id}`} style={{ marginRight: '2%' }}>Show</Link>
+                                        <button className="btn btn-outline-danger" onClick={() => handleDelete(truck._id)} style={{ marginRight: '2%' }}>Delete</button>
+                                        <button className="btn btn-outline-warning" onClick={() => handleEdit(truck._id)}>Edit</button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
