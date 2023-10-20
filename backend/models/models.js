@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
-
-// Define truck schema and export model
-export const Truck = mongoose.model("TruckDatabase", new Schema({
+/*comments:
+    data integrity: minimum and maximum limits
+*/
+//truck schema
+export const Truck = mongoose.model("Truck", new Schema({
     truckType: {
         type: String,
         required: true
@@ -12,12 +14,12 @@ export const Truck = mongoose.model("TruckDatabase", new Schema({
         type: String,
         required: true
     },
-    expenses: [ //multiple instances
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'Expense'
-        }
-    ],
+    expenses: {
+
+        type: Schema.Types.ObjectId,
+        ref: 'Expense'
+
+    },
     trips: [ //multiple instances
         {
             type: Schema.Types.ObjectId,
@@ -25,22 +27,8 @@ export const Truck = mongoose.model("TruckDatabase", new Schema({
         }
     ]
 }));
-
-export const YearlyExpense = mongoose.model("YearlyExpense", new Schema({
-    year: Number,
-    ltoReg: Number,
-    fcieReg: Number,
-    stickerReg: Number,
-    maintenance: Number
-}));
-
-export const MonthlyExpense = mongoose.model("MonthlyExpense", new Schema({
-    month: String,
-    maintenance: Number,
-    dieselConsumption: Number
-}));
-
-export const Expenses = mongoose.model("ExpensesDatabase", new Schema({
+//expenses and sub-objects
+export const Expenses = mongoose.model("Expense", new Schema({
     yearlyExpenses: [
         {
             type: Schema.Types.ObjectId,
@@ -54,24 +42,37 @@ export const Expenses = mongoose.model("ExpensesDatabase", new Schema({
         }
     ]
 }));
+export const YearlyExpense = mongoose.model("YearlyExpense", new Schema({
+    year: Number,
+    ltoReg: Number,
+    fcieReg: Number,
+    stickerReg: Number,
+    maintenance: Number
+}));
 
-export const Driver = mongoose.model("DriverDatabase", new Schema({
+export const MonthlyExpense = mongoose.model("MonthlyExpense", new Schema({
+    month: String,
+    maintenance: Number,
+    dieselConsumption: Number
+}));
+//entities
+export const Driver = mongoose.model("Driver", new Schema({
     name: String, //searchable using name
     licenseNumber: String
 }));
 
-export const Customer = mongoose.model("CustomerDatabase", new Schema({
+export const Helper = mongoose.model("Helper", new Schema({
+    name: String,
+    contactNumber: String
+}));
+
+export const Customer = mongoose.model("Customer", new Schema({
     name: String, //searchable using name
     contactNumber: String,
     location: String
 }));
 
-export const Helper = mongoose.model("HelperDatabase", new Schema({
-    name: String,
-    contactNumber: String
-}));
-
-export const Trip = mongoose.model("TripDatabase", new Schema({
+export const Trip = mongoose.model("Trip", new Schema({
     driver: {
         type: Schema.Types.ObjectId,
         ref: 'Driver',

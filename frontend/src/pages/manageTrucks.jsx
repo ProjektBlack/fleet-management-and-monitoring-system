@@ -3,34 +3,29 @@ import { Link } from "react-router-dom";
 //import components
 import Sidebar from "../components/Sidebar";
 import TruckTable from "../components/tables/TruckTable";
-//add new buttons, edit button perhaps, access controls, general layout optimization
-//correct loading animation
+//button icons instead of text, access controls, sort button, search bar, edit functionality
 const ManageTruck = () => {
     return (
         <div>
             <div className="row">
-                <div className="col-2">
+                <div className="col-2" style={{ height: '94vh' }}>
                     <Sidebar />
                 </div>
-                <div className="col-10">
-                    <div className="row d-flex mx-auto mb-4 mt-4">
-                        <div className="col-10">
-                            <h1 style={{ marginTop: "10%" }}>Trucks</h1>
+                <div className="col-10 p-4">
+                    <div className="row pt-4" style={{ marginTop: '7.5vh', marginBottom: '1.5%' }}>
+                        <div className="col-10 mt-4">
+                            <h1>Manage Trucks</h1>
                         </div>
-                        <div className="col">
-                            <Link to="/newtruck" className="btn btn-outline-success" style={{ marginTop: "60%", marginLeft: "50%" }}>
-                                Create
-                            </Link>
+                        <div className="col-2 mt-4 text-end">
+                            <Link to="/addTruck" className="btn btn-success mt-2">New</Link>
                         </div>
+                    </div>
+                    <div className="row">
+                        <TruckTable />
                     </div>
                 </div>
             </div>
-            <div className="row">
-                <div className="col" >
-                    <TruckTable />
-                </div>
-            </div>
-        </div >
+        </div>
 
     )
 }
