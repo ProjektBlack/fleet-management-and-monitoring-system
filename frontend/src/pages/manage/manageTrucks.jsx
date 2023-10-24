@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 //import components
-import Sidebar from "../components/Sidebar";
-import TruckTable from "../components/tables/TruckTable";
+import Sidebar from "../../components/Sidebar";
+import TruckTable from "../../components/tables/TruckTable";
 //button icons instead of text, access controls, sort button, search bar, edit functionality
 const ManageTruck = () => {
     return (
@@ -17,7 +17,7 @@ const ManageTruck = () => {
                             <h1>Manage Trucks</h1>
                         </div>
                         <div className="col-2 mt-4 text-end">
-                            <Link to="/addTruck" className="btn btn-success mt-2">New</Link>
+                            <Link to="/newtrucks" className="btn btn-success mt-2">New</Link>
                         </div>
                     </div>
                     <div className="row">

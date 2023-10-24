@@ -67,7 +67,7 @@ const TruckTable = () => {
                                     <td>
                                         <Link className="btn btn-outline-success" to={`/trucks/details/${truck._id}`} style={{ marginRight: '2%' }}>Show</Link>
                                         <button className="btn btn-outline-danger" onClick={() => handleDelete(truck._id)} style={{ marginRight: '2%' }}>Delete</button>
-                                        <button className="btn btn-outline-warning" onClick={() => handleEdit(truck._id)}>Edit</button>
+                                        <button className="btn btn-outline-warning">Edit</button>
                                     </td>
                                 </tr>
                             ))}

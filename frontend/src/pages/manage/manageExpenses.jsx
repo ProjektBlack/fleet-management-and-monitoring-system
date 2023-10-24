@@ -1,10 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 //components
-import Sidebar from "../components/Sidebar";
-import StocksTable from "../components/tables/StocksTable"
+//need to format this properly
+import Sidebar from "../../components/Sidebar";
+import ExpensesTable from "../../components/tables/ExpensesTable"
 
-const ManageStocks = (props) => {
+const ManageExpenses = (props) => {
     return (
         <div>
             <div className="row">
@@ -14,10 +15,10 @@ const ManageStocks = (props) => {
                 <div className="col-10">
                     <div className="row d-flex mx-auto mb-4 mt-4">
                         <div className="col-10">
-                            <h1 style={{ marginTop: "10%" }}>Stocks</h1>
+                            <h1 style={{ marginTop: "10%" }}>Expenses</h1>
                         </div>
                         <div className="col">
-                            <Link to="/newstock" className="btn btn-outline-success" style={{ marginTop: "60%", marginLeft: "50%" }}>
+                            <Link to="/newexpenses" className="btn btn-outline-success" style={{ marginTop: "60%", marginLeft: "50%" }}>
                                 Create
                             </Link>
                         </div>
@@ -26,11 +27,11 @@ const ManageStocks = (props) => {
             </div>
             <div className="row">
                 <div className="col" >
-                    <StocksTable />
+                    <ExpensesTable />
                 </div>
             </div>
         </div >
     )
 }
 
-export default ManageStocks
+export default ManageExpenses

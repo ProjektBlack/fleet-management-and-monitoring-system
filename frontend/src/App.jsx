@@ -9,17 +9,14 @@ import Dashboard from "./components/Dashboard";
 //import pages
 import Login from "./pages/login";
 import Home from "./pages/home";
-import ManageTruck from "./pages/manageTrucks";
-import ManageCustomers from "./pages/manageCustomers"
-import ManageDrivers from "./pages/manageDrivers"
-import ManageExpenses from "./pages/manageExpenses"
+import ManageTruck from "./pages/manage/manageTrucks";
+import ManageExpenses from "./pages/manage/manageExpenses"
 //import forms
 import CreateTruck from "./components/forms/TruckForm"
-import CreateDriver from "./components/forms/DriversForm"
-import CreateCustomer from "./components/forms/CustomersForm"
 import CreateExpense from "./components/forms/ExpensesForm";
+import CreateTrip from "./components/forms/TripsForm";
 //
-import ShowTruck from "./pages/truckDetails";
+import ShowTruck from "./pages/details/truckDetails";
 
 const App = () => {
   return (
@@ -28,15 +25,12 @@ const App = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Home />} />
       {/*forms*/}
-      <Route path="/newtruck" element={<CreateTruck />} />
-      <Route path="/newcustomer" element={<CreateCustomer />} />
-      <Route path="/newdriver" element={<CreateDriver />} />
-      <Route path="/newexpenses" element={<CreateExpense />} />
+      <Route path="/newtrucks" element={<CreateTruck />} />
+      <Route path="/newexpenses/:expensesId" element={<CreateExpense />} />
+      <Route path="/newtrips/:truckId" element={<CreateTrip />} />
       {/*tables*/}
       <Route path="/trucks" element={<ManageTruck />} />
-      <Route path="/customers" element={<ManageCustomers />} />
       <Route path="/expenses" element={<ManageExpenses />} />
-      <Route path="/drivers" element={<ManageDrivers />} />
       {/*details*/}
       <Route path="trucks/details/:id" element={<ShowTruck />}></Route>
     </Routes>

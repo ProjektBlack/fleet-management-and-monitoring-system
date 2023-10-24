@@ -8,9 +8,6 @@ import { PORT, dbUrl } from "./config.js";
 // Import models
 import {
     Truck,
-    Customer,
-    Driver,
-    Helper,
     Expenses,
     Trip, // Add Trip model
     YearlyExpense, // Add YearlyExpense model

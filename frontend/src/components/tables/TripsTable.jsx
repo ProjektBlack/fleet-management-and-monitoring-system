@@ -6,8 +6,8 @@ import Sidebar from "../Sidebar";
 import Spinner from "../Spinner";
 import ReturnButton from "../ReturnButton";
 
-const ExpensesTable = () => {
+const TripsTable = () => {
 
 };
 
-export default ExpensesTable;
+export default TripsTable;

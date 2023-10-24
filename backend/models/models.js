@@ -12,20 +12,18 @@ export const Truck = mongoose.model("Truck", new Schema({
     },
     plateNumber: {
         type: String,
-        required: true
+        required: true,
+        unique: true,
+        maxlength: 10
     },
     expenses: {
-
         type: Schema.Types.ObjectId,
-        ref: 'Expense'
-
+        ref: 'Expenses'
     },
-    trips: [ //multiple instances
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'Trip'
-        }
-    ]
+    trips: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Trip'
+    }]
 }));
 //expenses and sub-objects
 export const Expenses = mongoose.model("Expense", new Schema({
@@ -55,37 +53,28 @@ export const MonthlyExpense = mongoose.model("MonthlyExpense", new Schema({
     maintenance: Number,
     dieselConsumption: Number
 }));
-//entities
-export const Driver = mongoose.model("Driver", new Schema({
-    name: String, //searchable using name
-    licenseNumber: String
-}));
-
-export const Helper = mongoose.model("Helper", new Schema({
-    name: String,
-    contactNumber: String
-}));
-
-export const Customer = mongoose.model("Customer", new Schema({
-    name: String, //searchable using name
-    contactNumber: String,
-    location: String
-}));
 
 export const Trip = mongoose.model("Trip", new Schema({
     driver: {
-        type: Schema.Types.ObjectId,
-        ref: 'Driver',
-        required: true
+        name: String,
+        licenseNumber: String,
+        required: {
+            type: Boolean,
+            default: true
+        }
     },
     customer: {
-        type: Schema.Types.ObjectId,
-        ref: 'Customer',
-        required: true
+        name: String,
+        contactNumber: String,
+        location: String,
+        required: {
+            type: Boolean,
+            default: true
+        }
     },
     helper: {
-        type: Schema.Types.ObjectId,
-        ref: 'Helper',
+        name: String,
+        contactNumber: String
     },
     date: {
         type: Date,
@@ -96,9 +85,10 @@ export const Trip = mongoose.model("Trip", new Schema({
         required: true
     },
     timeReceived: {
-        type: String,
+        type: String
     },
     timeReturned: {
-        type: String,
+        type: String
     }
+    //should have status if completed or not - for ongoing trip listening widget
 }));

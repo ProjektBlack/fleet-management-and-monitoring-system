@@ -2,29 +2,32 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const CreateTruck = (props) => {
-    const [TruckID, setTruckID] = useState('')
-    const [PlateNo, setPlateNo] = useState('')
-    const [TruckType, setTruckType] = useState('')
-    const [Revenue, setRev] = useState('')
-    const [Depreciation, setDep] = useState('')
-    const [Amortization, setAmor] = useState('')
-    const [TotalFeeExpenses, setTFE] = useState('')
-    const [FCIE, setFCIE] = useState('')
-    const [REGISTRATION, setReg] = useState('')
-    const [loading, setLoading] = useState(false)
-    const navigate = useNavigate();
+const CreateTruck = () => {
+    const [newTruck, setNewTruck] = useState({}) //state for new truck object
+    const [plateNumber, setPlateNumber] = useState('')
+    const [truckType, setTruckType] = useState('')
+    const [expenses, setExpenses] = useState({
+        yearlyExpenses: [],
+        monthlyExpenses: []
+    })
+
+    //function to create a new truck
     const handleCreateTruck = async () => {
         try {
             const data = {
-                TruckID, PlateNo, TruckType, Revenue, Depreciation, Amortization, TotalFeeExpenses, FCIE, REGISTRATION
+                plateNumber,
+                truckType,
             };
-            setLoading(true);
-            await axios.post('http://localhost:2222/tempstruck', data);
-            setLoading(false);
-            navigate("/trucks")
+            const response = await axios.post('http://localhost:2222/trucks', data) //create new truck - no expenses yet
+            const expenseResponse = await axios.post('http://localhost:2222/expenses', expenses) //create new expenses associated with truck
+            const newObjectID = response.data._id; //get truck ID for getting truck object
+            const getObject = await axios.get(`http://localhost:2222/trucks/${newObjectID}`);
+            setNewTruck(getObject.data); //set new truck object
+            newTruck.expenses = expenseResponse.data._id; //set new truck expenses
+            await axios.put(`http://localhost:2222/trucks/${newObjectID}`, newTruck); //update truck with expenses
+            console.log(response.data);
+            alert("Truck created.");
         } catch (error) {
-            setLoading(false);
             alert("Error occurred. Please check console.");
             console.error(error);
         }
@@ -34,24 +37,10 @@ const CreateTruck = (props) => {
         <div className="row">
             <div className="p-4 mx-auto mt-4" style={{ width: '50%' }}>
                 <h5>Create New Truck</h5>
-                <label>Enter Truck ID: </label>
-                <input type="text" value={TruckID} onChange={(e) => setTruckID(e.target.value)} className="form-control"></input>
-                <label>Enter Plate Number: </label>
-                <input type="text" value={PlateNo} onChange={(e) => setPlateNo(e.target.value)} className="form-control"></input>
-                <label>Enter Truck Type: </label>
-                <input type="text" value={TruckType} onChange={(e) => setTruckType(e.target.value)} className="form-control"></input>
-                <label>Enter Revenue: </label>
-                <input type="text" value={Revenue} onChange={(e) => setRev(e.target.value)} className="form-control"></input>
-                <label>Enter Depreciation: </label>
-                <input type="text" value={Depreciation} onChange={(e) => setDep(e.target.value)} className="form-control"></input>
-                <label>Enter Amortization: </label>
-                <input type="text" value={Amortization} onChange={(e) => setAmor(e.target.value)} className="form-control"></input>
-                <label>Enter Total Fee Expenses: </label>
-                <input type="text" value={TotalFeeExpenses} onChange={(e) => setTFE(e.target.value)} className="form-control"></input>
-                <label>Enter FCIE Registration Amount): </label>
-                <input type="text" value={FCIE} onChange={(e) => setFCIE(e.target.value)} className="form-control"></input>
-                <label>Enter Registration Fee: </label>
-                <input type="text" value={REGISTRATION} onChange={(e) => setReg(e.target.value)} className="form-control"></input>
+                <label>Plate Number </label>
+                <input type="text" value={plateNumber} onChange={(e) => setPlateNumber(e.target.value)} className="form-control"></input>
+                <label>Truck Type </label>
+                <input type="text" value={truckType} onChange={(e) => setTruckType(e.target.value)} className="form-control"></input>
                 <button className="btn btn-success mx-auto d-flex mt-4 mb-4" onClick={handleCreateTruck}>Create</button>
             </div>
         </div>

@@ -23,12 +23,10 @@ const Sidebar = () => {
                     <div className="collapse" id="dashboard-collapse">
                         <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                             <li><Link to="/trucks" className="link-dark rounded">Trucks</Link></li>
-                            <li><Link to="/drivers" className="link-dark rounded">Drivers</Link></li>
-                            <li><Link to="/customers" className="link-dark rounded">Customers</Link></li>
+                            <li><Link to="/trips" className="link-dark rounded">Trips</Link></li>
                             <li><Link to="/expenses" className="link-dark rounded">Expenses</Link></li>
-                            <li><Link to="/stocks" className="link-dark rounded">Stocks</Link></li>
-                            <li><Link to="/routes" className="link-dark rounded">Routes</Link></li>
-                            <li><Link to="/shipments" className="link-dark rounded">Shipments</Link></li>
+                            <li><Link to="/employees" className="link-dark rounded">Employees</Link></li>
+                            <li><Link to="/customers" className="link-dark rounded">Customers</Link></li>
                         </ul>
                     </div>
                 </li>
