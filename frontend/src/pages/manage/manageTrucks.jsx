@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 //import components
-import Sidebar from "../../components/Sidebar";
+import Sidebar from "../../components/widgets/subcomponents/sidebar";
 import TruckTable from "../../components/tables/TruckTable";
 //button icons instead of text, access controls, sort button, search bar, edit functionality
 const ManageTruck = () => {

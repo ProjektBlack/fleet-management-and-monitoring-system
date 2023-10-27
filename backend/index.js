@@ -1,12 +1,15 @@
 // Import modules
 import express from "express";
 import mongoose from "mongoose";
+import bcrypt from 'bcryptjs';
+import jwt from "jsonwebtoken";
 
 // Import variables
 import { PORT, dbUrl } from "./config.js";
 
 // Import models
 import {
+    User,
     Truck,
     Expenses,
     Trip, // Add Trip model
@@ -25,7 +28,7 @@ app.get("/", (request, response) => {
     return response.status(200).send("Request successful."); // The server "responding" by sending the requested file
 });
 
-// CORS issue - allows different domains to access the API
+//CORS - allows different domain addresses to access the API
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173'); // Replace with your frontend's URL
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -109,7 +112,72 @@ const deleteRecord = async (model, req, res) => {
         res.status(500).send({ message: error.message });
     }
 };
+//routes
+//for logging in
 
+// Define a route for logging in
+app.post('/login', async (req, res) => {
+    try {
+        // Get the username and password from the request body
+        const { username, password } = req.body;
+
+        // Find the user with the given username
+        const user = await User.findOne({ username });
+
+        // If the user doesn't exist, return an error
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Check if the password is correct
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            return res.status(401).json({ message: 'Invalid password' });
+        }
+
+        // Create a JSON Web Token (JWT) for the user
+        const token = jwt.sign({ userId: user._id, email: user.email }, 'your-secret-key', {
+            expiresIn: '1h', // Token expiration time
+        });
+
+        // Return the token to the client
+        res.status(200).json({ token });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ message: 'Error logging in' });
+    }
+});
+// Route for creating a new user
+app.post('/users', async (req, res) => {
+    try {
+        // Get the user data from the request body
+        const { username, password } = req.body;
+
+        // Check if the user already exists
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+            return res.status(409).json({ message: 'User already exists' });
+        }
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create a new user object
+        const newUser = new User({
+            username,
+            password: hashedPassword
+        });
+
+        // Save the new user to the database
+        await newUser.save();
+
+        // Return a success message to the client
+        res.status(201).json({ message: 'User created successfully' });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ message: 'Error creating user' });
+    }
+});
 // Routes for Trip
 app.post('/trips', (req, res) => createRecord(Trip, req, res));
 app.get('/trips', (req, res) => getAllRecords(Trip, res));
@@ -130,27 +198,6 @@ app.get('/monthlyexpenses', (req, res) => getAllRecords(MonthlyExpense, res));
 app.get('/monthlyexpenses/:id', (req, res) => getSingleRecord(MonthlyExpense, req, res)); // Use getSingleRecord for retrieving a single monthly expense
 app.put('/monthlyexpenses/:id', (req, res) => updateRecord(MonthlyExpense, req, res));
 app.delete('/monthlyexpenses/:id', (req, res) => deleteRecord(MonthlyExpense, req, res));
-
-// Routes for Driver
-app.post('/drivers', (req, res) => createRecord(Driver, req, res));
-app.get('/drivers', (req, res) => getAllRecords(Driver, res));
-app.get('/drivers/:id', (req, res) => getSingleRecord(Driver, req, res));
-app.put('/drivers/:id', (req, res) => updateRecord(Driver, req, res));
-app.delete('/drivers/:id', (req, res) => deleteRecord(Driver, req, res));
-
-// Routes for Customer
-app.post('/customers', (req, res) => createRecord(Customer, req, res));
-app.get('/customers', (req, res) => getAllRecords(Customer, res));
-app.get('/customers/:id', (req, res) => getSingleRecord(Customer, req, res));
-app.put('/customers/:id', (req, res) => updateRecord(Customer, req, res));
-app.delete('/customers/:id', (req, res) => deleteRecord(Customer, req, res));
-
-// Routes for Helper
-app.post('/helpers', (req, res) => createRecord(Helper, req, res));
-app.get('/helpers', (req, res) => getAllRecords(Helper, res));
-app.get('/helpers/:id', (req, res) => getSingleRecord(Helper, req, res));
-app.put('/helpers/:id', (req, res) => updateRecord(Helper, req, res));
-app.delete('/helpers/:id', (req, res) => deleteRecord(Helper, req, res));
 
 // Routes for Truck
 app.post('/trucks', (req, res) => createRecord(Truck, req, res));

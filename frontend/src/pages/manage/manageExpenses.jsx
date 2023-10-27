@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 //components
 //need to format this properly
-import Sidebar from "../../components/Sidebar";
+import Sidebar from "../../components/widgets/subcomponents/sidebar";
 import ExpensesTable from "../../components/tables/ExpensesTable"
 
 const ManageExpenses = (props) => {

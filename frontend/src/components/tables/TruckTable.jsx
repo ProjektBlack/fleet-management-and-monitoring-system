@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios'
 import { Link } from "react-router-dom";
-import Sidebar from "../Sidebar";
-import Spinner from "../Spinner";
+import Sidebar from "../widgets/subcomponents/sidebar";
+import Spinner from "../widgets/subcomponents/Spinner";
 
-const TruckTable = () => {
+const TruckTable = (props) => {
     const [trucks, setTrucks] = useState([]);
     const [loading, setLoading] = useState(false);
 
     //fetches data from backend
     const fetchData = async () => {
         setLoading(true);
+        console.log(props.isAuthenticated);
+
         try {
             const response = await axios.get("http://localhost:2222/trucks");
             setTrucks(response.data.data);

@@ -1,7 +1,7 @@
 import React from "react";
 //components
-import Sidebar from "../components/Sidebar";
-import Dashboard from "../components/Dashboard";
+import Sidebar from "../components/widgets/subcomponents/sidebar";
+import Dashboard from "../components/widgets/subcomponents/Dashboard";
 import TruckTable from "../components/tables/TruckTable";
 
 const Home = (props) => {

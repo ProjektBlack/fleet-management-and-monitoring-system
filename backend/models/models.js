@@ -4,6 +4,13 @@ const Schema = mongoose.Schema;
 /*comments:
     data integrity: minimum and maximum limits
 */
+const userSchema = new mongoose.Schema({
+    username: String,
+    password: String,
+    // Other fields...
+});
+
+export const User = mongoose.model('User', userSchema);
 //truck schema
 export const Truck = mongoose.model("Truck", new Schema({
     truckType: {

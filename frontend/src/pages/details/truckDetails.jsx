@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Sidebar from "../../components/Sidebar";
+import Sidebar from "../../components/widgets/subcomponents/sidebar";
 import axios from "axios";
-import Spinner from "../../components/Spinner";
-import ReturnButton from "../../components/ReturnButton";
+import Spinner from "../../components/widgets/subcomponents/Spinner";
+import ReturnButton from "../../components/widgets/subcomponents/ReturnButton";
 import { useParams } from "react-router-dom";
 // comments: better ui, add expenses, add trips , add edit functionality
 const ShowTruck = () => {

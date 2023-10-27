@@ -3,6 +3,12 @@ import { Link } from "react-router-dom";
 //user icon or name should change depending on the user
 //sidebar details should be appropriate to screen size
 const Sidebar = () => {
+    //logout function
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        window.location.href = "/login";; // You may need to import 'history' from your routing library
+    };
+
     return (
         <div className="flex-shrink-0 p-3 bg-white" style={{ width: '110%', height: '100%' }}>
             <a href="/" className="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
@@ -11,7 +17,7 @@ const Sidebar = () => {
             <ul className="list-unstyled ps-0">
                 <li className="mb-1">
                     <button className="btn btn-toggle align-items-center rounded" aria-expanded="true">
-                        <Link to="/" style={{ textDecoration: "none", color: "black" }}>
+                        <Link to="/home" style={{ textDecoration: "none", color: "black" }}>
                             Dashboard
                         </Link>
                     </button>
@@ -25,8 +31,6 @@ const Sidebar = () => {
                             <li><Link to="/trucks" className="link-dark rounded">Trucks</Link></li>
                             <li><Link to="/trips" className="link-dark rounded">Trips</Link></li>
                             <li><Link to="/expenses" className="link-dark rounded">Expenses</Link></li>
-                            <li><Link to="/employees" className="link-dark rounded">Employees</Link></li>
-                            <li><Link to="/customers" className="link-dark rounded">Customers</Link></li>
                         </ul>
                     </div>
                 </li>
@@ -51,7 +55,7 @@ const Sidebar = () => {
                     <div className="collapse" id="account-collapse">
                         <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                             <li><a href="#" className="link-dark rounded">Settings</a></li>
-                            <li><a href="#" className="link-dark rounded">Log Out</a></li>
+                            <li><a className="link-dark rounded" onClick={handleLogout}>Log Out</a></li>
                         </ul>
                     </div>
                 </li>
