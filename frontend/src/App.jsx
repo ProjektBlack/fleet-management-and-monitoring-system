@@ -11,6 +11,7 @@ import Login from "./pages/login";
 import Home from "./pages/home";
 import ManageTruck from "./pages/manage/manageTrucks";
 import ManageExpenses from "./pages/manage/manageExpenses"
+import Missing from "./pages/missing";
 //import forms
 import CreateTruck from "./components/forms/TruckForm"
 import CreateExpense from "./components/forms/ExpensesForm";
@@ -33,6 +34,8 @@ const App = () => {
       <Route path="/newtrips/:truckId" element={<PrivateRoute isAuthenticated={isAuthenticated}><CreateTrip /></PrivateRoute>} />
       <Route path="/expenses" element={<PrivateRoute isAuthenticated={isAuthenticated}><ManageExpenses /></PrivateRoute>} />
       <Route path="trucks/details/:id" element={<PrivateRoute isAuthenticated={isAuthenticated}><ShowTruck /></PrivateRoute>} />
+      {/*error page*/}
+      <Route path="*" element={<Missing />} />
     </Routes>
   );
 };
