@@ -1,16 +1,13 @@
 import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
-/*comments:
-    data integrity: minimum and maximum limits
-*/
-const userSchema = new mongoose.Schema({
+
+//schema for user
+export const User = mongoose.model('User', new Schema({
     username: String,
     password: String,
-    // Other fields...
-});
+}));
 
-export const User = mongoose.model('User', userSchema);
 //truck schema
 export const Truck = mongoose.model("Truck", new Schema({
     truckType: {
@@ -32,6 +29,7 @@ export const Truck = mongoose.model("Truck", new Schema({
         ref: 'Trip'
     }]
 }));
+
 //expenses and sub-objects
 export const Expenses = mongoose.model("Expense", new Schema({
     yearlyExpenses: [
@@ -47,6 +45,8 @@ export const Expenses = mongoose.model("Expense", new Schema({
         }
     ]
 }));
+
+//i have ideas for expenses to be able calculate the total expenses for the year based on the monthly expenses - will implement once I get feedback from the manager
 export const YearlyExpense = mongoose.model("YearlyExpense", new Schema({
     year: Number,
     ltoReg: Number,
@@ -57,31 +57,33 @@ export const YearlyExpense = mongoose.model("YearlyExpense", new Schema({
 
 export const MonthlyExpense = mongoose.model("MonthlyExpense", new Schema({
     month: String,
+    year: Number,
     maintenance: Number,
     dieselConsumption: Number
 }));
 
 export const Trip = mongoose.model("Trip", new Schema({
     driver: {
-        name: String,
-        licenseNumber: String,
-        required: {
-            type: Boolean,
-            default: true
-        }
+        name: {
+            type: String,
+            required: true
+        },
     },
     customer: {
-        name: String,
-        contactNumber: String,
-        location: String,
-        required: {
-            type: Boolean,
-            default: true
+        name: {
+            type: String,
+            required: true
+        },
+        location: {
+            type: String,
+            required: true
         }
     },
     helper: {
-        name: String,
-        contactNumber: String
+        name: {
+            type: String,
+            required: true
+        },
     },
     date: {
         type: Date,
@@ -96,6 +98,8 @@ export const Trip = mongoose.model("Trip", new Schema({
     },
     timeReturned: {
         type: String
+    },
+    status: {
+        type: String
     }
-    //should have status if completed or not - for ongoing trip listening widget
 }));
