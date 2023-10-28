@@ -17,7 +17,7 @@ const ManageTruck = () => {
                             <h1>Manage Trucks</h1>
                         </div>
                         <div className="col-2 mt-4 text-end">
-                            <Link to="/newtrucks" className="btn btn-success mt-2">New</Link>
+                            <Link to="/trucks/new" className="btn btn-success mt-2">New</Link>
                         </div>
                     </div>
                     <div className="row">
@@ -26,7 +26,6 @@ const ManageTruck = () => {
                 </div>
             </div>
         </div>
-
     )
 }
 

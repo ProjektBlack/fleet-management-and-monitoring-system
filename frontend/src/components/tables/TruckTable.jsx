@@ -69,7 +69,7 @@ const TruckTable = (props) => {
                                     <td>
                                         <Link className="btn btn-outline-success" to={`/trucks/details/${truck._id}`} style={{ marginRight: '2%' }}>Show</Link>
                                         <button className="btn btn-outline-danger" onClick={() => handleDelete(truck._id)} style={{ marginRight: '2%' }}>Delete</button>
-                                        <button className="btn btn-outline-warning">Edit</button>
+                                        <Link className="btn btn-outline-warning" to={`/trucks/edit/${truck._id}`}>Edit</Link>
                                     </td>
                                 </tr>
                             ))}

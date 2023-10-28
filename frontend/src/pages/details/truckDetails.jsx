@@ -121,6 +121,7 @@ const ShowTruck = () => {
                                         <th>FCIE Registration</th>
                                         <th>Sticker Registration</th>
                                         <th>Maintenance</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -131,6 +132,7 @@ const ShowTruck = () => {
                                             <td>{expense.fcieReg}</td>
                                             <td>{expense.stickerReg}</td>
                                             <td>{expense.maintenance}</td>
+                                            <td><Link className="btn btn-outline-warning" to={`/expenses/yearly/edit/${expense._id}`}>Edit</Link></td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -144,6 +146,7 @@ const ShowTruck = () => {
                                         <th>Month</th>
                                         <th>Maintenance</th>
                                         <th>Diesel Consumption</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -152,6 +155,7 @@ const ShowTruck = () => {
                                             <td>{expense.month}</td>
                                             <td>{expense.maintenance}</td>
                                             <td>{expense.dieselConsumption}</td>
+                                            <td><Link className="btn btn-outline-warning" to={`/expenses/monthly/edit/${expense._id}`}>Edit</Link></td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -176,6 +180,7 @@ const ShowTruck = () => {
                                         <th>Time Dispatched</th>
                                         <th>Time Received</th>
                                         <th>Time Returned</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -188,6 +193,7 @@ const ShowTruck = () => {
                                             <td>{trip.timeDispatched}</td>
                                             <td>{trip.timeReceived}</td>
                                             <td>{trip.timeReturned}</td>
+                                            <td><Link className="btn btn-outline-warning" to={`/trips/edit/${trip._id}`}>Edit</Link></td>
                                         </tr>
                                     ))}
                                 </tbody>
