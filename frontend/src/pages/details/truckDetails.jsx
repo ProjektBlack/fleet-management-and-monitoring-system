@@ -180,6 +180,10 @@ const ShowTruck = () => {
                                         <th>Time Dispatched</th>
                                         <th>Time Received</th>
                                         <th>Time Returned</th>
+                                        <th>Total Fuel Cost</th>
+                                        <th>Toll Fee Cost</th>
+                                        <th>Total Trip Cost</th>
+                                        <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -193,6 +197,10 @@ const ShowTruck = () => {
                                             <td>{trip.timeDispatched}</td>
                                             <td>{trip.timeReceived}</td>
                                             <td>{trip.timeReturned}</td>
+                                            <td>{trip.dieselConsumption}</td>
+                                            <td>{trip.tollFee}</td>
+                                            <td>{trip.totalTripExpense}</td>
+                                            <td>{trip.status}</td>
                                             <td><Link className="btn btn-outline-warning" to={`/trips/edit/${trip._id}`}>Edit</Link></td>
                                         </tr>
                                     ))}

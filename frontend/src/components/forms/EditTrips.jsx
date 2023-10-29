@@ -180,3 +180,7 @@ const EditTrip = () => {
 
 export default EditTrip;
 
+//trip expenses
+//distance, 1 liter = 6 km, formula totalDistance/6 = totalLiters*dieselCost, toll fee
+//monthly
+//total cost of diesel, totalLiters * dieselPrice, 

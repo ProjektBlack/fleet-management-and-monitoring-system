@@ -58,8 +58,8 @@ export const YearlyExpense = mongoose.model("YearlyExpense", new Schema({
 export const MonthlyExpense = mongoose.model("MonthlyExpense", new Schema({
     month: String,
     year: Number,
-    maintenance: Number,
-    dieselConsumption: Number
+    maintenance: Number, //aggravated by the number of trips
+    dieselConsumption: Number //aggravated by the number of trips
 }));
 
 export const Trip = mongoose.model("Trip", new Schema({
@@ -101,5 +101,23 @@ export const Trip = mongoose.model("Trip", new Schema({
     },
     status: {
         type: String
+    },
+    distance: {
+        type: Number
+    },
+    dieselCost: {
+        type: Number
+    },
+    dieselConsumption: {
+        type: Number
+    },
+    tollFee: {
+        type: Number
+    },
+    pathway: {
+        type: Number
+    },
+    totalTripExpense: {
+        type: Number
     }
 }));
