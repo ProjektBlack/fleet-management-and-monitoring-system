@@ -13,7 +13,7 @@ const EditMonthlyExpense = () => {
 
     //function to get monthly expense
     useEffect(() => {
-        const getYearlyExpense = async () => {
+        const getMonthlyExpense = async () => {
             try {
                 const response = await axios.get(`http://localhost:2222/monthlyexpenses/${id}`);
                 console.log(response);
@@ -25,7 +25,7 @@ const EditMonthlyExpense = () => {
                 console.error(error);
             }
         };
-        getYearlyExpense();
+        getMonthlyExpense();
     }, [id]);
 
     //function to update monthly expense

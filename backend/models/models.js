@@ -48,21 +48,29 @@ export const Expenses = mongoose.model("Expense", new Schema({
 
 //i have ideas for expenses to be able calculate the total expenses for the year based on the monthly expenses - will implement once I get feedback from the manager
 export const YearlyExpense = mongoose.model("YearlyExpense", new Schema({
-    year: Number,
+    year: String,
     ltoReg: Number,
     fcieReg: Number,
     stickerReg: Number,
-    maintenance: Number
+    maintenance: Number, //aggregated by monthly maintenance
+    totalTrips: Number, //aggregated by all trips
+    totalDieselConsumption: Number, //aggregated by all trips
+    totalExpenses: Number //aggregated by all expenses (maintenance + total diesel consumption)
 }));
 
 export const MonthlyExpense = mongoose.model("MonthlyExpense", new Schema({
     month: String,
-    year: Number,
-    maintenance: Number, //aggravated by the number of trips
-    dieselConsumption: Number //aggravated by the number of trips
+    year: String,
+    maintenance: Number, //aggregated by the number of trips
+    totalTrips: Number,
+    dieselConsumption: Number //aggregated by the number of trips
 }));
 
 export const Trip = mongoose.model("Trip", new Schema({
+    truck: {
+        type: Schema.Types.ObjectId,
+        ref: 'Truck'
+    },
     driver: {
         name: {
             type: String,
@@ -85,8 +93,16 @@ export const Trip = mongoose.model("Trip", new Schema({
             required: true
         },
     },
-    date: {
-        type: Date,
+    year: {
+        type: String,
+        required: true
+    },
+    month: {
+        type: String,
+        required: true
+    },
+    day: {
+        type: String,
         required: true
     },
     timeDispatched: {

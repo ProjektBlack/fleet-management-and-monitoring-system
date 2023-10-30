@@ -36,6 +36,19 @@ router.get("/monthlyexpenses", (req, res) => getAllRecords(MonthlyExpense, res))
 router.get("/monthlyexpenses/:id", (req, res) => getSingleRecord(MonthlyExpense, req, res));
 router.put("/monthlyexpenses/:id", (req, res) => updateRecord(MonthlyExpense, req, res));
 router.delete("/monthlyexpenses/:id", (req, res) => deleteRecord(MonthlyExpense, req, res));
+router.get("/monthly/expenses/:year", async (req, res) => {
+    try {
+        const { year } = req.params;
+        const expenses = await MonthlyExpense.find({ year: year });
+        if (!expenses) {
+            res.status(404).json({ message: "Expenses not found" });
+        }
+        res.status(200).json(expenses);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send({ message: error.message });
+    }
+});
 
 //routes for trips
 router.post("/trips", (req, res) => createRecord(Trip, req, res));
@@ -43,6 +56,20 @@ router.get("/trips", (req, res) => getAllRecords(Trip, res));
 router.get("/trips/:id", (req, res) => getSingleRecord(Trip, req, res));
 router.put("/trips/:id", (req, res) => updateRecord(Trip, req, res));
 router.delete("/trips/:id", (req, res) => deleteRecord(Trip, req, res));
+//route for getting trips by year and month
+router.get("/trips/:year/:month", async (req, res) => {
+    try {
+        const { year, month } = req.params;
+        const trips = await Trip.find({ year: year, month: month });
+        if (!trips) {
+            res.status(404).json({ message: "Trips not found" });
+        }
+        res.status(200).json(trips);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send({ message: error.message });
+    }
+});
 
 //functions for handling CRUD operations
 

@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
 //ui cleanup: icons, buttons 
-//auto-compute: total expenses, total trips
+//bug: gets all trips correctly, but not the linked truck
+//create states to disable certain buttons when key fields are not filled and states are not updated
 
 const CreateExpense = () => {
     const [loading, setLoading] = useState(false);
@@ -12,20 +13,63 @@ const CreateExpense = () => {
 
     //states for yearly expenses
     const [year, setYear] = useState("");
-    const [ltoFees, setLtoFees] = useState("");
-    const [fcieFees, setFcieFees] = useState("");
-    const [miscStickerFees, setMiscStickerFees] = useState("");
-    const [maintenanceCosts, setMaintenanceCosts] = useState("");
+    const [ltoFees, setLtoFees] = useState("0");
+    const [fcieFees, setFcieFees] = useState("0");
+    const [miscStickerFees, setMiscStickerFees] = useState("0");
+    const [maintenanceCosts, setMaintenanceCosts] = useState("0");
+    const [totalDieselConsumption, setTotalDieselConsumption] = useState("");
+    const [totalExpenses, setTotalExpenses] = useState("0");
+    const [totalTrips, setTotalTrips] = useState("");
     //states for monthly expenses
     const [month, setMonth] = useState("");
-    const [monthlyMaintenanceCosts, setMonthlyMaintenanceCosts] = useState("");
+    const [trips, setTrips] = useState("");
+    const [monthlyMaintenanceCosts, setMonthlyMaintenanceCosts] = useState("0");
     const [dieselCosts, setDieselCosts] = useState("");
-
 
     // set the expense ID state to the ID from the URL params
     const { expensesId } = useParams();
 
-    //function to create an expense
+    //function to get and compute total trips and total fuel costs
+    const computeMonthlyTotalTripsAndFuelCosts = async () => {
+        try {
+            const response = await axios.get(`http://localhost:2222/trips/${year}/${month}`);
+            const trips = response.data.length;
+            let totalFuelCosts = 0;
+            for (let i = 0; i < trips; i++) {
+                totalFuelCosts += response.data[i].dieselConsumption;
+            }
+            setTrips(trips);
+            setDieselCosts(totalFuelCosts);
+        } catch (error) {
+            alert("Error occurred. Please check console.");
+            console.error(error);
+        }
+    }
+    //function to get and compute yearly costs and trips
+    const computeYearlyTotalTripsAndFuelCosts = async () => {
+        try {
+            const response = await axios.get(`http://localhost:2222/monthly/expenses/${year}`);
+            const trips = response.data.length;
+            let totalFuelCosts = 0;
+            for (let i = 0; i < trips; i++) {
+                totalFuelCosts += response.data[i].dieselConsumption;
+            }
+            let totalMaintenance = 0;
+            for (let i = 0; i < trips; i++) {
+                totalMaintenance += response.data[i].maintenance;
+            }
+            setMaintenanceCosts(totalMaintenance);
+            setTotalTrips(trips);
+            setTotalDieselConsumption(totalFuelCosts);
+            setTotalExpenses(totalFuelCosts + totalMaintenance + parseInt(ltoFees) + parseInt(fcieFees) + parseInt(miscStickerFees))
+            console.log(totalExpenses)
+        } catch (error) {
+            alert("Error occurred. Please check console.");
+            console.error(error);
+        }
+    }
+
+    //function to create an expense - update this to include the new fields
     const handleCreateExpense = async () => {
         console.log(expensesId);
         //checks if selected type is yearly
@@ -36,7 +80,10 @@ const CreateExpense = () => {
                     ltoReg: ltoFees,
                     fcieReg: fcieFees,
                     stickerReg: miscStickerFees,
-                    maintenance: maintenanceCosts
+                    maintenance: maintenanceCosts,
+                    totalTrips,
+                    totalDieselConsumption,
+                    totalExpenses
                 };
                 setLoading(true);
                 const response = await axios.post('http://localhost:2222/yearlyexpenses', data);
@@ -46,6 +93,7 @@ const CreateExpense = () => {
                 await axios.put(`http://localhost:2222/expenses/${expensesId}`, getObject.data);
                 setLoading(false);
                 alert("Expense Created");
+                window.history.back();
             } catch (error) {
                 setLoading(false);
                 alert("Error occurred. Please check console.");
@@ -56,7 +104,7 @@ const CreateExpense = () => {
         else if (selectedType === "option2") {
             try {
                 const data = {
-                    month, maintenance: monthlyMaintenanceCosts, dieselConsumption: dieselCosts
+                    month, maintenance: monthlyMaintenanceCosts, dieselConsumption: dieselCosts, totalTrips: trips, year
                 };
                 setLoading(true);
                 const response = await axios.post('http://localhost:2222/monthlyexpenses', data);
@@ -66,6 +114,7 @@ const CreateExpense = () => {
                 await axios.put(`http://localhost:2222/expenses/${expensesId}`, getObject.data);
                 setLoading(false);
                 alert("Expense Created");
+                window.history.back();
             } catch (error) {
                 setLoading(false);
                 alert("Error occurred. Please check console.");
@@ -117,8 +166,40 @@ const CreateExpense = () => {
                     className="form-control"
                     required
                     value={maintenanceCosts}
-                    onChange={(e) => setMaintenanceCosts(e.target.value)}
+                    disabled
                 />
+                <label>Total Trips</label>
+                <input
+                    type="number"
+                    className="form-control"
+                    required
+                    value={totalTrips}
+                    disabled
+                />
+                <label>Total Diesel Consumption</label>
+                <input
+                    type="number"
+                    className="form-control"
+                    required
+                    value={totalDieselConsumption}
+                    disabled
+                />
+                <label>Total Expenses</label>
+                <input
+                    type="number"
+                    className="form-control"
+                    required
+                    value={totalExpenses}
+                    disabled
+                />
+                <div className="row">
+                    <div className="col">
+                        <button className="btn btn-success mx-auto d-flex mt-4 mb-4" onClick={computeYearlyTotalTripsAndFuelCosts}>Calculate</button>
+                    </div>
+                    <div className="col">
+                        <button className="btn btn-success mx-auto d-flex mt-4 mb-4" onClick={handleCreateExpense}>Create</button>
+                    </div>
+                </div>
             </div>
         );
     } else if (selectedType === "option2") {
@@ -132,6 +213,14 @@ const CreateExpense = () => {
                     value={month}
                     onChange={(e) => setMonth(e.target.value)}
                 />
+                <label>Year</label>
+                <input
+                    type="String"
+                    className="form-control"
+                    required
+                    value={year}
+                    onChange={(e) => setYear(e.target.value)}
+                />
                 <label>Maintenance Costs:</label>
                 <input
                     type="number"
@@ -140,15 +229,34 @@ const CreateExpense = () => {
                     value={monthlyMaintenanceCosts}
                     onChange={(e) => setMonthlyMaintenanceCosts(e.target.value)}
                 />
-                <label>Diesel Costs:</label>
+                <label>Total Trips:</label>
+                <input
+                    type="number"
+                    className="form-control"
+                    required
+                    value={trips}
+                    onChange={(e) => setTrips(e.target.value)}
+                    disabled
+                />
+                <label>Total Fuel Cost:</label>
                 <input
                     type="number"
                     className="form-control"
                     required
                     value={dieselCosts}
                     onChange={(e) => setDieselCosts(e.target.value)}
+                    disabled
                 />
+                <div className="row">
+                    <div className="col">
+                        <button className="btn btn-success mx-auto d-flex mt-4 mb-4" onClick={computeMonthlyTotalTripsAndFuelCosts}>Calculate</button>
+                    </div>
+                    <div className="col">
+                        <button className="btn btn-success mx-auto d-flex mt-4 mb-4" onClick={handleCreateExpense}>Create</button>
+                    </div>
+                </div>
             </div>
+
         );
     }
 
@@ -169,14 +277,8 @@ const CreateExpense = () => {
 
                 {formFields}
 
-                <button
-                    className="btn btn-success mx-auto d-flex mt-4 mb-4"
-                    onClick={handleCreateExpense}
-                >
-                    Create
-                </button>
             </div>
-        </div>
+        </div >
     );
 };
 

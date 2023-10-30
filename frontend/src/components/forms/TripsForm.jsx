@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 //comments: use form, use prevent default to prevent it from reloading
@@ -10,19 +10,18 @@ const CreateTrip = () => {
     //states for trip details
     const [driver, setDriver] = useState({
         name: "John Doe",
-        licenseNumber: "0000-0000-0000"
     });
     const [customer, setCustomer] = useState({
         name: "John Doe",
-        contactNumber: "0000-0000-0000",
         location: "default location"
     });
     const [helper, setHelper] = useState({
         name: "John Doe",
-        contactNumber: "0000-0000-0000"
     });
 
-    const [date, setDate] = useState("");
+    const [year, setYear] = useState("");
+    const [month, setMonth] = useState("");
+    const [day, setDay] = useState("");
     const [timeDispatched, setTimeDispatched] = useState("");
     const [timeReceived, setTimeReceived] = useState("");
     const [timeReturned, setTimeReturned] = useState("");
@@ -34,6 +33,9 @@ const CreateTrip = () => {
     const [pathway, setPathway] = useState("");
     const [totalTripCost, setTotalTripCost] = useState("");
 
+
+    //navigattion after creation
+    const navigate = useNavigate();
     //get truck ID from URL params
     const { truckId } = useParams();
 
@@ -95,10 +97,13 @@ const CreateTrip = () => {
         //construct message body
         try {
             const data = {
+                truck: truckId,
                 driver,
                 customer,
                 helper,
-                date,
+                year,
+                month,
+                day,
                 timeDispatched,
                 timeReceived,
                 timeReturned,
@@ -120,6 +125,7 @@ const CreateTrip = () => {
             setLoading(false);
             //use better alerts
             alert("Trip created.");
+            window.history.back();
         } catch (error) {
             setLoading(false);
             alert("Error occurred.");
@@ -167,13 +173,33 @@ const CreateTrip = () => {
                     onChange={(e) => setCustomer({ ...customer, location: e.target.value })}
                 />
 
-                <label>Date</label>
+                <label>Year</label>
                 <input
-                    type="date"
+                    type="string"
                     className="form-control"
-                    name="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
+                    name="year"
+                    value={year}
+                    onChange={(e) => setYear(e.target.value)}
+                    required
+                />
+
+                <label>Month</label>
+                <input
+                    type="string"
+                    className="form-control"
+                    name="month"
+                    value={month}
+                    onChange={(e) => setMonth(e.target.value)}
+                    required
+                />
+
+                <label>Day</label>
+                <input
+                    type="string"
+                    className="form-control"
+                    name="day"
+                    value={day}
+                    onChange={(e) => setDay(e.target.value)}
                     required
                 />
 

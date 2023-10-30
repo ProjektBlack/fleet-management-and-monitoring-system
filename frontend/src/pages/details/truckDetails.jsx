@@ -143,8 +143,10 @@ const ShowTruck = () => {
                             <table className="table table-bordered table-hover">
                                 <thead>
                                     <tr>
+                                        <th>Year</th>
                                         <th>Month</th>
                                         <th>Maintenance</th>
+                                        <th>Total Trips</th>
                                         <th>Diesel Consumption</th>
                                         <th>Actions</th>
                                     </tr>
@@ -152,8 +154,10 @@ const ShowTruck = () => {
                                 <tbody>
                                     {monthlyExpenses.map((expense, index) => (
                                         <tr key={expense.month}>
+                                            <td>{expense.year}</td>
                                             <td>{expense.month}</td>
                                             <td>{expense.maintenance}</td>
+                                            <td>{expense.totalTrips}</td>
                                             <td>{expense.dieselConsumption}</td>
                                             <td><Link className="btn btn-outline-warning" to={`/expenses/monthly/edit/${expense._id}`}>Edit</Link></td>
                                         </tr>
@@ -168,9 +172,10 @@ const ShowTruck = () => {
                             <h6>Operations</h6>
                             <Link to={`/newtrips/${id}`} className="btn btn-success">Add</Link>
                         </div>
-                        <div>
-                            <h6>Recent Trips</h6>
-                            <table className="table table-bordered table-hover">
+                        <h5 className="mb-2">Recent Trips</h5>
+                        <div style={{ overflowX: "auto", overflowY: "auto", maxHeight: "50vh" }}>
+
+                            <table className="table table-bordered table-hover" >
                                 <thead>
                                     <tr>
                                         <th>Driver</th>
@@ -182,23 +187,25 @@ const ShowTruck = () => {
                                         <th>Time Returned</th>
                                         <th>Total Fuel Cost</th>
                                         <th>Toll Fee Cost</th>
+                                        <th>Pathway Cost</th>
                                         <th>Total Trip Cost</th>
                                         <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {trips.map((trip, index) => (
+                                    {trips.sort((a, b) => new Date(b.date) - new Date(a.date)).map((trip, index) => (
                                         <tr key={index}>
                                             <td>{trip.driver.name}</td>
                                             <td>{trip.customer.name}</td>
                                             <td>{trip.helper.name}</td>
-                                            <td>{trip.date}</td>
+                                            <td>{trip.month} {trip.day}, {trip.year} </td>
                                             <td>{trip.timeDispatched}</td>
                                             <td>{trip.timeReceived}</td>
                                             <td>{trip.timeReturned}</td>
                                             <td>{trip.dieselConsumption}</td>
                                             <td>{trip.tollFee}</td>
+                                            <td>{trip.pathway}</td>
                                             <td>{trip.totalTripExpense}</td>
                                             <td>{trip.status}</td>
                                             <td><Link className="btn btn-outline-warning" to={`/trips/edit/${trip._id}`}>Edit</Link></td>
