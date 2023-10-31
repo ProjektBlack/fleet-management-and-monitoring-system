@@ -3,23 +3,23 @@ import express from "express";
 import mongoose from "mongoose";
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
-import router from "./routes/routes.js";
-// Import variables
+import router from "./routes/routes.js"; //imported routes
+//import variables
 import { PORT, dbUrl, secretKey } from "./config.js";
 //import user model
 import { User } from "./models/models.js";
 
-//starting the server
+//start the server
 const app = express();
-
 //for parsing json data
 app.use(express.json());
-//CORS - allows different domain addresses to access the API
+
+//cors setup
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173'); // Replace with your frontend's URL
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173'); //replace with url
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.setHeader('Access-Control-Allow-Credentials', 'true'); // Use a string here
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
     if (req.method === 'OPTIONS') {
         return res.sendStatus(200);
     }
@@ -30,6 +30,7 @@ app.use((req, res, next) => {
 //routes
 //using middleware for other routes
 app.use('/', router);
+
 //route for logging in
 app.post('/login', async (req, res) => {
     try {

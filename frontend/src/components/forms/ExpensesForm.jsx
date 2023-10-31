@@ -8,7 +8,7 @@ import { useParams } from "react-router-dom";
 //create states to disable certain buttons when key fields are not filled and states are not updated
 
 const CreateExpense = () => {
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false); //loading is not used here
     const [selectedType, setSelectedType] = useState("option1");
 
     //states for yearly expenses
@@ -27,12 +27,12 @@ const CreateExpense = () => {
     const [dieselCosts, setDieselCosts] = useState("");
 
     // set the expense ID state to the ID from the URL params
-    const { expensesId } = useParams();
+    const { expensesId, truckId } = useParams();
 
     //function to get and compute total trips and total fuel costs
     const computeMonthlyTotalTripsAndFuelCosts = async () => {
         try {
-            const response = await axios.get(`http://localhost:2222/trips/${year}/${month}`);
+            const response = await axios.get(`http://localhost:2222/trips/${year}/${month}/${truckId}`);
             const trips = response.data.length;
             let totalFuelCosts = 0;
             for (let i = 0; i < trips; i++) {
@@ -48,7 +48,8 @@ const CreateExpense = () => {
     //function to get and compute yearly costs and trips
     const computeYearlyTotalTripsAndFuelCosts = async () => {
         try {
-            const response = await axios.get(`http://localhost:2222/monthly/expenses/${year}`);
+            console.log(truckId)
+            const response = await axios.get(`http://localhost:2222/monthly/expenses/${truckId}/${year}`);
             const trips = response.data.length;
             let totalFuelCosts = 0;
             for (let i = 0; i < trips; i++) {
@@ -76,6 +77,7 @@ const CreateExpense = () => {
         if (selectedType === "option1") {
             try {
                 const data = {
+                    truck: truckId,
                     year,
                     ltoReg: ltoFees,
                     fcieReg: fcieFees,
@@ -104,7 +106,7 @@ const CreateExpense = () => {
         else if (selectedType === "option2") {
             try {
                 const data = {
-                    month, maintenance: monthlyMaintenanceCosts, dieselConsumption: dieselCosts, totalTrips: trips, year
+                    truck: truckId, month, maintenance: monthlyMaintenanceCosts, dieselConsumption: dieselCosts, totalTrips: trips, year
                 };
                 setLoading(true);
                 const response = await axios.post('http://localhost:2222/monthlyexpenses', data);
@@ -113,7 +115,7 @@ const CreateExpense = () => {
                 getObject.data.monthlyExpenses.push(newObjectID);
                 await axios.put(`http://localhost:2222/expenses/${expensesId}`, getObject.data);
                 setLoading(false);
-                alert("Expense Created");
+                alert("Expense created.");
                 window.history.back();
             } catch (error) {
                 setLoading(false);

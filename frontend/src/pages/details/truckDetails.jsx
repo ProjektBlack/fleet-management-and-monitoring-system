@@ -107,7 +107,7 @@ const ShowTruck = () => {
                             <h2>Expenses</h2>
                             <h6>Operations</h6>
                             <div className="col-1">
-                                <Link to={`/newexpenses/${trucks.expenses}`} className="btn btn-success">Add</Link>
+                                <Link to={`/expenses/new/${trucks.expenses}/${id}`} className="btn btn-success">Add</Link>
                             </div>
                         </div>
 
@@ -121,6 +121,7 @@ const ShowTruck = () => {
                                         <th>FCIE Registration</th>
                                         <th>Sticker Registration</th>
                                         <th>Maintenance</th>
+                                        <th>Total Expenses</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -132,7 +133,8 @@ const ShowTruck = () => {
                                             <td>{expense.fcieReg}</td>
                                             <td>{expense.stickerReg}</td>
                                             <td>{expense.maintenance}</td>
-                                            <td><Link className="btn btn-outline-warning" to={`/expenses/yearly/edit/${expense._id}`}>Edit</Link></td>
+                                            <td>{expense.totalExpenses}</td>
+                                            <td><Link className="btn btn-outline-warning" to={`/expenses/yearly/edit/${expense._id}/${id}`}>Edit</Link></td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -159,7 +161,7 @@ const ShowTruck = () => {
                                             <td>{expense.maintenance}</td>
                                             <td>{expense.totalTrips}</td>
                                             <td>{expense.dieselConsumption}</td>
-                                            <td><Link className="btn btn-outline-warning" to={`/expenses/monthly/edit/${expense._id}`}>Edit</Link></td>
+                                            <td><Link className="btn btn-outline-warning" to={`/expenses/monthly/edit/${expense._id}/${id}`}>Edit</Link></td>
                                         </tr>
                                     ))}
                                 </tbody>
