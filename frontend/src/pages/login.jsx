@@ -1,91 +1,58 @@
-import React, { useContext, useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authProvider";
-//login page - handle login logic - authenticate, then redirect to home page
+import axios from "axios";
 
 const Login = () => {
+    //global state for authentication
     const { isAuthenticated, setIsAuthenticated } = useAuth();
+    //states for login page
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    //displays error message if login fails
     const [error, setError] = useState("");
+    //used to navigate to home page after login
     const navigate = useNavigate();
+
+    //function to handle login
     const handleLogin = async () => {
+        event.preventDefault();
         try {
-            console.log(password, username);
-            const response = await axios.post("http://localhost:2222/login", {
-                username,
-                password,
-            });
+            await axios.post("http://localhost:2222/login",
+                {
+                    username,
+                    password,
+                });
             setUsername("");
             setPassword("");
-            const token = response.data.token;
-            console.log(token);
-            console.log(isAuthenticated)
             setIsAuthenticated(true);
             navigate("/home");
-            console.log("why is this not working")
         } catch (error) {
             console.log(error);
-            setError("Invalid username or password");
+            setError(error.response.data.message || "Something went wrong. Please contact support.");
         }
     };
 
     return (
         <div>
-            <div
-                style={{
-                    height: "100%",
-                    paddingTop: "1%",
-                    paddingBottom: "10%",
-                    backgroundColor: "rgba(223, 228, 234,1.0)",
-                }}
-            >
-                <div
-                    className="container"
-                    style={{
-                        marginTop: "10%",
-                        padding: "100px",
-                        width: "30%",
-                        backgroundColor: "#fff",
-                        borderRadius: "8px",
-                        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                    }}
-                >
-                    <div>
-                        <h5 style={{ color: "#2E8B57" }}>FMMS</h5>
-                        <div className="row">
-                            <label htmlFor="username" className="mb-1">
-                                Username
-                            </label>
-                            <input
-                                className="form-control"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                            />
+            <div id="loginBackground" className="d-flex align-items-center justify-content-center">
+                <div id="loginPanel" className="d-flex align-items-center justify-content-center">
+                    <form onSubmit={handleLogin} noValidate>
+                        <h5 className="logo">FMMS</h5>
+                        <div className="row mb-2">
+                            <label className="mb-2">Username</label>
+                            <input className="form-control" type="text" required value={username} onChange={(e) => setUsername(e.target.value)} />
                         </div>
-                        <div className="row">
-                            <label htmlFor="password" className="mb-1">
-                                Password
-                            </label>
-                            <input
-                                className="form-control"
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
+                        <div className="row mb-4">
+                            <label className="mb-2">Password</label>
+                            <input className="form-control" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                            <div className="text-danger">{error}</div>
                         </div>
-                        {error && <div className="text-danger">{error}</div>}
-                        <button
-                            className="btn btn-success mt-3 mx-auto d-flex"
-                            onClick={handleLogin}
-                        >
-                            Log In
-                        </button>
-                    </div>
+                        <button className="btn btn-success mt-3 mx-auto d-flex" type="submit">Log In</button>
+                    </form>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

@@ -10,10 +10,10 @@ const Home = (props) => {
             <div className="col-2">
                 <Sidebar />
             </div>
-            <div className="col">
+            <div className="col border">
                 <Dashboard />
             </div>
-        </div >
+        </div>
     );
 }
 

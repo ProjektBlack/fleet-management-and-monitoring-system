@@ -1,3 +1,35 @@
 body {
     overflow-x: hidden;
 }
+
+@media (max-width: 768px) {
+    #loginPanel {
+        width: 25%;
+    }
+}
+
+/*login page*/
+#loginBackground {
+    height: 100vh;
+    background-size: cover;
+    background-image: url("../../public/truckWallpaper.jpg");
+}
+
+#loginPanel {
+    width: 30%;
+    padding: 5%;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    color: #2E8B57;
+}
+
+/*navigation bar*/
+
+#sidebar {
+    width: 100%;
+    height: 100%;
+}

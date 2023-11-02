@@ -1,65 +1,39 @@
 import React from "react";
-import { Link } from "react-router-dom";
-//user icon or name should change depending on the user
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/authProvider";
+
 //sidebar details should be appropriate to screen size
 const Sidebar = () => {
+    //for logging out
+    const { isAuthenticated, setIsAuthenticated } = useAuth();
+    //for navigation to login page after logging out
+    const navigate = useNavigate();
+
     //logout function
     const handleLogout = () => {
         localStorage.removeItem('token');
-        window.location.href = "/login";; // You may need to import 'history' from your routing library
+        setIsAuthenticated(false);
+        navigate("/login");
     };
 
     return (
-        <div className="flex-shrink-0 p-3 bg-white" style={{ width: '110%', height: '100%' }}>
-            <a href="/" className="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
-                <span className="fs-5 fw-semibold"><span style={{ color: "green" }}>Green Movers</span> Services</span>
-            </a>
-            <ul className="list-unstyled ps-0">
-                <li className="mb-1">
-                    <button className="btn btn-toggle align-items-center rounded" aria-expanded="true">
-                        <Link to="/home" style={{ textDecoration: "none", color: "black" }}>
-                            Dashboard
-                        </Link>
-                    </button>
-                </li>
-                <li className="mb-1">
-                    <button className="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
-                        Manage
-                    </button>
-                    <div className="collapse" id="dashboard-collapse">
-                        <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                            <li><Link to="/trucks" className="link-dark rounded">Trucks</Link></li>
-                            <li><Link to="/trips" className="link-dark rounded">Trips</Link></li>
-                            <li><Link to="/expenses" className="link-dark rounded">Expenses</Link></li>
-                        </ul>
-                    </div>
-                </li>
-                <li className="mb-1">
-                    <button className="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
-                        Calculator
-                    </button>
-                    <div className="collapse" id="orders-collapse">
-                        <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                            <li><a href="#" className="link-dark rounded">Fuel</a></li>
-                            <li><a href="#" className="link-dark rounded">Tentative</a></li>
-                            <li><a href="#" className="link-dark rounded">Tentative</a></li>
-                            <li><a href="#" className="link-dark rounded">Tentative</a></li>
-                        </ul>
-                    </div>
-                </li>
-                <li className="border-top my-3"></li>
-                <li style={{ marginTop: '190%' }}>
-                    <button className="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
-                        Account
-                    </button>
-                    <div className="collapse" id="account-collapse">
-                        <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                            <li><a href="#" className="link-dark rounded">Settings</a></li>
-                            <li><a className="link-dark rounded" onClick={handleLogout}>Log Out</a></li>
-                        </ul>
-                    </div>
-                </li>
-            </ul>
+        <div>
+            <div id="sidebar" className="container p-4 bg-success text-white" style={{ height: "100vh" }}>
+                <div className="row">
+                    <h2 className="">FMMS</h2>
+                </div>
+                <div className="row">
+                    <ul>
+                        <li className="list-group-item">Home</li>
+                        <li className="list-group-item">Trucks</li>
+                        <li className="list-group-item">Trips</li>
+                        <li className="list-group-item">Expenses</li>
+                    </ul>
+
+                </div>
+            </div>
+
+
         </div >
     );
 }
