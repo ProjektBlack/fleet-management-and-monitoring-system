@@ -7,7 +7,7 @@ const Dashboard = (props) => {
         //notifications
         //update using js, also, insert icons
         //update to compartmentalize css
-        <div className="p-4 border">
+        <div className="p-4">
             <div className="row border-bottom pb-3 mb-4">
                 <div className="col-7" style={{ marginRight: '5%' }}>
                     <h1 style={{ marginTop: '10%' }}>Dashboard</h1>
