@@ -19,7 +19,7 @@ const Sidebar = () => {
 
     return (
         <div>
-            <div id="sidebar" className="container border-right p-4">
+            <div id="sidebar" className="border-right p-4">
                 <div className="row border-bottom pb-2 mb-2">
                     <div className="col">
                         <h4 className=""><span className="logo">Green Movers</span> Services</h4>
@@ -39,8 +39,6 @@ const Sidebar = () => {
                     </div>
                 </div>
             </div>
-
-
         </div >
     );
 }

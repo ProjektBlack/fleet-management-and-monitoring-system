@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import CardComponent from "../Card";
+import PendingWidget from "../Pending";
+import TruckTable from "../../tables/TruckTable";
 
 //first complex component
 const Dashboard = (props) => {
@@ -9,42 +11,17 @@ const Dashboard = (props) => {
         //update to compartmentalize css
         <div className="p-4">
             <div className="row border-bottom pb-3 mb-4">
-                <div className="col-7" style={{ marginRight: '5%' }}>
-                    <h1 style={{ marginTop: '10%' }}>Dashboard</h1>
+                <div className="col-9" style={{ marginRight: '5%' }}>
+                    <h1 style={{ marginTop: '5%' }}>Dashboard</h1>
                 </div>
-                <div className="col-2 p-4" style={{ borderStyle: 'solid', borderRadius: '5px', borderColor: '#D4D4D4', marginRight: '1%' }}>
-                    <div className="row text-center">
-                        <div className="col">
-                            {/*update using js*/}
-                            <h6 id="pendingTrips">0</h6>
-                        </div>
-                    </div>
-                    <div className="row text-center">
-                        <div className="col">
-                            <span>Pending</span>
-                        </div>
-                    </div>
-                </div>
-                <div className="col-2 p-4" style={{ borderStyle: 'solid', borderRadius: '5px', borderColor: '#D4D4D4' }}>
-                    <div className="row text-center">
-                        <div className="col">
-                            {/*update using js*/}
-                            <h6 id="completedTrips">0</h6>
-                        </div>
-                    </div>
-                    <div className="row text-center">
-                        <div className="col">
-                            <span>Done</span>
-                        </div>
-                    </div>
-                </div>
+                <PendingWidget />
             </div>
             {/*place widgets here*/}
             <div id="widgets">
                 {/*sample widgets*/}
                 <div className="row mb-4">
                     <div className="col-8">
-                        <CardComponent />
+                        <TruckTable />
                     </div>
                     <div className="col">
                         <div className="row mb-4">

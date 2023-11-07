@@ -79,3 +79,37 @@ body {
 #logout:hover {
     color: red;
 }
+
+/*dashboard*/
+
+#pendingWidget {
+    color: #2E8B57;
+    border-radius: 5px;
+    margin-right: 1%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+#showIcon {
+    color: #2E8B57;
+    font-size: large;
+}
+
+#trashIcon {
+    color: red;
+    font-size: large;
+
+}
+
+#editIcon {
+    color: orange;
+    font-size: large;
+
+}
+
+#newIcon {
+    color: #2E8B57;
+    font-size: x-large;
+}

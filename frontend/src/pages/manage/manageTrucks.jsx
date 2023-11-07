@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import Sidebar from "../../components/widgets/subcomponents/sidebar";
 import TruckTable from "../../components/tables/TruckTable";
 //button icons instead of text, access controls, sort button, search bar, edit functionality
+import { BsFillFilePlusFill } from "react-icons/bs";
 const ManageTruck = () => {
     return (
         <div>
@@ -17,7 +18,7 @@ const ManageTruck = () => {
                             <h1>Manage Trucks</h1>
                         </div>
                         <div className="col-2 mt-4 text-end">
-                            <Link to="/trucks/new" className="btn btn-success mt-2">New</Link>
+                            <Link to="/trucks/new"><BsFillFilePlusFill id="newIcon" /></Link>
                         </div>
                     </div>
                     <div className="row">

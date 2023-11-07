@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios'
 import { Link } from "react-router-dom";
-import Sidebar from "../widgets/subcomponents/Sidebar";
+import { BsFillFilePlusFill, BsFillTrashFill, BsFillPencilFill, BsEye } from "react-icons/bs";
 import Spinner from "../widgets/subcomponents/Spinner";
 
 const TruckTable = (props) => {
@@ -11,8 +11,6 @@ const TruckTable = (props) => {
     //fetches data from backend
     const fetchData = async () => {
         setLoading(true);
-        console.log(props.isAuthenticated);
-
         try {
             const response = await axios.get("http://localhost:2222/trucks");
             setTrucks(response.data.data);
@@ -67,9 +65,9 @@ const TruckTable = (props) => {
                                     <td>{truck.plateNumber}</td>
                                     <td>{truck.truckType}</td>
                                     <td>
-                                        <Link className="btn btn-outline-success" to={`/trucks/details/${truck._id}`} style={{ marginRight: '2%' }}>Show</Link>
-                                        <button className="btn btn-outline-danger" onClick={() => handleDelete(truck._id)} style={{ marginRight: '2%' }}>Delete</button>
-                                        <Link className="btn btn-outline-warning" to={`/trucks/edit/${truck._id}`}>Edit</Link>
+                                        <Link id="showIcon" to={`/trucks/details/${truck._id}`} style={{ marginRight: '2%' }}><BsEye /></Link>
+                                        <BsFillTrashFill id="trashIcon" onClick={() => handleDelete(truck._id)} style={{ marginRight: '2%', cursor: "pointer" }} />
+                                        <Link id="editIcon" to={`/trucks/edit/${truck._id}`}><BsFillPencilFill /></Link>
                                     </td>
                                 </tr>
                             ))}

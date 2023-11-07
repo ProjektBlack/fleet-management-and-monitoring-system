@@ -83,6 +83,19 @@ router.get("/trips/:year/:month/:truck", async (req, res) => {
         res.status(500).send({ message: error.message });
     }
 });
+//route for getting pending trips
+router.get("/trips/status/pending", async (req, res) => {
+    try {
+        const trips = await Trip.find({ status: "Pending" });
+        if (!trips) {
+            res.status(404).json({ message: "Trips not found" });
+        }
+        res.status(200).json(trips);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send({ message: error.message });
+    }
+});
 
 //functions for handling CRUD operations
 
