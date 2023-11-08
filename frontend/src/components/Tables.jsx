@@ -1,10 +1,14 @@
+//dependencies
 import React, { useEffect, useState } from "react";
 import axios from 'axios'
 import { Link } from "react-router-dom";
-import { BsFillFilePlusFill, BsFillTrashFill, BsFillPencilFill, BsEye } from "react-icons/bs";
-import Spinner from "../widgets/subcomponents/Spinner";
+//import components
+import { Spinner, ReturnButton } from "./Widgets"
+//icons
+import { BsFillTrashFill, BsFillPencilFill, BsEye } from "react-icons/bs";
 
-const TruckTable = (props) => {
+//truck table
+export const TruckTable = () => {
     const [trucks, setTrucks] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -54,9 +58,9 @@ const TruckTable = (props) => {
                     <table className="table table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th style={{ width: "20%" }}>Plate Number</th>
-                                <th style={{ width: "60%" }}>Truck Type</th>
-                                <th style={{ width: "20%" }}>Operations</th>
+                                <th style={{ width: "15%" }}>Plate Number</th>
+                                <th style={{ width: "75%" }}>Truck Type</th>
+                                <th style={{ width: "10%" }}>Operations</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -79,4 +83,12 @@ const TruckTable = (props) => {
     );
 };
 
-export default TruckTable;
+//expenses table
+export const ExpensesTable = () => {
+
+};
+
+//trips table
+export const TripsTable = () => {
+
+};

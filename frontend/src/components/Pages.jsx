@@ -1,12 +1,121 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import Sidebar from "../../components/widgets/subcomponents/sidebar";
+//dependencies
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams, Link } from "react-router-dom";
+import { useAuth } from "../context/authProvider";
 import axios from "axios";
-import Spinner from "../../components/widgets/subcomponents/Spinner";
-import ReturnButton from "../../components/widgets/subcomponents/ReturnButton";
-import { useParams } from "react-router-dom";
-// comments: better ui, add expenses, add trips , add edit functionality
-const ShowTruck = () => {
+//components
+import { Spinner, ReturnButton, Sidebar, Dashboard } from "./Widgets";
+import { TruckTable, ExpensesTable, TripsTable } from "./Tables";
+//icons
+import { BsFillFilePlusFill } from "react-icons/bs";
+
+//login page
+export const Login = () => {
+    //global state for authentication
+    const { isAuthenticated, setIsAuthenticated } = useAuth();
+    //states for login page
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    //displays error message if login fails
+    const [error, setError] = useState("");
+    //used to navigate to home page after login
+    const navigate = useNavigate();
+
+    //function to handle login
+    const handleLogin = async () => {
+        event.preventDefault();
+        try {
+            await axios.post("http://localhost:2222/login",
+                {
+                    username,
+                    password,
+                });
+            setUsername("");
+            setPassword("");
+            setIsAuthenticated(true);
+            navigate("/home");
+        } catch (error) {
+            console.log(error);
+            setError(error.response.data.message || "Something went wrong. Please contact support.");
+        }
+    };
+
+    return (
+        <div>
+            <div id="loginBackground" className="d-flex align-items-center justify-content-center">
+                <div id="loginPanel" className="d-flex align-items-center justify-content-center">
+                    <form onSubmit={handleLogin} noValidate>
+                        <h5 className="logo">FMMS</h5>
+                        <div className="row mb-2">
+                            <label className="mb-2">Username</label>
+                            <input className="form-control" type="text" required value={username} onChange={(e) => setUsername(e.target.value)} />
+                        </div>
+                        <div className="row mb-4">
+                            <label className="mb-2">Password</label>
+                            <input className="form-control" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                            <div className="text-danger">{error}</div>
+                        </div>
+                        <button className="btn btn-success mt-3 mx-auto d-flex" type="submit">Log In</button>
+                    </form>
+                </div>
+            </div>
+        </div >
+    );
+};
+
+//page not found
+export const Missing = () => {
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+            <h1>404 - Page Not Found</h1>
+            <p>The page you are looking for does not exist.</p>
+            <ReturnButton />
+        </div>
+    );
+};
+
+//dashboard
+export const Home = () => {
+    return (
+        <div className="row">
+            <div className="col-2">
+                <Sidebar />
+            </div>
+            <div className="col border">
+                <Dashboard />
+            </div>
+        </div>
+    );
+}
+
+//manage trucks
+export const ManageTruck = () => {
+    return (
+        <div>
+            <div className="row">
+                <div className="col-2" style={{ height: '94vh' }}>
+                    <Sidebar />
+                </div>
+                <div className="col-10 p-4">
+                    <div className="row pt-4" style={{ marginTop: '7.5vh', marginBottom: '1.5%' }}>
+                        <div className="col-10 mt-4">
+                            <h1>Manage Trucks</h1>
+                        </div>
+                        <div className="col-2 mt-4 text-end">
+                            <Link to="/trucks/new"><BsFillFilePlusFill id="newIcon" /></Link>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <TruckTable />
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+//show truck details
+export const ShowTruck = () => {
     const [trucks, setTrucks] = useState({});
     const [loading, setLoading] = useState(false);
     const [expenses, setExpenses] = useState([]);
@@ -224,4 +333,32 @@ const ShowTruck = () => {
     );
 };
 
-export default ShowTruck;
+//manage expenses
+export const ManageExpenses = () => {
+    return (
+        <div>
+            <div className="row">
+                <div className="col-2">
+                    <Sidebar />
+                </div>
+                <div className="col-10">
+                    <div className="row d-flex mx-auto mb-4 mt-4">
+                        <div className="col-10">
+                            <h1 style={{ marginTop: "10%" }}>Expenses</h1>
+                        </div>
+                        <div className="col">
+                            <Link to="/newexpenses" className="btn btn-outline-success" style={{ marginTop: "60%", marginLeft: "50%" }}>
+                                Create
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col" >
+                    <ExpensesTable />
+                </div>
+            </div>
+        </div >
+    )
+}

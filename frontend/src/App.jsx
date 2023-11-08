@@ -5,21 +5,9 @@ import PrivateRoute from "./components/widgets/subcomponents/privateRoute";
 import { Routes, Route } from 'react-router-dom'
 import { useAuth } from "./context/authProvider";
 //import pages
-import Login from "./pages/login";
-import Home from "./pages/home";
-import ManageTruck from "./pages/manage/manageTrucks";
-import ManageExpenses from "./pages/manage/manageExpenses"
-import Missing from "./pages/missing";
+import { Home, Login, Missing, ManageTruck, ManageExpenses, ShowTruck } from "./components/Pages";
 //import forms
-import CreateTruck from "./components/forms/TruckForm"
-import CreateExpense from "./components/forms/ExpensesForm";
-import CreateTrip from "./components/forms/TripsForm";
-import EditTruck from "./components/forms/EditTrucks";
-import EditYearlyExpense from "./components/forms/EditYearlyExpense";
-import EditMonthlyExpense from "./components/forms/EditMonthlyExpense";
-import EditTrip from "./components/forms/EditTrips";
-//details
-import ShowTruck from "./pages/details/truckDetails";
+import { CreateTruck, CreateTrip, CreateExpense, EditTruck, EditMonthlyExpense, EditYearlyExpense, EditTrip } from "./components/Forms";
 
 const App = () => {
   //get the authentication state from the context
