@@ -1,14 +1,14 @@
 import React from "react" //react allows component building
 import 'bootstrap/dist/css/bootstrap.min.css'; //bootstrap css framework
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import PrivateRoute from "./components/widgets/subcomponents/privateRoute";
 import { Routes, Route } from 'react-router-dom'
 import { useAuth } from "./context/authProvider";
 //import pages
 import { Home, Login, Missing, ManageTruck, ManageExpenses, ShowTruck } from "./components/Pages";
 //import forms
 import { CreateTruck, CreateTrip, CreateExpense, EditTruck, EditMonthlyExpense, EditYearlyExpense, EditTrip } from "./components/Forms";
-
+//import private route
+import { PrivateRoute } from "./components/Widgets";
 const App = () => {
   //get the authentication state from the context
   const { isAuthenticated, setIsAuthenticated } = useAuth();

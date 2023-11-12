@@ -1,6 +1,6 @@
 //dependencies
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 //create truck form
@@ -12,6 +12,7 @@ export const CreateTruck = () => {
         yearlyExpenses: [],
         monthlyExpenses: []
     })
+    const navigate = useNavigate();
 
     //function to create a new truck
     const handleCreateTruck = async () => {
@@ -29,6 +30,7 @@ export const CreateTruck = () => {
             await axios.put(`http://localhost:2222/trucks/${newObjectID}`, newTruck); //update truck with expenses
             console.log(response.data);
             alert("Truck created.");
+            navigate(`/trucks`); //navigate to truck details page
         } catch (error) {
             alert("Error occurred. Please check console.");
             console.error(error);
@@ -232,14 +234,21 @@ export const CreateTrip = () => {
                 />
 
                 <label>Month</label>
-                <input
-                    type="string"
-                    className="form-control"
-                    name="month"
-                    value={month}
-                    onChange={(e) => setMonth(e.target.value)}
-                    required
-                />
+                <select class="form-select" value={month} onChange={(e) => setMonth(e.target.value)}>
+                    <option selected>Select month</option>
+                    <option value="January">January</option>
+                    <option value="February">February</option>
+                    <option value="March">March</option>
+                    <option value="April">April</option>
+                    <option value="May">May</option>
+                    <option value="June">June</option>
+                    <option value="July">July</option>
+                    <option value="August">August</option>
+                    <option value="September">September</option>
+                    <option value="October">October</option>
+                    <option value="November">November</option>
+                    <option value="December">December</option>
+                </select>
 
                 <label>Day</label>
                 <input
@@ -359,14 +368,14 @@ export const CreateExpense = () => {
     const [ltoFees, setLtoFees] = useState("0");
     const [fcieFees, setFcieFees] = useState("0");
     const [miscStickerFees, setMiscStickerFees] = useState("0");
-    const [maintenanceCosts, setMaintenanceCosts] = useState("0");
+    const [maintenanceCosts, setMaintenanceCosts] = useState(0);
     const [totalDieselConsumption, setTotalDieselConsumption] = useState("");
     const [totalExpenses, setTotalExpenses] = useState("0");
     const [totalTrips, setTotalTrips] = useState("");
     //states for monthly expenses
     const [month, setMonth] = useState("");
     const [trips, setTrips] = useState("");
-    const [monthlyMaintenanceCosts, setMonthlyMaintenanceCosts] = useState("0");
+    const [monthlyMaintenanceCosts, setMonthlyMaintenanceCosts] = useState(0);
     const [dieselCosts, setDieselCosts] = useState("");
 
     // set the expense ID state to the ID from the URL params
@@ -393,20 +402,28 @@ export const CreateExpense = () => {
         try {
             console.log(truckId)
             const response = await axios.get(`http://localhost:2222/monthly/expenses/${truckId}/${year}`);
-            const trips = response.data.length;
+            let totalYearlyTrips = 0;
+            console.log(response.data[0].totalTrips)
+            console.log(response.data[0].maintenance)
+            console.log(response.data[0].dieselConsumption)
+            for (let i = 0; i < response.data.length; i++) {
+                totalYearlyTrips += parseFloat(response.data[i].totalTrips);
+            }
             let totalFuelCosts = 0;
-            for (let i = 0; i < trips; i++) {
-                totalFuelCosts += response.data[i].dieselConsumption;
+            for (let i = 0; i < response.data.length; i++) {
+                totalFuelCosts += parseFloat(response.data[i].dieselConsumption);
             }
+            console.log("Total fuel costs:" + totalFuelCosts)
             let totalMaintenance = 0;
-            for (let i = 0; i < trips; i++) {
-                totalMaintenance += response.data[i].maintenance;
+            for (let i = 0; i < response.data.length; i++) {
+                totalMaintenance += parseFloat(response.data[i].maintenance);
             }
+            console.log("Total maintenance: " + totalMaintenance)
             setMaintenanceCosts(totalMaintenance);
-            setTotalTrips(trips);
+            setTotalTrips(totalYearlyTrips);
             setTotalDieselConsumption(totalFuelCosts);
             setTotalExpenses(totalFuelCosts + totalMaintenance + parseInt(ltoFees) + parseInt(fcieFees) + parseInt(miscStickerFees))
-            console.log(totalExpenses)
+            console.log("Total expenses:" + totalExpenses)
         } catch (error) {
             alert("Error occurred. Please check console.");
             console.error(error);
@@ -437,7 +454,7 @@ export const CreateExpense = () => {
                 getObject.data.yearlyExpenses.push(newObjectID);
                 await axios.put(`http://localhost:2222/expenses/${expensesId}`, getObject.data);
                 setLoading(false);
-                alert("Expense Created");
+                alert("Record created.");
                 window.history.back();
             } catch (error) {
                 setLoading(false);
@@ -551,13 +568,21 @@ export const CreateExpense = () => {
         formFields = (
             <div>
                 <label>Month</label>
-                <input
-                    type="String"
-                    className="form-control"
-                    required
-                    value={month}
-                    onChange={(e) => setMonth(e.target.value)}
-                />
+                <select class="form-select" value={month} onChange={(e) => setMonth(e.target.value)}>
+                    <option selected>Select month</option>
+                    <option value="January">January</option>
+                    <option value="February">February</option>
+                    <option value="March">March</option>
+                    <option value="April">April</option>
+                    <option value="May">May</option>
+                    <option value="June">June</option>
+                    <option value="July">July</option>
+                    <option value="August">August</option>
+                    <option value="September">September</option>
+                    <option value="October">October</option>
+                    <option value="November">November</option>
+                    <option value="December">December</option>
+                </select>
                 <label>Year</label>
                 <input
                     type="String"
@@ -746,13 +771,21 @@ export const EditMonthlyExpense = () => {
             <div className="p-4 mx-auto mt-4" style={{ width: '50%' }}>
                 <h5>Update Monthly Expense</h5>
                 <label>Month</label>
-                <input
-                    type="String"
-                    className="form-control"
-                    required
-                    value={month}
-                    onChange={(e) => setMonth(e.target.value)}
-                />
+                <select class="form-select" value={month} onChange={(e) => setMonth(e.target.value)}>
+                    <option selected>Select month</option>
+                    <option value="January">January</option>
+                    <option value="February">February</option>
+                    <option value="March">March</option>
+                    <option value="April">April</option>
+                    <option value="May">May</option>
+                    <option value="June">June</option>
+                    <option value="July">July</option>
+                    <option value="August">August</option>
+                    <option value="September">September</option>
+                    <option value="October">October</option>
+                    <option value="November">November</option>
+                    <option value="December">December</option>
+                </select>
                 <label>Year</label>
                 <input
                     type="String"

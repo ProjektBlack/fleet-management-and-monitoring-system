@@ -3,9 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { Navigate, Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
 //components
-import { useAuth } from "../../../context/authProvider";
+import { useAuth } from "../context/authProvider";
 //icons
 import { BsFillFileSpreadsheetFill, BsFillHouseDoorFill, BsFillTruckFrontFill, BsCreditCard2FrontFill } from "react-icons/bs";
+//table
+import { TruckTable } from "./Tables";
 
 //private route
 export const PrivateRoute = ({ isAuthenticated, children }) => {

@@ -4,7 +4,7 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 import { useAuth } from "../context/authProvider";
 import axios from "axios";
 //components
-import { Spinner, ReturnButton, Sidebar, Dashboard } from "./Widgets";
+import { Spinner, BackButton, Sidebar, Dashboard } from "./Widgets";
 import { TruckTable, ExpensesTable, TripsTable } from "./Tables";
 //icons
 import { BsFillFilePlusFill } from "react-icons/bs";
@@ -69,7 +69,7 @@ export const Missing = () => {
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
             <h1>404 - Page Not Found</h1>
             <p>The page you are looking for does not exist.</p>
-            <ReturnButton />
+            <BackButton />
         </div>
     );
 };
@@ -205,7 +205,7 @@ export const ShowTruck = () => {
                                 <button className="btn btn-danger">Delete</button>
                             </div>
                             <div className="col">
-                                <ReturnButton />
+                                <BackButton />
                             </div>
                         </div>
                         <h6>Type</h6>
@@ -243,7 +243,7 @@ export const ShowTruck = () => {
                                             <td>{expense.stickerReg}</td>
                                             <td>{expense.maintenance}</td>
                                             <td>{expense.totalExpenses}</td>
-                                            <td><Link className="btn btn-outline-warning" to={`/expenses/yearly/edit/${expense._id}/${id}`}>Edit</Link></td>
+                                            <td><Link className="btn btn-outline-warning" to={`/expenses/yearly/edit/${expense._id}/${id}`}>Edit</Link><button className='btn btn-outline-danger'>Delete</button></td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -270,7 +270,7 @@ export const ShowTruck = () => {
                                             <td>{expense.maintenance}</td>
                                             <td>{expense.totalTrips}</td>
                                             <td>{expense.dieselConsumption}</td>
-                                            <td><Link className="btn btn-outline-warning" to={`/expenses/monthly/edit/${expense._id}/${id}`}>Edit</Link></td>
+                                            <td><Link className="btn btn-outline-warning" to={`/expenses/monthly/edit/${expense._id}/${id}`}>Edit</Link><button className='btn btn-outline-danger'>Delete</button></td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -290,8 +290,8 @@ export const ShowTruck = () => {
                                 <thead>
                                     <tr>
                                         <th>Driver</th>
-                                        <th>Customer</th>
                                         <th>Helper</th>
+                                        <th>Customer</th>
                                         <th>Date</th>
                                         <th>Time Dispatched</th>
                                         <th>Time Received</th>
@@ -308,8 +308,8 @@ export const ShowTruck = () => {
                                     {trips.sort((a, b) => new Date(b.date) - new Date(a.date)).map((trip, index) => (
                                         <tr key={index}>
                                             <td>{trip.driver.name}</td>
-                                            <td>{trip.customer.name}</td>
                                             <td>{trip.helper.name}</td>
+                                            <td>{trip.customer.name}</td>
                                             <td>{trip.month} {trip.day}, {trip.year} </td>
                                             <td>{trip.timeDispatched}</td>
                                             <td>{trip.timeReceived}</td>
@@ -319,7 +319,7 @@ export const ShowTruck = () => {
                                             <td>{trip.pathway}</td>
                                             <td>{trip.totalTripExpense}</td>
                                             <td>{trip.status}</td>
-                                            <td><Link className="btn btn-outline-warning" to={`/trips/edit/${trip._id}`}>Edit</Link></td>
+                                            <td><Link className="btn btn-outline-warning" to={`/trips/edit/${trip._id}`}>Edit</Link><button className='btn btn-outline-danger'>Delete</button></td>
                                         </tr>
                                     ))}
                                 </tbody>

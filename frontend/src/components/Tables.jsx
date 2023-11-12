@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import axios from 'axios'
 import { Link } from "react-router-dom";
 //import components
-import { Spinner, ReturnButton } from "./Widgets"
+import { Spinner, BackButton } from "./Widgets"
 //icons
 import { BsFillTrashFill, BsFillPencilFill, BsEye } from "react-icons/bs";
 

@@ -28,7 +28,7 @@ router.post("/yearlyexpenses", (req, res) => createRecord(YearlyExpense, req, re
 router.get("/yearlyexpenses", (req, res) => getAllRecords(YearlyExpense, res));
 router.get("/yearlyexpenses/:id", (req, res) => getSingleRecord(YearlyExpense, req, res));
 router.put("/yearlyexpenses/:id", (req, res) => updateRecord(YearlyExpense, req, res));
-router.delete("/yearlyexpenses/:id", (req, res) => deleteRecord(YearlyExpense, req, res));
+router.delete("/yearlyexpenses/delete/:id", (req, res) => deleteRecord(YearlyExpense, req, res));
 router.get("/yearly/expenses/:year/:truckId", async (req, res) => {
     try {
         const { year, truck } = req.params;
@@ -48,7 +48,7 @@ router.post("/monthlyexpenses", (req, res) => createRecord(MonthlyExpense, req, 
 router.get("/monthlyexpenses", (req, res) => getAllRecords(MonthlyExpense, res));
 router.get("/monthlyexpenses/:id", (req, res) => getSingleRecord(MonthlyExpense, req, res));
 router.put("/monthlyexpenses/:id", (req, res) => updateRecord(MonthlyExpense, req, res));
-router.delete("/monthlyexpenses/:id", (req, res) => deleteRecord(MonthlyExpense, req, res));
+router.delete("/monthlyexpenses/delete/:id", (req, res) => deleteRecord(MonthlyExpense, req, res));
 router.get("/monthly/expenses/:truckId/:year", async (req, res) => {
     try {
         const { truckId, year } = req.params;
@@ -60,6 +60,7 @@ router.get("/monthly/expenses/:truckId/:year", async (req, res) => {
     } catch (error) {
         console.error(error.message);
         res.status(500).send({ message: error.message });
+
     }
 });
 
@@ -68,7 +69,7 @@ router.post("/trips", (req, res) => createRecord(Trip, req, res));
 router.get("/trips", (req, res) => getAllRecords(Trip, res));
 router.get("/trips/:id", (req, res) => getSingleRecord(Trip, req, res));
 router.put("/trips/:id", (req, res) => updateRecord(Trip, req, res));
-router.delete("/trips/:id", (req, res) => deleteRecord(Trip, req, res));
+router.delete("/trips/delete/:id", (req, res) => deleteRecord(Trip, req, res));
 //route for getting trips by year and month
 router.get("/trips/:year/:month/:truck", async (req, res) => {
     try {
