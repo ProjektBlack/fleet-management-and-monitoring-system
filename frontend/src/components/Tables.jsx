@@ -7,6 +7,7 @@ import { Spinner, BackButton } from "./Widgets"
 //icons
 import { BsFillTrashFill, BsFillPencilFill, BsEye } from "react-icons/bs";
 
+
 //truck table
 export const TruckTable = () => {
     const [trucks, setTrucks] = useState([]);
@@ -84,9 +85,79 @@ export const TruckTable = () => {
 };
 
 //expenses table
-export const ExpensesTable = () => {
+export const YearlyExpensesTable = () => {
+    const [yearlyExpenses, setYearlyExpenses] = useState([]);
+    const [loading, setLoading] = useState(false);
 
+    async function fetchData() {
+        try {
+            setLoading(true);
+            const response = await axios.get("http://localhost:2222/yearlyexpenses");
+            const expenses = await Promise.all(response.data.data.map(async (expense) => {
+                const truckResponse = await axios.get(`http://localhost:2222/trucks/${expense.truck}`);
+                return { ...expense, truck: truckResponse.data.plateNumber };
+            }));
+            setYearlyExpenses(expenses);
+            setLoading(false);
+        } catch {
+            setLoading(false);
+            console.log("Error");
+        }
+    }
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    return (
+        <div>
+            {loading ? (
+                <div className="border d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
+                    <Spinner />
+                </div>
+            ) : (
+                <div style={{ overflowX: "auto", overflowY: "auto", maxHeight: "50vh" }}>
+                    <table className="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th style={{}}>Truck</th>
+                                <th style={{}}>Year</th>
+                                <th style={{}}>LTO Fees</th>
+                                <th style={{}}>Sticker Fees</th>
+                                <th style={{}}>Maintenance Fees</th>
+                                <th style={{}}>Total Trips</th>
+                                <th style={{}}>Total Diesel Consumption</th>
+                                <th style={{}}>Total Expenses</th>
+                                <th style={{}}>Operations</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {yearlyExpenses.map((expenses) => (
+                                <tr key={expenses.truck}>
+                                    <td>{expenses.truck}</td>
+                                    <td>{expenses.year}</td>
+                                    <td>{expenses.ltoReg}</td>
+                                    <td>{expenses.fcieReg}</td>
+                                    <td>{expenses.stickerReg}</td>
+                                    <td>{expenses.maintenance}</td>
+                                    <td>{expenses.totalTrips}</td>
+                                    <td>{expenses.totalDieselConsumption}</td>
+                                    <td>{expenses.totalExpenses}</td>
+                                    <td>
+                                        <Link id="showIcon" style={{ marginRight: '2%' }}><BsEye /></Link>
+                                        <BsFillTrashFill id="trashIcon" style={{ marginRight: '2%', cursor: "pointer" }} />
+                                        <Link id="editIcon"><BsFillPencilFill /></Link>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </div>
+    )
 };
+
 
 //trips table
 export const TripsTable = () => {

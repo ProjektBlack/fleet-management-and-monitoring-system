@@ -871,17 +871,23 @@ export const EditYearlyExpense = () => {
         try {
             console.log(truckId)
             const response = await axios.get(`http://localhost:2222/monthly/expenses/${truckId}/${year}`);
-            const trips = response.data.length;
+            let totalYearlyTrips = 0;
+            console.log(response.data[0].totalTrips)
+            console.log(response.data[0].maintenance)
+            console.log(response.data[0].dieselConsumption)
+            for (let i = 0; i < response.data.length; i++) {
+                totalYearlyTrips += parseFloat(response.data[i].totalTrips);
+            }
             let totalFuelCosts = 0;
-            for (let i = 0; i < trips; i++) {
+            for (let i = 0; i < response.data.length; i++) {
                 totalFuelCosts += response.data[i].dieselConsumption;
             }
             let totalMaintenance = 0;
-            for (let i = 0; i < trips; i++) {
+            for (let i = 0; i < response.data.length; i++) {
                 totalMaintenance += response.data[i].maintenance;
             }
             setMaintenanceCosts(totalMaintenance);
-            setTotalTrips(trips);
+            setTotalTrips(totalYearlyTrips);
             setTotalDieselConsumption(totalFuelCosts);
             setTotalExpenses(totalFuelCosts + totalMaintenance + parseInt(ltoFees) + parseInt(fcieFees) + parseInt(miscStickerFees))
             console.log(totalExpenses)

@@ -5,7 +5,7 @@ import { useAuth } from "../context/authProvider";
 import axios from "axios";
 //components
 import { Spinner, BackButton, Sidebar, Dashboard } from "./Widgets";
-import { TruckTable, ExpensesTable, TripsTable } from "./Tables";
+import { TruckTable, YearlyExpensesTable, TripsTable } from "./Tables";
 //icons
 import { BsFillFilePlusFill } from "react-icons/bs";
 
@@ -106,6 +106,7 @@ export const ManageTruck = () => {
                         </div>
                     </div>
                     <div className="row">
+                        <YearlyExpensesTable />
                         <TruckTable />
                     </div>
                 </div>
@@ -352,13 +353,12 @@ export const ManageExpenses = () => {
                             </Link>
                         </div>
                     </div>
+                    <div className="row">
+                        <YearlyExpensesTable />
+                    </div>
                 </div>
             </div>
-            <div className="row">
-                <div className="col" >
-                    <ExpensesTable />
-                </div>
-            </div>
+
         </div >
     )
 }
