@@ -4,7 +4,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { Routes, Route } from 'react-router-dom'
 import { useAuth } from "./context/authProvider";
 //import pages
-import { Home, Login, Missing, ManageTruck, ManageExpenses, ShowTruck } from "./components/Pages";
+import { Home, Login, Missing, ManageTruck, ManageYearlyExpenses, ShowTruck } from "./components/Pages";
 //import forms
 import { CreateTruck, CreateTrip, CreateExpense, EditTruck, EditMonthlyExpense, EditYearlyExpense, EditTrip } from "./components/Forms";
 //import private route
@@ -27,7 +27,7 @@ const App = () => {
       <Route path="/expenses/monthly/edit/:id/:truckId" element={<PrivateRoute isAuthenticated={isAuthenticated}><EditMonthlyExpense /></PrivateRoute>} />
       <Route path="/newtrips/:truckId" element={<PrivateRoute isAuthenticated={isAuthenticated}><CreateTrip /></PrivateRoute>} />
       <Route path="/trips/edit/:id" element={<PrivateRoute isAuthenticated={isAuthenticated}><EditTrip /></PrivateRoute>} />
-      <Route path="/expenses" element={<PrivateRoute isAuthenticated={isAuthenticated}><ManageExpenses /></PrivateRoute>} />
+      <Route path="/expenses" element={<PrivateRoute isAuthenticated={isAuthenticated}><ManageYearlyExpenses /></PrivateRoute>} />
       <Route path="trucks/details/:id" element={<PrivateRoute isAuthenticated={isAuthenticated}><ShowTruck /></PrivateRoute>} />
       {/*error page*/}
       <Route path="*" element={<Missing />} />

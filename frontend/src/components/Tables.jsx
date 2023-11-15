@@ -95,7 +95,7 @@ export const YearlyExpensesTable = () => {
             const response = await axios.get("http://localhost:2222/yearlyexpenses");
             const expenses = await Promise.all(response.data.data.map(async (expense) => {
                 const truckResponse = await axios.get(`http://localhost:2222/trucks/${expense.truck}`);
-                return { ...expense, truck: truckResponse.data.plateNumber };
+                return { ...expense, plateNumber: truckResponse.data.plateNumber };
             }));
             setYearlyExpenses(expenses);
             setLoading(false);
@@ -116,15 +116,16 @@ export const YearlyExpensesTable = () => {
                     <Spinner />
                 </div>
             ) : (
-                <div style={{ overflowX: "auto", overflowY: "auto", maxHeight: "50vh" }}>
-                    <table className="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th style={{}}>Truck</th>
+                <div className="" style={{ overflowX: "auto", overflowY: "auto", maxHeight: "50vh", marginRight: "2%" }}>
+                    <table className="table table-bordered table-hover ">
+                        <thead className="">
+                            <tr className="bg-primary">
+                                <th style={{}}>Plate Number</th>
                                 <th style={{}}>Year</th>
                                 <th style={{}}>LTO Fees</th>
-                                <th style={{}}>Sticker Fees</th>
-                                <th style={{}}>Maintenance Fees</th>
+                                <th style={{}}>FCIE Fees</th>
+                                <th style={{}}>Misc. Sticker Fees</th>
+                                <th style={{}}>Maintenance</th>
                                 <th style={{}}>Total Trips</th>
                                 <th style={{}}>Total Diesel Consumption</th>
                                 <th style={{}}>Total Expenses</th>
@@ -133,8 +134,8 @@ export const YearlyExpensesTable = () => {
                         </thead>
                         <tbody>
                             {yearlyExpenses.map((expenses) => (
-                                <tr key={expenses.truck}>
-                                    <td>{expenses.truck}</td>
+                                <tr key={expenses.plateNumber}>
+                                    <td>{expenses.plateNumber}</td>
                                     <td>{expenses.year}</td>
                                     <td>{expenses.ltoReg}</td>
                                     <td>{expenses.fcieReg}</td>
@@ -143,10 +144,8 @@ export const YearlyExpensesTable = () => {
                                     <td>{expenses.totalTrips}</td>
                                     <td>{expenses.totalDieselConsumption}</td>
                                     <td>{expenses.totalExpenses}</td>
-                                    <td>
-                                        <Link id="showIcon" style={{ marginRight: '2%' }}><BsEye /></Link>
-                                        <BsFillTrashFill id="trashIcon" style={{ marginRight: '2%', cursor: "pointer" }} />
-                                        <Link id="editIcon"><BsFillPencilFill /></Link>
+                                    <td className="text-center">
+                                        <Link id="showIcon" to={`/trucks/details/${expenses.truck}`} style={{ marginRight: '2%' }}><BsEye /></Link>
                                     </td>
                                 </tr>
                             ))}

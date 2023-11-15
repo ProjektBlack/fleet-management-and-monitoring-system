@@ -106,7 +106,6 @@ export const ManageTruck = () => {
                         </div>
                     </div>
                     <div className="row">
-                        <YearlyExpensesTable />
                         <TruckTable />
                     </div>
                 </div>
@@ -195,7 +194,7 @@ export const ShowTruck = () => {
                 </div>
             ) : (
                 <div className="row p-4">
-                    <div className="col">
+                    <div className="col-3">
                         <h2>Plate Number {trucks.plateNumber}</h2>
                         <div className="row">
                             <h6>Operations</h6>
@@ -335,7 +334,7 @@ export const ShowTruck = () => {
 };
 
 //manage expenses
-export const ManageExpenses = () => {
+export const ManageYearlyExpenses = () => {
     return (
         <div>
             <div className="row">
@@ -345,12 +344,18 @@ export const ManageExpenses = () => {
                 <div className="col-10">
                     <div className="row d-flex mx-auto mb-4 mt-4">
                         <div className="col-10">
-                            <h1 style={{ marginTop: "10%" }}>Expenses</h1>
+                            <h1 style={{ marginTop: "10%" }}>Yearly Expenses</h1>
                         </div>
                         <div className="col">
-                            <Link to="/newexpenses" className="btn btn-outline-success" style={{ marginTop: "60%", marginLeft: "50%" }}>
-                                Create
-                            </Link>
+                            <select className="form-select" style={{ marginTop: "150%" }}>
+                                <option selected>Sort</option>
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                        </div>
+                        <div className="col">
+                            <input className='form-control' style={{ marginTop: "150%" }}></input>
                         </div>
                     </div>
                     <div className="row">
