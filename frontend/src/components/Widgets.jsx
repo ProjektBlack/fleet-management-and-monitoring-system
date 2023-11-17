@@ -5,7 +5,7 @@ import axios from "axios";
 //components
 import { useAuth } from "../context/authProvider";
 //icons
-import { BsFillFileSpreadsheetFill, BsFillHouseDoorFill, BsFillTruckFrontFill, BsCreditCard2FrontFill } from "react-icons/bs";
+import { BsFillFileSpreadsheetFill, BsFillHouseDoorFill, BsFillTruckFrontFill, BsCreditCard2FrontFill, BsTruck } from "react-icons/bs";
 //table
 import { TruckTable } from "./Tables";
 
@@ -46,15 +46,20 @@ export const Sidebar = () => {
 
     return (
         <div>
-            <div id="sidebar" className="border-right p-4">
-                <div className="row border-bottom pb-2 mb-2">
-                    <div className="col">
-                        <h4 className=""><span className="logo">Green Movers</span> Services</h4>
+            <div id="sidebar" className="p-4">
+                <div className="row border-bottom pb-2 mb-2 g-4">
+                    <div className='col-2 text-center'>
+                        <BsTruck className='' size={30} color='#2E8B57' />
                     </div>
+                    <div className='col'>
+                        <h4 className=""><span className="logo">Green </span>Movers</h4>
+                    </div>
+
+
                 </div>
                 <div className="row">
                     <ul className="list-group">
-                        <Link to={"/home"} className="links text-decoration-none"><BsFillHouseDoorFill className="icons"></BsFillHouseDoorFill>  Home</Link>
+                        <Link to={"/home"} className="links text-decoration-none"><BsFillHouseDoorFill className="icons" id='homeIcon'></BsFillHouseDoorFill>Home</Link>
                         <Link to={"/trucks"} className="links text-decoration-none"><BsFillTruckFrontFill className="icons" id="truckIcon"></BsFillTruckFrontFill>Trucks</Link>
                         <Link to={"/trips"} className="links text-decoration-none"><BsFillFileSpreadsheetFill className="icons" id="tripsIcon"></BsFillFileSpreadsheetFill>Trips</Link>
                         <Link to={"/expenses"} className="links text-decoration-none"><BsCreditCard2FrontFill className="icons" id="expensesIcon"></BsCreditCard2FrontFill>Expenses</Link>
@@ -127,11 +132,10 @@ export const Dashboard = () => {
         //update using js, also, insert icons
         //update to compartmentalize css
         <div className="p-4">
-            <div className="row border-bottom pb-3 mb-4">
+            <div id="dashboardHeader" className="row border-start pb-3 mb-4 bg-white rounded p-4 border-success border-5">
                 <div className="col-9" style={{ marginRight: '5%' }}>
-                    <h1 style={{ marginTop: '5%' }}>Dashboard</h1>
+                    <h1>Dashboard</h1>
                 </div>
-                <PendingWidget />
             </div>
             {/*place widgets here*/}
             <div id="widgets">
@@ -142,7 +146,7 @@ export const Dashboard = () => {
                     </div>
                     <div className="col">
                         <div className="row mb-4">
-                            <CardComponent />
+                            <CardComponent />>
                         </div>
                         <div className="row">
                             <CardComponent />

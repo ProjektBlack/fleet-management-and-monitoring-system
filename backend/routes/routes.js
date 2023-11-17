@@ -1,7 +1,6 @@
 import express from "express";
 import {
     Truck,
-    Expenses,
     Trip,
     YearlyExpense,
     MonthlyExpense,
@@ -16,67 +15,19 @@ router.get("/trucks/:id", (req, res) => getSingleRecord(Truck, req, res));
 router.put("/trucks/:id", (req, res) => updateRecord(Truck, req, res));
 router.delete("/trucks/:id", (req, res) => deleteRecord(Truck, req, res));
 
-//routes for expenses
-router.post("/expenses", (req, res) => createRecord(Expenses, req, res));
-router.get("/expenses", (req, res) => getAllRecords(Expenses, res));
-router.get("/expenses/:id", (req, res) => getSingleRecord(Expenses, req, res));
-router.put("/expenses/:id", (req, res) => updateRecord(Expenses, req, res));
-router.delete("/expenses/:id", (req, res) => deleteRecord(Expenses, req, res));
-
-//routes for yearly expenses
-router.post("/yearlyexpenses", (req, res) => createRecord(YearlyExpense, req, res));
-router.get("/yearlyexpenses", (req, res) => getAllRecords(YearlyExpense, res));
-router.get("/yearlyexpenses/:id", (req, res) => getSingleRecord(YearlyExpense, req, res));
-router.put("/yearlyexpenses/:id", (req, res) => updateRecord(YearlyExpense, req, res));
-router.delete("/yearlyexpenses/delete/:id", (req, res) => deleteRecord(YearlyExpense, req, res));
-router.get("/yearly/expenses/:year/:truckId", async (req, res) => {
-    try {
-        const { year, truck } = req.params;
-        const expenses = await MonthlyExpense.find({ year: year, truck: truck });
-        if (!expenses) {
-            res.status(404).json({ message: "Expenses not found" });
-        }
-        res.status(200).json(expenses);
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).send({ message: error.message });
-    }
-});
-
-//routes for monthly expenses
-router.post("/monthlyexpenses", (req, res) => createRecord(MonthlyExpense, req, res));
-router.get("/monthlyexpenses", (req, res) => getAllRecords(MonthlyExpense, res));
-router.get("/monthlyexpenses/:id", (req, res) => getSingleRecord(MonthlyExpense, req, res));
-router.put("/monthlyexpenses/:id", (req, res) => updateRecord(MonthlyExpense, req, res));
-router.delete("/monthlyexpenses/delete/:id", (req, res) => deleteRecord(MonthlyExpense, req, res));
-router.get("/monthly/expenses/:truckId/:year", async (req, res) => {
-    try {
-        const { truckId, year } = req.params;
-        const expenses = await MonthlyExpense.find({ truck: truckId, year: year });
-        if (!expenses) {
-            res.status(404).json({ message: "Expenses not found" });
-        }
-        res.status(200).json(expenses);
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).send({ message: error.message });
-
-    }
-});
-
 //routes for trips
 router.post("/trips", (req, res) => createRecord(Trip, req, res));
 router.get("/trips", (req, res) => getAllRecords(Trip, res));
 router.get("/trips/:id", (req, res) => getSingleRecord(Trip, req, res));
 router.put("/trips/:id", (req, res) => updateRecord(Trip, req, res));
-router.delete("/trips/delete/:id", (req, res) => deleteRecord(Trip, req, res));
+router.delete("/trips/:id", (req, res) => deleteRecord(Trip, req, res));
 //route for getting trips by year and month
-router.get("/trips/:year/:month/:truck", async (req, res) => {
+router.get("/trips/:truck/:year/:month", async (req, res) => {
     try {
-        const { year, month, truck } = req.params;
-        const trips = await Trip.find({ year: year, month: month, truck: truck });
+        const { truck, year, month } = req.params;
+        const trips = await Trip.find({ truck: truck, year: year, month: month });
         if (!trips) {
-            res.status(404).json({ message: "Trips not found" });
+            res.status(404).json({ message: "There are no trips for that year and month." });
         }
         res.status(200).json(trips);
     } catch (error) {
@@ -85,13 +36,53 @@ router.get("/trips/:year/:month/:truck", async (req, res) => {
     }
 });
 //route for getting pending trips
-router.get("/trips/status/pending", async (req, res) => {
+router.get("/trips/pending", async (req, res) => {
     try {
         const trips = await Trip.find({ status: "Pending" });
         if (!trips) {
-            res.status(404).json({ message: "Trips not found" });
+            res.status(404).json({ message: "There are no pending trips." });
         }
         res.status(200).json(trips);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send({ message: error.message });
+    }
+});
+
+//routes for monthly expenses
+router.post("/expenses/monthly", (req, res) => createRecord(MonthlyExpense, req, res));
+router.get("/expenses/monthly", (req, res) => getAllRecords(MonthlyExpense, res));
+router.get("/expenses/monthly/:id", (req, res) => getSingleRecord(MonthlyExpense, req, res));
+router.put("/expenses/monthly/:id", (req, res) => updateRecord(MonthlyExpense, req, res));
+router.delete("/expenses/monthly/:id", (req, res) => deleteRecord(MonthlyExpense, req, res));
+router.get("/expenses/monthly/:year/:truckId", async (req, res) => { //get monthly expenses by year and truck
+    try {
+        const { year, truckId } = req.params;
+        const expenses = await MonthlyExpense.find({ truck: truckId, year: year });
+        if (!expenses) {
+            res.status(404).json({ message: "Record not found." });
+        }
+        res.status(200).json(expenses);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send({ message: error.message });
+    }
+});
+
+//routes for yearly expenses
+router.post("/expenses/yearly", (req, res) => createRecord(YearlyExpense, req, res));
+router.get("/expenses/yearly", (req, res) => getAllRecords(YearlyExpense, res));
+router.get("/expenses/yearly/:id", (req, res) => getSingleRecord(YearlyExpense, req, res));
+router.put("/expenses/yearly/:id", (req, res) => updateRecord(YearlyExpense, req, res));
+router.delete("/expenses/yearly/:id", (req, res) => deleteRecord(YearlyExpense, req, res));
+router.get("/expenses/yearly/:truckId/:year", async (req, res) => {
+    try {
+        const { truckId, year } = req.params;
+        const expenses = await MonthlyExpense.find({ truck: truckId, year: year });
+        if (!expenses) {
+            res.status(404).json({ message: "Record not found." });
+        }
+        res.status(200).json(expenses);
     } catch (error) {
         console.error(error.message);
         res.status(500).send({ message: error.message });
@@ -106,7 +97,7 @@ const getSingleRecord = async (model, req, res) => {
         const { id } = req.params;
         const record = await model.findById(id);
         if (!record) {
-            res.status(404).json({ message: `${model.modelName} not found` });
+            res.status(404).json({ message: `${model.modelName} not found.` });
         }
         res.status(200).json(record);
     } catch (error) {
@@ -144,9 +135,9 @@ const updateRecord = async (model, req, res) => {
         const { id } = req.params;
         const result = await model.findByIdAndUpdate(id, req.body);
         if (!result) {
-            res.status(404).json({ message: `${model.modelName} not found` });
+            res.status(404).json({ message: `${model.modelName} not found.` });
         }
-        res.status(200).send({ message: `${model.modelName} updated successfully` });
+        res.status(200).send({ message: `${model.modelName} updated successfully.` });
     } catch (error) {
         console.error(error.message);
         res.status(500).send({ message: error.message });
@@ -158,9 +149,9 @@ const deleteRecord = async (model, req, res) => {
         const { id } = req.params;
         const result = await model.findByIdAndDelete(id);
         if (!result) {
-            res.status(404).json({ message: `${model.modelName} not found` });
+            res.status(404).json({ message: `${model.modelName} not found.` });
         }
-        res.status(204).send({ message: `${model.modelName} deleted successfully` });
+        res.status(204).send({ message: `${model.modelName} deleted successfully.` });
     } catch (error) {
         console.error(error.message);
         res.status(500).send({ message: error.message });

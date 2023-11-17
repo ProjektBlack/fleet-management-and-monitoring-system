@@ -386,6 +386,7 @@ export const CreateExpense = () => {
         try {
             const response = await axios.get(`http://localhost:2222/trips/${year}/${month}/${truckId}`);
             const trips = response.data.length;
+            console.log(trips)
             let totalFuelCosts = 0;
             for (let i = 0; i < trips; i++) {
                 totalFuelCosts += response.data[i].dieselConsumption;

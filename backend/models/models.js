@@ -20,30 +20,23 @@ export const Truck = mongoose.model("Truck", new Schema({
         unique: true,
         maxlength: 10
     },
-    expenses: {
-        type: Schema.Types.ObjectId,
-        ref: 'Expenses'
+    availability: {
+        type: String, //if there is a pending trip, it will be unavailable
     },
+    expenses: [{
+        yearlyExpenses: [{
+            type: Schema.Types.ObjectId,
+            ref: 'YearlyExpense'
+        }],
+        monthlyExpenses: [{
+            type: Schema.Types.ObjectId,
+            ref: 'MonthlyExpense'
+        }]
+    }],
     trips: [{
         type: Schema.Types.ObjectId,
         ref: 'Trip'
     }]
-}));
-
-//expenses and sub-objects
-export const Expenses = mongoose.model("Expense", new Schema({
-    yearlyExpenses: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'YearlyExpense'
-        }
-    ],
-    monthlyExpenses: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'MonthlyExpense'
-        }
-    ]
 }));
 
 export const YearlyExpense = mongoose.model("YearlyExpense", new Schema({
@@ -70,8 +63,8 @@ export const MonthlyExpense = mongoose.model("MonthlyExpense", new Schema({
     year: String,
     maintenance: Number, //aggregated by the number of trips
     totalTrips: Number,
-    dieselConsumption: Number //aggregated by the number of trips
-    //needs another one for total expenses
+    dieselConsumption: Number, //aggregated by the number of trips
+    totalMonthlyExpenses: Number //total of all expenses (maintenance + diesel consumption)
 }));
 
 export const Trip = mongoose.model("Trip", new Schema({
@@ -124,7 +117,8 @@ export const Trip = mongoose.model("Trip", new Schema({
         type: String
     },
     status: {
-        type: String
+        type: String,
+        required: true
     },
     distance: {
         type: Number
@@ -142,6 +136,6 @@ export const Trip = mongoose.model("Trip", new Schema({
         type: Number
     },
     totalTripExpense: {
-        type: Number
+        type: Number //total of all expenses (diesel cost + toll fee + pathway)
     }
 }));

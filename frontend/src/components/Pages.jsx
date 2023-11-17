@@ -77,11 +77,11 @@ export const Missing = () => {
 //dashboard
 export const Home = () => {
     return (
-        <div className="row">
+        <div className="row g-2">
             <div className="col-2">
                 <Sidebar />
             </div>
-            <div className="col border">
+            <div id="dashboardContainer" className="col border-0 rounded">
                 <Dashboard />
             </div>
         </div>
