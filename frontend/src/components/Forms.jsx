@@ -5,14 +5,17 @@ import axios from "axios";
 
 //create truck form
 export const CreateTruck = () => {
+    const navigate = useNavigate();
+
     const [newTruck, setNewTruck] = useState({}) //state for new truck object
     const [plateNumber, setPlateNumber] = useState('')
     const [truckType, setTruckType] = useState('')
-    const [expenses, setExpenses] = useState({
+    const [underMaintenance, setUnderMaintenance] = useState(false) //default value for underMaintenance is false
+    const [expenses, setExpenses] = useState({ //create an empty expense object
         yearlyExpenses: [],
         monthlyExpenses: []
     })
-    const navigate = useNavigate();
+
 
     //function to create a new truck
     const handleCreateTruck = async () => {
@@ -20,14 +23,10 @@ export const CreateTruck = () => {
             const data = {
                 plateNumber,
                 truckType,
+                underMaintenance,
+                expenses: expenses
             };
-            const response = await axios.post('http://localhost:2222/trucks', data) //create new truck - no expenses yet
-            const expenseResponse = await axios.post('http://localhost:2222/expenses', expenses) //create new expenses associated with truck
-            const newObjectID = response.data._id; //get truck ID for getting truck object
-            const getObject = await axios.get(`http://localhost:2222/trucks/${newObjectID}`);
-            setNewTruck(getObject.data); //set new truck object
-            newTruck.expenses = expenseResponse.data._id; //set new truck expenses
-            await axios.put(`http://localhost:2222/trucks/${newObjectID}`, newTruck); //update truck with expenses
+            const response = await axios.post('http://localhost:2222/trucks', data) //create new truck
             console.log(response.data);
             alert("Truck created.");
             navigate(`/trucks`); //navigate to truck details page

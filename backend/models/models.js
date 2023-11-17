@@ -20,8 +20,9 @@ export const Truck = mongoose.model("Truck", new Schema({
         unique: true,
         maxlength: 10
     },
-    availability: {
-        type: String, //if there is a pending trip, it will be unavailable
+    underMaintenance: {
+        type: Boolean,
+        required: true
     },
     expenses: [{
         yearlyExpenses: [{

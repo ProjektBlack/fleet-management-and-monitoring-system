@@ -92,20 +92,20 @@ export const Home = () => {
 export const ManageTruck = () => {
     return (
         <div>
-            <div className="row">
-                <div className="col-2" style={{ height: '94vh' }}>
+            <div className="row g-2">
+                <div className="col-2">
                     <Sidebar />
                 </div>
-                <div className="col-10 p-4">
-                    <div className="row pt-4" style={{ marginTop: '7.5vh', marginBottom: '1.5%' }}>
-                        <div className="col-10 mt-4">
+                <div id="dashboardContainer" className="col border-0 rounded p-4">
+                    <div className="row border-start border-success rounded border-5 dsContainer mb-3">
+                        <div className="col-10 p-4">
                             <h1>Manage Trucks</h1>
                         </div>
                         <div className="col-2 mt-4 text-end">
                             <Link to="/trucks/new"><BsFillFilePlusFill id="newIcon" /></Link>
                         </div>
                     </div>
-                    <div className="row">
+                    <div className="row border-start border-success rounded border-5 dsContainer tableContainer">
                         <TruckTable />
                     </div>
                 </div>

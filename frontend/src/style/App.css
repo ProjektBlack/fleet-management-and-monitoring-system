@@ -32,6 +32,10 @@ body {
     color: #2E8B57;
 }
 
+.unlogo {
+    color: rgb(255, 149, 35);
+}
+
 #sidebar {
     background-color: white;
     width: 100%;
@@ -93,8 +97,8 @@ body {
 
 /*dashboard*/
 
-#dashboardContainer {
-    background-color: #F2F2F2;
+.dsContainer {
+    background-color: white;
 }
 
 #pendingWidget {
@@ -127,4 +131,17 @@ body {
 #newIcon {
     color: #2E8B57;
     font-size: x-large;
+}
+
+/*widgets*/
+
+.widget {
+    width: 100%;
+    min-height: 15vh;
+    font-size: small;
+}
+
+/*manage trucks page*/
+.tableContainer {
+    height: 75vh;
 }

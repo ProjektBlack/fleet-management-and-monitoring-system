@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 //import components
 import { Spinner, BackButton } from "./Widgets"
 //icons
-import { BsFillTrashFill, BsFillPencilFill, BsEye } from "react-icons/bs";
+import { BsFillTrashFill, BsFillPencilFill, BsEye, BsCheckLg, BsExclamationCircle } from "react-icons/bs";
 
 
 //truck table
@@ -24,6 +24,17 @@ export const TruckTable = () => {
         } catch (error) {
             console.log(error);
             setLoading(false);
+        }
+    };
+
+    const truckAvailability = (truck) => {
+        const hasPendingTrips = truck.trips.some(trip => trip.status === 'pending' || trip.status === 'Pending');
+        const isUnderMaintenance = truck.underMaintenance;
+
+        if (hasPendingTrips || isUnderMaintenance) {
+            return 'Unavailable';
+        } else {
+            return 'Available';
         }
     };
 
@@ -51,17 +62,19 @@ export const TruckTable = () => {
     return (
         <div>
             {loading ? (
-                <div className="border d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
+                <div className="s d-flex justify-content-center align-items-center" style={{ height: '40vh' }}>
                     <Spinner />
                 </div>
             ) : (
-                <div style={{ overflowX: "auto", overflowY: "auto", maxHeight: "50vh" }}>
-                    <table className="table table-bordered table-hover">
+                <div style={{ overflowX: "auto", overflowY: "auto", maxHeight: "70vh" }}>
+                    <table className="table table-hover">
                         <thead>
                             <tr>
-                                <th style={{ width: "15%" }}>Plate Number</th>
-                                <th style={{ width: "75%" }}>Truck Type</th>
-                                <th style={{ width: "10%" }}>Operations</th>
+                                <th>Plate Number</th>
+                                <th>Truck Type</th>
+                                <th>Availability</th>
+                                <th>Maintenance</th>
+                                <th>Operations</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -69,6 +82,8 @@ export const TruckTable = () => {
                                 <tr key={truck.plateNumber}>
                                     <td>{truck.plateNumber}</td>
                                     <td>{truck.truckType}</td>
+                                    <td>{truckAvailability(truck)}</td>
+                                    <td>{truck.underMaintenance ? <BsExclamationCircle /> : <BsCheckLg />}</td>
                                     <td>
                                         <Link id="showIcon" to={`/trucks/details/${truck._id}`} style={{ marginRight: '2%' }}><BsEye /></Link>
                                         <BsFillTrashFill id="trashIcon" onClick={() => handleDelete(truck._id)} style={{ marginRight: '2%', cursor: "pointer" }} />

@@ -19,6 +19,7 @@ export const PrivateRoute = ({ isAuthenticated, children }) => {
 }
 
 //return button
+//add an icon
 export const BackButton = () => {
     const goBack = () => {
         window.history.back();
@@ -84,33 +85,6 @@ export const Spinner = () => {
     )
 }
 
-//pending widget
-const PendingWidget = () => {
-    const [pendingTrips, setPendingTrips] = useState(0);
-
-    useEffect(() => {
-        axios.get("http://localhost:2222/trips/status/pending")
-            .then((res) => {
-                setPendingTrips(res.data.length);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }, []);
-
-    return (
-        <div id="pendingWidget" className="col-2">
-            <div className="row text-center">
-                <div className="col">
-                    <BsFillTruckFrontFill />
-                    <h6 id="pendingTrips">{pendingTrips}</h6>
-                    <h6>Pending Trips</h6>
-                </div>
-            </div>
-        </div>
-    )
-}
-
 //card component (placeholder)
 export const CardComponent = () => {
     return (
@@ -125,6 +99,44 @@ export const CardComponent = () => {
     );
 }
 
+export const PendingWidget = () => {
+    const [pendingTrips, setPendingTrips] = useState(0);
+
+    useEffect(() => {
+        axios.get("http://localhost:2222/trips/status/pending")
+            .then((res) => {
+                setPendingTrips(res.data.length);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
+
+    return (
+        <div className='text-center widget pt-3'>
+            <div className='row'>
+                <h1 id="pendingTrips" className='unlogo'>{pendingTrips}</h1>
+            </div>
+            <div className='row'>
+                <p className='text-muted'>Pending Trips</p>
+            </div>
+        </div>
+    );
+}
+
+export const SampleWidget2 = () => {
+    return (
+        <div className='text-center widget pt-2'>
+            <div className='row'>
+                <h1><span className='logo'>17</span></h1>
+            </div>
+            <div className='row'>
+                <p className='text-muted'>Completed trips this month</p>
+            </div>
+        </div>
+    );
+}
+
 //dashboard
 export const Dashboard = () => {
     return (
@@ -132,24 +144,22 @@ export const Dashboard = () => {
         //update using js, also, insert icons
         //update to compartmentalize css
         <div className="p-4">
-            <div id="dashboardHeader" className="row border-start pb-3 mb-4 bg-white rounded p-4 border-success border-5">
-                <div className="col-9" style={{ marginRight: '5%' }}>
-                    <h1>Dashboard</h1>
-                </div>
+            <div id="dashboardHeader" className="row border-start mb-4 bg-white rounded p-4 border-success border-5">
+                <h1>Dashboard</h1>
             </div>
             {/*place widgets here*/}
-            <div id="widgets">
+            <div id="widgets" className='container'>
                 {/*sample widgets*/}
-                <div className="row mb-4">
-                    <div className="col-8">
+                <div className="row mb-4 g-5">
+                    <div className="col-10 border-start border-success border-5 rounded dsContainer">
                         <TruckTable />
                     </div>
                     <div className="col">
-                        <div className="row mb-4">
-                            <CardComponent />>
+                        <div className="row mb-2 border-start border-success border-5 rounded dsContainer">
+                            <PendingWidget />
                         </div>
-                        <div className="row">
-                            <CardComponent />
+                        <div className="row border-start border-success border-5 rounded dsContainer">
+                            <SampleWidget2 />
                         </div>
                     </div>
                 </div>
