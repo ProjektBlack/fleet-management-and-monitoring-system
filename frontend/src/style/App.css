@@ -18,13 +18,20 @@ body {
 
 #loginPanel {
     width: 30%;
-    padding: 5%;
+    padding: 3%;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-
+/*registration page*/
+#registrationPanel {
+    width: 30%;
+    padding: 3%;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
 /*navigation bar*/
 

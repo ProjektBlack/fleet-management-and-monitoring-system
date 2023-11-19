@@ -5,7 +5,7 @@ import axios from "axios";
 //components
 import { useAuth } from "../context/authProvider";
 //icons
-import { BsFillFileSpreadsheetFill, BsFillHouseDoorFill, BsFillTruckFrontFill, BsCreditCard2FrontFill, BsTruck } from "react-icons/bs";
+import { BsFillFileSpreadsheetFill, BsFillHouseDoorFill, BsFillTruckFrontFill, BsCreditCard2FrontFill, BsTruck, BsArrowReturnLeft } from "react-icons/bs";
 //table
 import { TruckTable } from "./Tables";
 
@@ -26,7 +26,7 @@ export const BackButton = () => {
     };
 
     return (
-        <button className="btn btn-outline-success" onClick={goBack}>Return</button>
+        <BsArrowReturnLeft onClick={goBack} />
     );
 };
 

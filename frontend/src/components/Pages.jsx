@@ -19,6 +19,8 @@ export const Login = () => {
     //displays error message if login fails
     const [error, setError] = useState("");
     //used to navigate to home page after login
+    //loading state for login
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     //function to handle login
@@ -40,12 +42,20 @@ export const Login = () => {
         }
     };
 
+    const areFormsFilled = () => {
+        if (username === "" || password === "") {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     return (
         <div>
             <div id="loginBackground" className="d-flex align-items-center justify-content-center">
                 <div id="loginPanel" className="d-flex align-items-center justify-content-center">
-                    <form onSubmit={handleLogin} noValidate>
-                        <h5 className="logo">FMMS</h5>
+                    <form onSubmit={handleLogin}>
+                        <h3 className="logo">FMMS</h3>
                         <div className="row mb-2">
                             <label className="mb-2">Username</label>
                             <input className="form-control" type="text" required value={username} onChange={(e) => setUsername(e.target.value)} />
@@ -55,7 +65,11 @@ export const Login = () => {
                             <input className="form-control" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
                             <div className="text-danger">{error}</div>
                         </div>
-                        <button className="btn btn-success mt-3 mx-auto d-flex" type="submit">Log In</button>
+                        <button className="btn btn-success mt-3 mx-auto d-flex fs-6 ${areFormsFilled() ? '' : disabled}" type="submit" disabled={!areFormsFilled()}> Log In</button>
+                        <div className='text-center mt-1'>
+                            <Link to={"/register"} className='text-muted text-decoration-none fw-light'>Not yet registered?</Link>
+                        </div>
+
                     </form>
                 </div>
             </div>

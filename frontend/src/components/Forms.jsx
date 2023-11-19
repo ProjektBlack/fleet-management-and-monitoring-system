@@ -1,7 +1,89 @@
 //dependencies
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+
+//register a new user
+export const Register = () => {
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmation, setConfirmation] = useState("");
+    const [passwordFilledUp, setPasswordFilledUp] = useState(false);
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
+
+    //function to register a new user
+    const handleRegister = async () => {
+        event.preventDefault();
+        if (password !== confirmation) {
+            setError("Passwords do not match.");
+            return;
+        } else {
+            try {
+                const data = {
+                    username,
+                    password,
+                };
+                const response = await axios.post("http://localhost:2222/users", data);
+                console.log(response.data);
+                alert("User registered.");
+                navigate("/login");
+            } catch (error) {
+                alert("Error occurred. Please check console.");
+                setError(error.message)
+            }
+        }
+    };
+
+    //handling password validation
+    const handlePasswordFilledUp = (e) => {
+        setPasswordFilledUp(true);
+        setPassword(e.target.value);
+    };
+
+    const areFormsFilled = () => {
+        if (username && password && confirmation) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    return (
+        <div id="loginBackground" className="d-flex align-items-center justify-content-center" style={{ height: "100vh" }}>
+            <form id="registrationPanel" className="form-control" onSubmit={handleRegister}>
+                <div className="row">
+                    <h3>Registration</h3>
+                </div>
+                <div className="row">
+                    <label className="mb-1 mt-1">Username</label>
+                    <input className="form-control" value={username} onChange={(e) => setUsername(e.target.value)} />
+                </div>
+                <div className="row">
+                    <label className="mb-1 mt-1">Password</label>
+                    <input type="password" className="form-control" value={password} onChange={handlePasswordFilledUp} />
+                </div>
+                {passwordFilledUp ? (   //if password is filled up, show confirmation field
+                    <div className="row">
+                        <label className="mb-1 mt-1">Confirm Password</label>
+                        <input type="password" className="form-control" value={confirmation} onChange={(e) => setConfirmation(e.target.value)} />
+                    </div>
+                ) : null}
+                {error ? (  //if error is not null, show error message}
+                    <div>
+                        <p className="text-danger">{error}</p>
+                    </div>
+                ) : null}
+                <div className="row">
+                    <button className="btn btn-success mx-auto mt-4 ${areFormsFilled() ? '' : 'disabled'}`" type="submit" disabled={!areFormsFilled()}>Register</button>
+                </div>
+                <div className='text-center mt-1'>
+                    <Link to={"/login"} className='text-muted text-decoration-none fw-light'>Already registered?</Link>
+                </div>
+            </form>
+        </div>
+    );
+};
 
 //create truck form
 export const CreateTruck = () => {

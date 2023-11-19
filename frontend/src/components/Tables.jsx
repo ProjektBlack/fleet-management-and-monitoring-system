@@ -82,7 +82,7 @@ export const TruckTable = () => {
                                 <tr key={truck.plateNumber}>
                                     <td>{truck.plateNumber}</td>
                                     <td>{truck.truckType}</td>
-                                    <td>{truckAvailability(truck)}</td>
+                                    <td>{truckAvailability(truck)}</td> {/*change to available or unavailable in forms*/}
                                     <td>{truck.underMaintenance ? <BsExclamationCircle /> : <BsCheckLg />}</td>
                                     <td>
                                         <Link id="showIcon" to={`/trucks/details/${truck._id}`} style={{ marginRight: '2%' }}><BsEye /></Link>

@@ -6,7 +6,7 @@ import { useAuth } from "./context/authProvider";
 //import pages
 import { Home, Login, Missing, ManageTruck, ManageYearlyExpenses, ShowTruck } from "./components/Pages";
 //import forms
-import { CreateTruck, CreateTrip, CreateExpense, EditTruck, EditMonthlyExpense, EditYearlyExpense, EditTrip } from "./components/Forms";
+import { CreateTruck, CreateTrip, CreateExpense, EditTruck, EditMonthlyExpense, EditYearlyExpense, EditTrip, Register } from "./components/Forms";
 //import private route
 import { PrivateRoute } from "./components/Widgets";
 const App = () => {
@@ -17,6 +17,7 @@ const App = () => {
     <Routes>
       {/*entry point to the app*/}
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
       {/*private routes*/}
       <Route path="/home" element={<PrivateRoute isAuthenticated={isAuthenticated}><Home /></PrivateRoute>} />
       <Route path="/trucks" element={<PrivateRoute isAuthenticated={isAuthenticated}><ManageTruck /></PrivateRoute>} />
