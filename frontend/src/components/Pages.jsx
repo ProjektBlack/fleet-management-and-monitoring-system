@@ -13,6 +13,7 @@ import { BsFillFilePlusFill } from "react-icons/bs";
 export const Login = () => {
     //global state for authentication
     const { isAuthenticated, setIsAuthenticated } = useAuth();
+    const { login } = useAuth();
     //states for login page
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -27,11 +28,12 @@ export const Login = () => {
     const handleLogin = async () => {
         event.preventDefault();
         try {
-            await axios.post("http://localhost:2222/login",
-                {
-                    username,
-                    password,
-                });
+            const response = await axios.post("http://localhost:2222/login", {
+                username,
+                password,
+            });
+            const { token } = response.data;
+            login(token);
             setUsername("");
             setPassword("");
             setIsAuthenticated(true);

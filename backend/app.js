@@ -43,10 +43,10 @@ app.post('/login', async (req, res) => {
         if (!passwordMatch) {
             return res.status(401).json({ message: 'Invalid password' });
         }
-        const token = jwt.sign({ userId: user._id, email: user.email }, secretKey, {
+        //create token
+        const token = jwt.sign({ userId: user.username, role: user.role }, secretKey, {
             expiresIn: '2h',
         });
-        //jwt for future use
         res.status(200).json({ token });
     } catch (error) {
         console.error(error.message);
@@ -57,21 +57,23 @@ app.post('/login', async (req, res) => {
 //route for creating a new user
 app.post('/users', async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { username, password, role } = req.body;
+        //check if user exists
         const existingUser = await User.findOne({ username });
         if (existingUser) {
-            return res.status(409).json({ message: 'User already exists' });
+            return res.status(409).json({ message: 'User already exists.' });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({
             username,
-            password: hashedPassword
+            password: hashedPassword,
+            role
         });
         await newUser.save();
         res.status(201).json({ message: 'User created successfully.' });
     } catch (error) {
         console.error(error.message);
-        res.status(500).json({ message: 'Error creating user' });
+        res.status(500).json({ message: 'Error creating user.' });
     }
 });
 

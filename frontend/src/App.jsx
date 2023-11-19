@@ -2,6 +2,7 @@ import React from "react" //react allows component building
 import 'bootstrap/dist/css/bootstrap.min.css'; //bootstrap css framework
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { Routes, Route } from 'react-router-dom'
+//import contexts
 import { useAuth } from "./context/authProvider";
 //import pages
 import { Home, Login, Missing, ManageTruck, ManageYearlyExpenses, ShowTruck } from "./components/Pages";

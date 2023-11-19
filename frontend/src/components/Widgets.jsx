@@ -139,6 +139,10 @@ export const SampleWidget2 = () => {
 
 //dashboard
 export const Dashboard = () => {
+    const { user } = useAuth();
+    useEffect(() => {
+        console.log(user.username)
+    }, []);
     return (
         //notifications
         //update using js, also, insert icons
@@ -146,6 +150,7 @@ export const Dashboard = () => {
         <div className="p-4">
             <div id="dashboardHeader" className="row border-start mb-4 bg-white rounded p-4 border-success border-5">
                 <h1>Dashboard</h1>
+                <h3 className="text-muted">Welcome back, <span className="logo">{user.userId}</span></h3>
             </div>
             {/*place widgets here*/}
             <div id="widgets" className='container'>

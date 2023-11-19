@@ -8,6 +8,7 @@ export const Register = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmation, setConfirmation] = useState("");
+    const [PARTY, setPARTY] = useState("");
     const [passwordFilledUp, setPasswordFilledUp] = useState(false);
     const [error, setError] = useState("");
     const navigate = useNavigate();
@@ -15,6 +16,7 @@ export const Register = () => {
     //function to register a new user
     const handleRegister = async () => {
         event.preventDefault();
+        console.log(PARTY)
         if (password !== confirmation) {
             setError("Passwords do not match.");
             return;
@@ -23,6 +25,7 @@ export const Register = () => {
                 const data = {
                     username,
                     password,
+                    role: PARTY
                 };
                 const response = await axios.post("http://localhost:2222/users", data);
                 console.log(response.data);
@@ -63,6 +66,14 @@ export const Register = () => {
                     <label className="mb-1 mt-1">Password</label>
                     <input type="password" className="form-control" value={password} onChange={handlePasswordFilledUp} />
                 </div>
+                <div className="row">
+                    <label className="mb-1 mt-1">Role</label>
+                    <select className="form-select" value={PARTY} onChange={(e) => setPARTY(e.target.value)}>
+                        <option value="admin">Admin</option>
+                        <option value="user">User</option>
+                    </select>
+                </div>
+
                 {passwordFilledUp ? (   //if password is filled up, show confirmation field
                     <div className="row">
                         <label className="mb-1 mt-1">Confirm Password</label>
