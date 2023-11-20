@@ -7,7 +7,7 @@ import axios from "axios";
 import { Spinner, BackButton, Sidebar, Dashboard } from "./Widgets";
 import { TruckTable, YearlyExpensesTable, TripsTable } from "./Tables";
 //icons
-import { BsFillFilePlusFill, BsEye } from "react-icons/bs";
+import { BsFillFilePlusFill, BsEye, BsPen, BsFillPencilFill, BsFillTrashFill } from "react-icons/bs";
 
 //login page
 export const Login = () => {
@@ -138,6 +138,7 @@ export const ShowTruck = () => {
     const [yearlyExpenses, setYearlyExpenses] = useState([]); //datas to map
     const [monthlyExpenses, setMonthlyExpenses] = useState([]); //datas to map
     const [trips, setTrips] = useState([]); //datas to map
+    const { user } = useAuth();
     const { id } = useParams();
 
     useEffect(() => {
@@ -249,9 +250,11 @@ export const ShowTruck = () => {
                                 <div className="col">
                                     <button className="btn btn-success">Edit</button>
                                 </div>
-                                <div className="col">
-                                    <button className="btn btn-danger">Delete</button>
-                                </div>
+                                {user.role === 'Admin' && (
+                                    <div className="col">
+                                        <button className="btn btn-danger">Delete</button>
+                                    </div>
+                                )}
                                 <div className="col">
                                     <BackButton />
                                 </div>
@@ -282,7 +285,7 @@ export const ShowTruck = () => {
                             </div>
                             <div>
                                 <h6>Yearly Expenses</h6>
-                                <table className='table table-bordered table-hover'>
+                                <table className='table table-bordered table-hover table-striped'>
                                     <thead className="">
                                         <th>Year</th>
                                         <th>LTO Fees</th>
@@ -306,9 +309,9 @@ export const ShowTruck = () => {
                                                 <td>{expense.totalDieselConsumption}</td>
                                                 <td>{expense.totalExpenses}</td>
                                                 <td className="text-center">
-                                                    <Link id="showIcon" to={`/expenses/yearly/edit/${expense._id}/${id}`} style={{ marginRight: '2%' }}><BsEye /></Link>
-                                                    <button onClick={() => deleteYearlyExpense(expense._id)}>Delete</button>
-                                                    <Link to={`/expenses/yearly/edit/${expense._id}`} style={{ marginLeft: '2%' }}>Edit</Link>
+                                                    <Link id="showIcon" to={`/expenses/yearly/edit/${expense._id}/${id}`} className="showIcon" style={{ marginRight: '2%' }}><BsEye /></Link>
+                                                    {user.role == 'Admin' && (<BsFillTrashFill className="trashIcon" onClick={() => deleteYearlyExpense(expense._id)} />)}
+                                                    < Link to={`/expenses/yearly/edit/${expense._id}`} style={{ marginLeft: '2%' }} className='editIcon'><BsFillPencilFill /></Link>
                                                 </td>
                                             </tr>
                                         ))}
@@ -317,7 +320,7 @@ export const ShowTruck = () => {
                             </div>
                             <div>
                                 <h6>Monthly Expenses</h6>
-                                <table className="table table-bordered table-hover ">
+                                <table className="table table-bordered table-hover table-striped">
                                     <thead className="">
                                         <th>Month</th>
                                         <th>Year</th>
@@ -337,9 +340,9 @@ export const ShowTruck = () => {
                                                 <td>{expense.dieselConsumption}</td>
                                                 <td>{expense.totalMonthlyExpenses}</td>
                                                 <td className="text-center">
-                                                    <Link id="showIcon" to={`/expenses/monthly/edit/${expense._id}/${id}`} style={{ marginRight: '2%' }}><BsEye /></Link>
-                                                    <button onClick={() => deleteMonthlyExpense(expense._id)}>Delete</button>
-                                                    <Link to={`/expenses/monthly/edit/${expense._id}`} style={{ marginLeft: '2%' }}>Edit</Link>
+                                                    <Link id="showIcon" to={`/expenses/monthly/edit/${expense._id}/${id}`} style={{ marginRight: '2%' }}><BsEye className='showIcon' /></Link>
+                                                    {user.role == "Admin" && (<BsFillTrashFill className="trashIcon" onClick={() => deleteMonthlyExpense(expense._id)} />)}
+                                                    <Link to={`/expenses/monthly/edit/${expense._id}`} style={{ marginLeft: '2%' }} className='editIcon'><BsFillPencilFill /></Link>
                                                 </td>
                                             </tr>
                                         ))}
@@ -363,7 +366,7 @@ export const ShowTruck = () => {
                         </div>
                         <h5 className="mb-2">Recent Trips</h5>
                         <div style={{ overflowX: "auto", overflowY: "auto", maxHeight: "50vh" }}>
-                            <table className="table table-bordered table-hover ">
+                            <table className="table table-bordered table-hover table-striped">
                                 <thead className="">
                                     <tr className="bg-primary">
                                         <th style={{}}>Customer</th>
@@ -401,9 +404,9 @@ export const ShowTruck = () => {
                                             <td>{trip.pathway}</td>
                                             <td>{trip.totalTripExpense}</td>
                                             <td className="text-center">
-                                                <Link id="showIcon" to={`/trips/details/${trip._id}`} style={{ marginRight: '2%' }}><BsEye /></Link>
-                                                <button onClick={() => deleteTrip(trip._id)}>Delete</button>
-                                                <Link to={`/trips/edit/${trip._id}`} style={{ marginLeft: '2%' }}>Edit</Link>
+                                                <Link to={`/trips/details/${trip._id}`}><BsEye style={{ marginRight: '2%' }} className='showIcon' /></Link>
+                                                {user.role == "Admin" && (<BsFillTrashFill className="trashIcon" onClick={() => deleteTrip(trip._id)} />)}
+                                                <Link to={`/trips/edit/${trip._id}`} style={{ marginLeft: '2%' }}><BsFillPencilFill className='editIcon' /></Link>
                                             </td>
                                         </tr>
                                     ))}

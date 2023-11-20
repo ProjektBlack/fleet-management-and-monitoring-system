@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios'
 import { Link } from "react-router-dom";
+//context
+import { useAuth } from "../context/authProvider";
 //import components
 import { Spinner, BackButton } from "./Widgets"
 //icons
@@ -10,6 +12,7 @@ import { BsFillTrashFill, BsFillPencilFill, BsEye, BsCheckLg, BsExclamationCircl
 
 //truck table
 export const TruckTable = () => {
+    const { user } = useAuth();
     const [trucks, setTrucks] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -85,9 +88,11 @@ export const TruckTable = () => {
                                     <td>{truckAvailability(truck)}</td>
                                     <td>{truck.underMaintenance ? <BsExclamationCircle /> : <BsCheckLg />}</td>
                                     <td>
-                                        <Link id="showIcon" to={`/trucks/details/${truck._id}`} style={{ marginRight: '2%' }}><BsEye /></Link>
-                                        <BsFillTrashFill id="trashIcon" onClick={() => handleDelete(truck._id)} style={{ marginRight: '2%', cursor: "pointer" }} />
-                                        <Link id="editIcon" to={`/trucks/edit/${truck._id}`}><BsFillPencilFill /></Link>
+                                        <Link className="showIcon" to={`/trucks/details/${truck._id}`} style={{ marginRight: '2%' }}><BsEye /></Link>
+                                        {user.role === 'Admin' && ( //only admins can delete trucks}
+                                            <BsFillTrashFill className="trashIcon" onClick={() => handleDelete(truck._id)} style={{ marginRight: '2%', cursor: "pointer" }} />
+                                        )}
+                                        <Link className="editIcon" to={`/trucks/edit/${truck._id}`}><BsFillPencilFill /></Link>
                                     </td>
                                 </tr>
                             ))}

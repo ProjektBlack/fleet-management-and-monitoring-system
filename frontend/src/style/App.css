@@ -118,18 +118,18 @@ body {
     align-items: center;
 }
 
-#showIcon {
+.showIcon {
     color: #2E8B57;
     font-size: large;
 }
 
-#trashIcon {
+.trashIcon {
     color: red;
     font-size: large;
 
 }
 
-#editIcon {
+.editIcon {
     color: orange;
     font-size: large;
 
