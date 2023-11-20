@@ -26,7 +26,7 @@ export const BackButton = () => {
     };
 
     return (
-        <BsArrowReturnLeft onClick={goBack} />
+        <BsArrowReturnLeft onClick={goBack} id="backButton" />
     );
 };
 
@@ -35,12 +35,13 @@ export const BackButton = () => {
 export const Sidebar = () => {
     //for logging out
     const { isAuthenticated, setIsAuthenticated } = useAuth();
+    const { logout } = useAuth();
     //for navigation to login page after logging out
     const navigate = useNavigate();
 
     //logout function
     const handleLogout = () => {
-        localStorage.removeItem('token');
+        logout();
         setIsAuthenticated(false);
         navigate("/login");
     };

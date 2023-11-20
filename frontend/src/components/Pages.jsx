@@ -7,7 +7,7 @@ import axios from "axios";
 import { Spinner, BackButton, Sidebar, Dashboard } from "./Widgets";
 import { TruckTable, YearlyExpensesTable, TripsTable } from "./Tables";
 //icons
-import { BsFillFilePlusFill } from "react-icons/bs";
+import { BsFillFilePlusFill, BsEye } from "react-icons/bs";
 
 //login page
 export const Login = () => {
@@ -132,15 +132,12 @@ export const ManageTruck = () => {
 
 //show truck details
 export const ShowTruck = () => {
-    const [trucks, setTrucks] = useState({});
     const [loading, setLoading] = useState(false);
-    const [expenses, setExpenses] = useState([]);
-    const [yearlyExpenses, setYearlyExpenses] = useState([]);
-    const [monthlyExpenses, setMonthlyExpenses] = useState([]);
-    const [trips, setTrips] = useState([]);
-    const [driver, setDriver] = useState([{}]);
-    const [customer, setCustomer] = useState([{}]);
-    const [helper, setHelper] = useState([{}]);
+    const [truckInfo, setTruckInfo] = useState({}); //info and ids
+    const [expenses, setExpenses] = useState([]); //ids
+    const [yearlyExpenses, setYearlyExpenses] = useState([]); //datas to map
+    const [monthlyExpenses, setMonthlyExpenses] = useState([]); //datas to map
+    const [trips, setTrips] = useState([]); //datas to map
     const { id } = useParams();
 
     useEffect(() => {
@@ -148,53 +145,37 @@ export const ShowTruck = () => {
         const fetchData = async () => {
             try {
                 //get single truck
-                const truckResponse = await axios.get(`http://localhost:2222/trucks/${id}`);
-                const truckData = truckResponse.data;
-                console.log(truckData.expenses)
-                setTrucks(truckData);
-                //checks if expenses is not null
-                if (truckData.expenses) {
-                    const expenseResponse = await axios.get(`http://localhost:2222/expenses/${truckData.expenses}`);
-                    setExpenses(expenseResponse.data);
-                    //checks if yearly expenses is not null
-                    if (expenseResponse.data.yearlyExpenses) {
-                        const yearlyExpensesResponse = await Promise.all(
-                            //maps all yearly expenses related to the truck
-                            expenseResponse.data.yearlyExpenses.map(async (yearlyExpenseId) => {
-                                const response = await axios.get(`http://localhost:2222/yearlyexpenses/${yearlyExpenseId}`);
-                                return response.data;
-                            })
-                        );
-                        //sets yearly expenses
-                        setYearlyExpenses(yearlyExpensesResponse);
-                    }
-                    //checks if monthly expenses is not null
-                    if (expenseResponse.data.monthlyExpenses) {
-                        const monthlyExpensesResponse = await Promise.all(
-                            expenseResponse.data.monthlyExpenses.map(async (monthlyExpenseId) => {
-                                //maps all monthly expenses related to the truck
-                                const response = await axios.get(`http://localhost:2222/monthlyexpenses/${monthlyExpenseId}`);
-                                return response.data;
-                            })
-                        );
-                        //sets monthly expenses
-                        setMonthlyExpenses(monthlyExpensesResponse);
-                    }
-                    //checks if trips is not null
-                    if (truckData.trips) {
-                        const tripsResponse = await Promise.all(
-                            truckData.trips.map(async (tripId) => {
-                                const response = await axios.get(`http://localhost:2222/trips/${tripId}`);
-                                return response.data;
-                            })
-                        );
-                        setTrips(tripsResponse);
-                    } else {
-                        console.log("No trips");
-                    }
+                const response = await axios.get(`http://localhost:2222/trucks/${id}`);
+                const truckData = response.data;
+                setTruckInfo(truckData);
+                console.log(truckData);
+                setExpenses(truckData.expenses);
+                //get all yearly expenses and their data based on the references on expenses.yearlyExpenses
+                if (truckData && truckData.expenses && truckData.expenses.yearlyExpenses && truckData.expenses.yearlyExpenses.length > 0) {
+                    const yearlyExpensesData = await Promise.all(truckData.expenses.yearlyExpenses.map(async (expense) => {
+                        const response = await axios.get(`http://localhost:2222/expenses/yearly/${expense}`);
+                        return response.data;
+                    }));
+                    setYearlyExpenses(yearlyExpensesData);
+                }
+                if (truckData && truckData.expenses && truckData.expenses.monthlyExpenses && truckData.expenses.monthlyExpenses.length > 0) {
+                    //get all monthly expenses based on the references on expenses.monthlyExpenses
+                    const monthlyExpensesData = await Promise.all(truckData.expenses.monthlyExpenses.map(async (expense) => {
+                        const response = await axios.get(`http://localhost:2222/expenses/monthly/${expense}`);
+                        return response.data;
+                    }));
+                    setMonthlyExpenses(monthlyExpensesData);
+                }
+                if (truckData && truckData.trips.length > 0) {
+                    //get all trips and their data based on the reference ids
+                    const tripData = await Promise.all(truckData.trips.map(async (trip) => {
+                        const response = await axios.get(`http://localhost:2222/trips/${trip}`);
+                        return response.data;
+                    }));
+                    setTrips(tripData);
                 }
             } catch (error) {
-                console.log(error);
+                console.error(error);
             } finally {
                 setLoading(false);
             }
@@ -202,8 +183,32 @@ export const ShowTruck = () => {
         fetchData();
     }, [id]);
 
+    const deleteTrip = async (tripId) => {
+        try {
+            // Make the DELETE request
+            await axios.delete(`http://localhost:2222/trips/${tripId}`);
+
+            // Remove the deleted trip from the local state
+            setTrips(trips.filter(trip => trip._id !== tripId));
+        } catch (error) {
+            // Log the error
+            console.error(error);
+        }
+    };
+
+    const truckAvailability = (truck) => {
+        const hasPendingTrips = Array.isArray(truck.trips) && truck.trips.some(trip => trip.status === 'pending' || trip.status === 'Pending');
+        const isUnderMaintenance = truck.underMaintenance;
+
+        if (hasPendingTrips || isUnderMaintenance) {
+            return 'Unavailable';
+        } else {
+            return 'Available';
+        }
+    };
+
     return (
-        <div style={{ minHeight: "95vh" }}>
+        <div className="container" style={{ minHeight: "100vh" }}>
             {loading ? (
                 <div className="d-flex justify-content-center align-items-center" style={{ height: '95vh' }}>
                     <Spinner />
@@ -211,89 +216,60 @@ export const ShowTruck = () => {
             ) : (
                 <div className="row p-4">
                     <div className="col-3">
-                        <h2>Plate Number {trucks.plateNumber}</h2>
-                        <div className="row">
-                            <h6>Operations</h6>
-                            <div className="col">
-                                <button className="btn btn-success">Edit</button>
+                        <div className='container rounded p-4 infoContainer border-bottom border-5 border-success'>
+                            <h2><span className='logo'>Plate No.</span> {truckInfo.plateNumber}</h2>
+                            <div className="row mb-2">
+                                <h6>Operations</h6>
+                                <div className="col">
+                                    <button className="btn btn-success">Edit</button>
+                                </div>
+                                <div className="col">
+                                    <button className="btn btn-danger">Delete</button>
+                                </div>
+                                <div className="col">
+                                    <BackButton />
+                                </div>
                             </div>
-                            <div className="col">
-                                <button className="btn btn-danger">Delete</button>
+                            <div className='row'>
+                                <h6>Type</h6>
+                                <p className='text-muted'>{truckInfo.truckType}</p>
                             </div>
-                            <div className="col">
-                                <BackButton />
+                            <div className='row'>
+                                <h6>Status</h6>
+                                <p className='text-muted'>{truckAvailability(truckInfo)}</p>
                             </div>
-                        </div>
-                        <h6>Type</h6>
-                        <p>{trucks.truckType}</p>
-                    </div>
-                    <div className="col">
-                        <div className="row">
-                            <h2>Expenses</h2>
-                            <h6>Operations</h6>
-                            <div className="col-1">
-                                <Link to={`/expenses/new/${trucks.expenses}/${id}`} className="btn btn-success">Add</Link>
+                            <div className='row'>
+                                <h6>Maintenance Status</h6>
+                                <p className='text-muted'>{truckInfo.underMaintenance ? "Under Maintenance" : "Not Under Maintenance"}</p>
                             </div>
                         </div>
 
-                        <div>
-                            <h6>Yearly Expenses</h6>
-                            <table className="table table-bordered table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Year</th>
-                                        <th>LTO Registration</th>
-                                        <th>FCIE Registration</th>
-                                        <th>Sticker Registration</th>
-                                        <th>Maintenance</th>
-                                        <th>Total Expenses</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {yearlyExpenses.map((expense, index) => (
-                                        <tr key={index}>
-                                            <td>{expense.year}</td>
-                                            <td>{expense.ltoReg}</td>
-                                            <td>{expense.fcieReg}</td>
-                                            <td>{expense.stickerReg}</td>
-                                            <td>{expense.maintenance}</td>
-                                            <td>{expense.totalExpenses}</td>
-                                            <td><Link className="btn btn-outline-warning" to={`/expenses/yearly/edit/${expense._id}/${id}`}>Edit</Link><button className='btn btn-outline-danger'>Delete</button></td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div>
-                            <h6>Monthly Expenses</h6>
-                            <table className="table table-bordered table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Year</th>
-                                        <th>Month</th>
-                                        <th>Maintenance</th>
-                                        <th>Total Trips</th>
-                                        <th>Diesel Consumption</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {monthlyExpenses.map((expense, index) => (
-                                        <tr key={expense.month}>
-                                            <td>{expense.year}</td>
-                                            <td>{expense.month}</td>
-                                            <td>{expense.maintenance}</td>
-                                            <td>{expense.totalTrips}</td>
-                                            <td>{expense.dieselConsumption}</td>
-                                            <td><Link className="btn btn-outline-warning" to={`/expenses/monthly/edit/${expense._id}/${id}`}>Edit</Link><button className='btn btn-outline-danger'>Delete</button></td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
                     </div>
-                    <div className="col">
+                    <div className="col border rounded p-4 infoContainer">
+                        <div className='container'>
+                            <div className="row">
+                                <h2>Expenses</h2>
+                                <h6>Operations</h6>
+                                <div className="col-1">
+                                    <Link to={`/expenses/new/${truckInfo.expenses}/${id}`} className="btn btn-success">Add</Link>
+                                </div>
+                            </div>
+                            <div>
+                                <h6>Yearly Expenses</h6>
+                            </div>
+                            <div>
+                                <h6>Monthly Expenses</h6>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            )
+            }
+            <div className="row p-1">
+                <div className='col'>
+                    <div className='p-4 rounded infoContainer border-success border-5 border-top'>
                         <h2>Trips</h2>
                         <div className="col-1">
                             <h6>Operations</h6>
@@ -301,41 +277,47 @@ export const ShowTruck = () => {
                         </div>
                         <h5 className="mb-2">Recent Trips</h5>
                         <div style={{ overflowX: "auto", overflowY: "auto", maxHeight: "50vh" }}>
-
-                            <table className="table table-bordered table-hover" >
-                                <thead>
-                                    <tr>
-                                        <th>Driver</th>
-                                        <th>Helper</th>
-                                        <th>Customer</th>
-                                        <th>Date</th>
-                                        <th>Time Dispatched</th>
-                                        <th>Time Received</th>
-                                        <th>Time Returned</th>
-                                        <th>Total Fuel Cost</th>
-                                        <th>Toll Fee Cost</th>
-                                        <th>Pathway Cost</th>
-                                        <th>Total Trip Cost</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
+                            <table className="table table-bordered table-hover ">
+                                <thead className="">
+                                    <tr className="bg-primary">
+                                        <th style={{}}>Customer</th>
+                                        <th style={{}}>Customer Location</th>
+                                        <th style={{}}>Driver</th>
+                                        <th style={{}}>Helper</th>
+                                        <th style={{}}>Date</th>
+                                        <th style={{}}>Time Dispatched</th>
+                                        <th style={{}}>Time Received</th>
+                                        <th style={{}}>Time Returned</th>
+                                        <th style={{}}>Status</th>
+                                        <th style={{}}>Distance</th>
+                                        <th style={{}}>Diesel Consumption</th>
+                                        <th style={{}}>Toll Fees</th>
+                                        <th style={{}}>Pathway Fees</th>
+                                        <th style={{}}>Total Trip Expenses</th>
+                                        <th style={{}}>Operations</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {trips.sort((a, b) => new Date(b.date) - new Date(a.date)).map((trip, index) => (
-                                        <tr key={index}>
+                                    {trips.map((trip) => (
+                                        <tr key={trip._id}>
+                                            <td>{trip.customer.name}</td>
+                                            <td>{trip.customer.location}</td>
                                             <td>{trip.driver.name}</td>
                                             <td>{trip.helper.name}</td>
-                                            <td>{trip.customer.name}</td>
-                                            <td>{trip.month} {trip.day}, {trip.year} </td>
+                                            <td>{trip.month} {trip.day}, {trip.year}</td>
                                             <td>{trip.timeDispatched}</td>
                                             <td>{trip.timeReceived}</td>
                                             <td>{trip.timeReturned}</td>
+                                            <td>{trip.status}</td>
+                                            <td>{trip.distance}</td>
                                             <td>{trip.dieselConsumption}</td>
                                             <td>{trip.tollFee}</td>
                                             <td>{trip.pathway}</td>
                                             <td>{trip.totalTripExpense}</td>
-                                            <td>{trip.status}</td>
-                                            <td><Link className="btn btn-outline-warning" to={`/trips/edit/${trip._id}`}>Edit</Link><button className='btn btn-outline-danger'>Delete</button></td>
+                                            <td className="text-center">
+                                                <Link id="showIcon" to={`/trips/details/${trip._id}`} style={{ marginRight: '2%' }}><BsEye /></Link>
+                                                <button onClick={() => deleteTrip(trip._id)}>Delete</button>
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -343,8 +325,7 @@ export const ShowTruck = () => {
                         </div>
                     </div>
                 </div>
-            )
-            }
+            </div>
         </div >
     );
 };

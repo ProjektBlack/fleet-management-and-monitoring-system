@@ -13,14 +13,60 @@ router.post("/trucks", (req, res) => createRecord(Truck, req, res));
 router.get("/trucks", (req, res) => getAllRecords(Truck, res));
 router.get("/trucks/:id", (req, res) => getSingleRecord(Truck, req, res));
 router.put("/trucks/:id", (req, res) => updateRecord(Truck, req, res));
-router.delete("/trucks/:id", (req, res) => deleteRecord(Truck, req, res));
+//power delete for truck
+router.delete("/trucks/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        //delete trips that are associated with the truck
+        await Trip.deleteMany({ truck: id });
+        //delete all associated expenses
+        const truck = await Truck.findById(id);
+        if (truck) {
+            for (let expense of truck.expenses) {
+                await YearlyExpense.deleteMany({ _id: { $in: expense.yearlyExpenses } });
+                await MonthlyExpense.deleteMany({ _id: { $in: expense.monthlyExpenses } });
+            }
+        }
+        //finally, delete the truck
+        await Truck.findByIdAndRemove(id);
+        //confirm deletion
+        res.status(200).json({ message: "Truck and its associated trips and expenses deleted successfully." });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
 
 //routes for trips
 router.post("/trips", (req, res) => createRecord(Trip, req, res));
 router.get("/trips", (req, res) => getAllRecords(Trip, res));
 router.get("/trips/:id", (req, res) => getSingleRecord(Trip, req, res));
 router.put("/trips/:id", (req, res) => updateRecord(Trip, req, res));
-router.delete("/trips/:id", (req, res) => deleteRecord(Trip, req, res));
+//power delete for trips
+router.delete("/trips/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const trip = await Trip.findById(id);
+        if (!trip) {
+            return res.status(404).json({ message: "Trip not found" });
+        }
+        //find the truck and remove the trip from its trips array
+        const truck = await Truck.findById(trip.truck);
+        if (truck) {
+            const index = truck.trips.indexOf(id);
+            if (index > -1) {
+                truck.trips.splice(index, 1);
+                await truck.save();
+            }
+        }
+        //delete the trip record
+        await Trip.findByIdAndRemove(id);
+        res.status(200).json({ message: "Trip deleted and removed from references." });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error." });
+    }
+});
 //route for getting trips by year and month
 router.get("/trips/:truck/:year/:month", async (req, res) => {
     try {
@@ -54,7 +100,32 @@ router.post("/expenses/monthly", (req, res) => createRecord(MonthlyExpense, req,
 router.get("/expenses/monthly", (req, res) => getAllRecords(MonthlyExpense, res));
 router.get("/expenses/monthly/:id", (req, res) => getSingleRecord(MonthlyExpense, req, res));
 router.put("/expenses/monthly/:id", (req, res) => updateRecord(MonthlyExpense, req, res));
-router.delete("/expenses/monthly/:id", (req, res) => deleteRecord(MonthlyExpense, req, res));
+//power delete for monthly expenses
+router.delete("/monthlyexpenses/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        //find the expense
+        const expense = await MonthlyExpense.findById(id);
+        if (!expense) {
+            return res.status(404).json({ message: "Monthly expense not found." });
+        }
+        //remove from references
+        const truck = await Truck.findOne({ "expenses.monthlyExpenses": id });
+        if (truck) {
+            const index = truck.expenses.monthlyExpenses.indexOf(id);
+            if (index > -1) {
+                truck.expenses.monthlyExpenses.splice(index, 1);
+                await truck.save();
+            }
+        }
+        //remove the record
+        await MonthlyExpense.findByIdAndRemove(id);
+        res.status(200).json({ message: "Expense deleted and removed from references." });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error." });
+    }
+});
 router.get("/expenses/monthly/:year/:truckId", async (req, res) => { //get monthly expenses by year and truck
     try {
         const { year, truckId } = req.params;
@@ -74,7 +145,36 @@ router.post("/expenses/yearly", (req, res) => createRecord(YearlyExpense, req, r
 router.get("/expenses/yearly", (req, res) => getAllRecords(YearlyExpense, res));
 router.get("/expenses/yearly/:id", (req, res) => getSingleRecord(YearlyExpense, req, res));
 router.put("/expenses/yearly/:id", (req, res) => updateRecord(YearlyExpense, req, res));
-router.delete("/expenses/yearly/:id", (req, res) => deleteRecord(YearlyExpense, req, res));
+//power delete for yearly expenses
+router.delete("/expenses/yearly/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        //find the expense
+        const expense = await YearlyExpense.findById(id);
+        if (!expense) {
+            return res.status(404).json({ message: "Expense not found." });
+        }
+
+        // Find the truck that contains the expense and remove the expense from its expenses array
+        const truck = await Truck.findOne({ "expenses.yearlyExpenses": id });
+        if (truck) {
+            const index = truck.expenses.yearlyExpenses.indexOf(id);
+            if (index > -1) {
+                truck.expenses.yearlyExpenses.splice(index, 1);
+                await truck.save();
+            }
+        }
+
+        // Delete the expense
+        await YearlyExpense.findByIdAndRemove(id);
+
+        res.status(200).json({ message: "YearlyExpense deleted successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
 router.get("/expenses/yearly/:truckId/:year", async (req, res) => {
     try {
         const { truckId, year } = req.params;

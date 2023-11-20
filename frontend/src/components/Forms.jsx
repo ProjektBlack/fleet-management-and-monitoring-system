@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import { BackButton } from "./Widgets";
 
 //register a new user
 export const Register = () => {
@@ -147,18 +148,17 @@ export const CreateTruck = () => {
 //comments: use form, use prevent default to prevent it from reloading
 export const CreateTrip = () => {
     const [loading, setLoading] = useState(false);
-    const [selectedType, setSelectedType] = useState("option1");
 
     //states for trip details
     const [driver, setDriver] = useState({
-        name: "John Doe",
+        name: ""
     });
     const [customer, setCustomer] = useState({
-        name: "John Doe",
-        location: "default location"
+        name: "",
+        location: ""
     });
     const [helper, setHelper] = useState({
-        name: "John Doe",
+        name: "",
     });
 
     const [year, setYear] = useState("");
@@ -167,16 +167,16 @@ export const CreateTrip = () => {
     const [timeDispatched, setTimeDispatched] = useState("");
     const [timeReceived, setTimeReceived] = useState("");
     const [timeReturned, setTimeReturned] = useState("");
-    const [status, setStatus] = useState("");
+    const [WOWEX, setWOWEX] = useState("Pending");
     const [distance, setDistance] = useState("");
-    const [dieselCost, setDieselCost] = useState("");
+    const [dieselCost, setDieselCost] = useState("60");
     const [dieselConsumption, setDieselConsumption] = useState("");
-    const [tollFee, setTollFee] = useState("");
-    const [pathway, setPathway] = useState("");
+    const [tollFee, setTollFee] = useState(0);
+    const [pathway, setPathway] = useState(0);
     const [totalTripCost, setTotalTripCost] = useState("");
 
 
-    //navigattion after creation
+    //navigation after creation
     const navigate = useNavigate();
     //get truck ID from URL params
     const { truckId } = useParams();
@@ -236,6 +236,7 @@ export const CreateTrip = () => {
 
     //function to create an expense
     const handleCreateTrip = async () => {
+        event.preventDefault();
         //construct message body
         try {
             const data = {
@@ -249,7 +250,7 @@ export const CreateTrip = () => {
                 timeDispatched,
                 timeReceived,
                 timeReturned,
-                status,
+                status: WOWEX,
                 distance,
                 dieselCost,
                 dieselConsumption,
@@ -267,7 +268,7 @@ export const CreateTrip = () => {
             setLoading(false);
             //use better alerts
             alert("Trip created.");
-            window.history.back();
+            navigate(`/trucks/details/${truckId}`); //navigate to truck details page
         } catch (error) {
             setLoading(false);
             alert("Error occurred.");
@@ -276,176 +277,220 @@ export const CreateTrip = () => {
     };
 
     return (
-        <div className="row">
-            <div className="p-4 mx-auto mt-4" style={{ width: '50%' }}>
+        <div className="container">
+            <form>
                 <h5>Create New Trip</h5>
-                <label>Driver Name</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="driverName"
-                    value={driver.name}
-                    onChange={(e) => setDriver({ ...driver, name: e.target.value })}
-                />
+                <div className="row infoContainer">
+                    <div className="col border p-4">
+                        <div className="row">
+                            <h6>
+                                Trip Details
+                            </h6>
+                        </div>
+                        <div className="row">
+                            <label>Driver Name</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="driverName"
+                                value={driver.name}
+                                onChange={(e) => setDriver({ ...driver, name: e.target.value })}
+                            />
+                        </div>
+                        <div className="row">
+                            <label>Helper Name</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="helperName"
+                                value={helper.name}
+                                onChange={(e) => setHelper({ ...helper, name: e.target.value })}
+                            />
+                        </div>
+                        <div className="row">
+                            <label>Customer Name</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="customerName"
+                                value={customer.name}
+                                onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
+                            />
+                        </div>
+                        <div className="row">
+                            <label>Customer Location</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="customerLocation"
+                                value={customer.location}
+                                onChange={(e) => setCustomer({ ...customer, location: e.target.value })}
+                            />
+                        </div>
+                        <div className="row">
+                            <label>Year</label>
+                            <input
+                                type="string"
+                                className="form-control"
+                                name="year"
+                                value={year}
+                                onChange={(e) => setYear(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="row">
+                            <label>Month</label>
+                            <select class="form-select" value={month} onChange={(e) => setMonth(e.target.value)}>
+                                <option selected>Select month</option>
+                                <option value="January">January</option>
+                                <option value="February">February</option>
+                                <option value="March">March</option>
+                                <option value="April">April</option>
+                                <option value="May">May</option>
+                                <option value="June">June</option>
+                                <option value="July">July</option>
+                                <option value="August">August</option>
+                                <option value="September">September</option>
+                                <option value="October">October</option>
+                                <option value="November">November</option>
+                                <option value="December">December</option>
+                            </select>
+                        </div>
+                        <div className="row">
+                            <label>Day</label>
+                            <input
+                                type="string"
+                                className="form-control"
+                                name="day"
+                                value={day}
+                                onChange={(e) => setDay(e.target.value)}
+                                required
+                            />
+                        </div>
+                    </div>
+                    <div className="col border p-4">
+                        <div className="row">
+                            <h6>Trip Status</h6>
+                        </div>
+                        <div className="row">
+                            <label>Time Dispatched</label>
+                            <input
+                                type="time"
+                                className="form-control"
+                                name="timeDispatched"
+                                value={timeDispatched}
+                                onChange={(e) => setTimeDispatched(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="row">
+                            <label>Time Received</label>
+                            <input
+                                type="time"
+                                className="form-control"
+                                name="timeReceived"
+                                value={timeReceived}
+                                onChange={(e) => setTimeReceived(e.target.value)}
+                            />
+                        </div>
 
-                <label>Helper Name</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="helperName"
-                    value={helper.name}
-                    onChange={(e) => setHelper({ ...helper, name: e.target.value })}
-                />
+                        <div className="row">
+                            <label>Time Returned</label>
+                            <input
+                                type="time"
+                                className="form-control"
+                                name="timeReturned"
+                                value={timeReturned}
+                                onChange={(e) => setTimeReturned(e.target.value)}
+                            />
+                        </div>
+                        <div className="row">
+                            <label>Status</label>
+                            <select className="form-select" name="status" value={WOWEX} onChange={(e) => setWOWEX(e.target.value)}>
+                                <option value={"Pending"}>Pending</option>
+                                <option value={"Done"}>Done</option>
+                            </select>
+                        </div>
+                        <div className="row">
+                            <label>Distance (KM)</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="distance"
+                                value={distance}
+                                onChange={handleDistanceChange}
+                            />
+                        </div>
+                    </div>
+                    <div className="col border p-4">
+                        <div className="row">
+                            <h6>Trip Costs</h6>
+                        </div>
+                        <div className="row">
+                            <label>Diesel Price (/liter)</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="dieselCost"
+                                value={dieselCost}
+                                onChange={handleDieselCostChange}
+                            />
+                        </div>
 
-                <label>Customer Name</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="customerName"
-                    value={customer.name}
-                    onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
-                />
+                        <div className="row">
+                            <label>Toll Fees</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="tollFee"
+                                value={tollFee}
+                                onChange={handleTollFeeChange}
+                            />
+                        </div>
 
-                <label>Customer Location</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="customerLocation"
-                    value={customer.location}
-                    onChange={(e) => setCustomer({ ...customer, location: e.target.value })}
-                />
+                        <div className="row">
+                            <label>Pathway Fees</label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                name="pathway"
+                                value={pathway}
+                                onChange={handlePathwayChange}
+                            />
+                        </div>
+                        <div className="row">
+                            <label>Total Fuel Cost</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="dieselConsumption"
+                                value={dieselConsumption}
+                                readOnly
+                                disabled
+                            />
+                        </div>
+                        <div className="row">
+                            <label>Total Trip Cost</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="totalTripCost"
+                                value={totalTripCost}
+                                onChange={(e) => setTotalTripCost(e.target.value)}
+                                readOnly
+                                disabled
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div className="p-4 mx-auto mt-4" style={{ width: '50%' }}>
 
-                <label>Year</label>
-                <input
-                    type="string"
-                    className="form-control"
-                    name="year"
-                    value={year}
-                    onChange={(e) => setYear(e.target.value)}
-                    required
-                />
 
-                <label>Month</label>
-                <select class="form-select" value={month} onChange={(e) => setMonth(e.target.value)}>
-                    <option selected>Select month</option>
-                    <option value="January">January</option>
-                    <option value="February">February</option>
-                    <option value="March">March</option>
-                    <option value="April">April</option>
-                    <option value="May">May</option>
-                    <option value="June">June</option>
-                    <option value="July">July</option>
-                    <option value="August">August</option>
-                    <option value="September">September</option>
-                    <option value="October">October</option>
-                    <option value="November">November</option>
-                    <option value="December">December</option>
-                </select>
-
-                <label>Day</label>
-                <input
-                    type="string"
-                    className="form-control"
-                    name="day"
-                    value={day}
-                    onChange={(e) => setDay(e.target.value)}
-                    required
-                />
-
-                <label>Time Dispatched</label>
-                <input
-                    type="time"
-                    className="form-control"
-                    name="timeDispatched"
-                    value={timeDispatched}
-                    onChange={(e) => setTimeDispatched(e.target.value)}
-                    required
-                />
-
-                <label>Time Received</label>
-                <input
-                    type="time"
-                    className="form-control"
-                    name="timeReceived"
-                    value={timeReceived}
-                    onChange={(e) => setTimeReceived(e.target.value)}
-                />
-
-                <label>Time Returned</label>
-                <input
-                    type="time"
-                    className="form-control"
-                    name="timeReturned"
-                    value={timeReturned}
-                    onChange={(e) => setTimeReturned(e.target.value)}
-                />
-                <label>Status</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="status"
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                />
-                <label>Distance (KM)</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="distance"
-                    value={distance}
-                    onChange={handleDistanceChange}
-                />
-                <label>Diesel Price (/liter)</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="dieselCost"
-                    value={dieselCost}
-                    onChange={handleDieselCostChange}
-                />
-
-                <label>Toll Fees</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="tollFee"
-                    value={tollFee}
-                    onChange={handleTollFeeChange}
-                />
-
-                <label>Pathway Fees</label>
-                <input
-                    type="number"
-                    className="form-control"
-                    name="pathway"
-                    value={pathway}
-                    onChange={handlePathwayChange}
-                />
-
-                <label>Total Fuel Cost</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="dieselConsumption"
-                    value={dieselConsumption}
-                    readOnly
-                    disabled
-                />
-
-                <label>Total Trip Cost</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="totalTripCost"
-                    value={totalTripCost}
-                    onChange={(e) => setTotalTripCost(e.target.value)}
-                    readOnly
-                    disabled
-                />
-                <button className="btn btn-success mt-4 mx-auto d-flex" onClick={handleCreateTrip}>
-                    Create
-                </button>
-            </div>
+                    <button className="btn btn-success mt-4 mx-auto d-flex" onClick={handleCreateTrip}>
+                        Create
+                    </button>
+                </div>
+            </form>
         </div>
     );
 };
@@ -750,7 +795,10 @@ export const EditTruck = () => {
     const [newTruck, setNewTruck] = useState({}) //state for new truck object
     const [plateNumber, setPlateNumber] = useState('')
     const [truckType, setTruckType] = useState('')
+    const [underMaintenance, setUnderMaintenance] = useState(false) //default value for underMaintenance is false
+    //get truck ID from URL params
     const { id } = useParams();
+    const navigate = useNavigate();
 
     //get truck ID from url then set states
     useEffect(() => {
@@ -759,6 +807,7 @@ export const EditTruck = () => {
                 const response = await axios.get(`http://localhost:2222/trucks/${id}`);
                 setNewTruck(response.data);
                 setPlateNumber(response.data.plateNumber);
+                setUnderMaintenance(response.data.underMaintenance);
                 setTruckType(response.data.truckType);
             } catch (error) {
                 console.error(error);
@@ -769,13 +818,17 @@ export const EditTruck = () => {
 
     //function to create a new truck
     const handleUpdateTruck = async () => {
+        event.preventDefault();
         try {
             const data = {
                 plateNumber,
                 truckType,
+                underMaintenance
             };
             const response = await axios.put(`http://localhost:2222/trucks/${id}`, data) //update truck
             console.log(response.data);
+            alert("Truck updated.");
+            navigate(`/home`); //navigate to truck details page
         } catch (error) {
             alert("Error occurred. Please check console.");
             console.error(error);
@@ -783,16 +836,34 @@ export const EditTruck = () => {
     };
 
     return (
-        <div className="row">
-            <div className="p-4 mx-auto mt-4" style={{ width: '50%' }}>
-                <h5>Edit Truck</h5>
-                <label>Plate Number </label>
-                <input type="text" value={plateNumber} onChange={(e) => setPlateNumber(e.target.value)} className="form-control"></input>
-                <label>Truck Type </label>
-                <input type="text" value={truckType} onChange={(e) => setTruckType(e.target.value)} className="form-control"></input>
+        <div className="d-flex align-items-center justify-content-center vh-100">
+            <form id="editTruckForm" className="p-4 mx-auto border-0 rounded">
+                <div className="row">
+                    <div className="col-11">
+                        <h5>Edit Truck</h5>
+                    </div>
+                    <div className="col">
+                        <BackButton />
+                    </div>
+                </div>
+                <div className="row mb-2" >
+                    <label className="mb-1">Plate Number </label>
+                    <input type="text" value={plateNumber} onChange={(e) => setPlateNumber(e.target.value)} className="form-control"></input>
+                </div>
+                <div className="row mb-2">
+                    <label className="mb-1">Truck Type </label>
+                    <input type="text" value={truckType} onChange={(e) => setTruckType(e.target.value)} className="form-control"></input>
+                </div>
+                <div className="row mb-2">
+                    <label className="mb-1">Maintenance Status</label>
+                    <select className="form-select" value={underMaintenance} onChange={(e) => setUnderMaintenance(e.target.value)}>
+                        <option value="true">Under Maintenance</option>
+                        <option value="false">Not Under Maintenance</option>
+                    </select>
+                </div>
                 <button className="btn btn-success mx-auto d-flex mt-4 mb-4" onClick={handleUpdateTruck}>Edit</button>
-            </div>
-        </div>
+            </form >
+        </div >
     )
 }
 
