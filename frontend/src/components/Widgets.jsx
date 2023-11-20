@@ -104,7 +104,7 @@ export const PendingWidget = () => {
     const [pendingTrips, setPendingTrips] = useState(0);
 
     useEffect(() => {
-        axios.get("http://localhost:2222/trips/status/pending")
+        axios.get("http://localhost:2222/trips/pending")
             .then((res) => {
                 setPendingTrips(res.data.length);
             })

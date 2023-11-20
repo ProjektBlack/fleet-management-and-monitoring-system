@@ -196,6 +196,32 @@ export const ShowTruck = () => {
         }
     };
 
+    const deleteMonthlyExpense = async (expenseId) => {
+        try {
+            // Make the DELETE request
+            await axios.delete(`http://localhost:2222/expenses/monthly/${expenseId}`);
+
+            // Remove the deleted expense from the local state
+            setMonthlyExpenses(monthlyExpenses.filter(expense => expense._id !== expenseId));
+        } catch (error) {
+            // Log the error
+            console.error(error);
+        }
+    };
+
+    const deleteYearlyExpense = async (expenseId) => {
+        try {
+            // Make the DELETE request
+            await axios.delete(`http://localhost:2222/expenses/yearly/${expenseId}`);
+
+            // Remove the deleted expense from the local state
+            setYearlyExpenses(yearlyExpenses.filter(expense => expense._id !== expenseId));
+        } catch (error) {
+            // Log the error
+            console.error(error);
+        }
+    };
+
     const truckAvailability = (truck) => {
         const hasPendingTrips = Array.isArray(truck.trips) && truck.trips.some(trip => trip.status === 'pending' || trip.status === 'Pending');
         const isUnderMaintenance = truck.underMaintenance;
@@ -251,14 +277,74 @@ export const ShowTruck = () => {
                                 <h2>Expenses</h2>
                                 <h6>Operations</h6>
                                 <div className="col-1">
-                                    <Link to={`/expenses/new/${truckInfo.expenses}/${id}`} className="btn btn-success">Add</Link>
+                                    <Link to={`/expenses/new/${id}`} className="btn btn-success">Add</Link>
                                 </div>
                             </div>
                             <div>
                                 <h6>Yearly Expenses</h6>
+                                <table className='table table-bordered table-hover'>
+                                    <thead className="">
+                                        <th>Year</th>
+                                        <th>LTO Fees</th>
+                                        <th>FCIE Fees</th>
+                                        <th>Sticker Fees</th>
+                                        <th>Maintenance Costs</th>
+                                        <th>Total Trips</th>
+                                        <th>Total Diesel Consumption</th>
+                                        <th>Total Expenses</th>
+                                        <th>Operations</th>
+                                    </thead>
+                                    <tbody>
+                                        {yearlyExpenses.map((expense) => (
+                                            <tr key={expense._id}>
+                                                <td>{expense.year}</td>
+                                                <td>{expense.ltoReg}</td>
+                                                <td>{expense.fcieReg}</td>
+                                                <td>{expense.stickerReg}</td>
+                                                <td>{expense.maintenance}</td>
+                                                <td>{expense.totalTrips}</td>
+                                                <td>{expense.totalDieselConsumption}</td>
+                                                <td>{expense.totalExpenses}</td>
+                                                <td className="text-center">
+                                                    <Link id="showIcon" to={`/expenses/yearly/edit/${expense._id}/${id}`} style={{ marginRight: '2%' }}><BsEye /></Link>
+                                                    <button onClick={() => deleteYearlyExpense(expense._id)}>Delete</button>
+                                                    <Link to={`/expenses/yearly/edit/${expense._id}`} style={{ marginLeft: '2%' }}>Edit</Link>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
                             <div>
                                 <h6>Monthly Expenses</h6>
+                                <table className="table table-bordered table-hover ">
+                                    <thead className="">
+                                        <th>Month</th>
+                                        <th>Year</th>
+                                        <th>Maintenance Cost</th>
+                                        <th>Total Trips</th>
+                                        <th>Diesel Consumption</th>
+                                        <th>Total Monthly Expenses</th>
+                                        <th>Operations</th>
+                                    </thead>
+                                    <tbody>
+                                        {monthlyExpenses.map((expense) => (
+                                            <tr key={expense._id}>
+                                                <td>{expense.month}</td>
+                                                <td>{expense.year}</td>
+                                                <td>{expense.maintenance}</td>
+                                                <td>{expense.totalTrips}</td>
+                                                <td>{expense.dieselConsumption}</td>
+                                                <td>{expense.totalMonthlyExpenses}</td>
+                                                <td className="text-center">
+                                                    <Link id="showIcon" to={`/expenses/monthly/edit/${expense._id}/${id}`} style={{ marginRight: '2%' }}><BsEye /></Link>
+                                                    <button onClick={() => deleteMonthlyExpense(expense._id)}>Delete</button>
+                                                    <Link to={`/expenses/monthly/edit/${expense._id}`} style={{ marginLeft: '2%' }}>Edit</Link>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
@@ -317,6 +403,7 @@ export const ShowTruck = () => {
                                             <td className="text-center">
                                                 <Link id="showIcon" to={`/trips/details/${trip._id}`} style={{ marginRight: '2%' }}><BsEye /></Link>
                                                 <button onClick={() => deleteTrip(trip._id)}>Delete</button>
+                                                <Link to={`/trips/edit/${trip._id}`} style={{ marginLeft: '2%' }}>Edit</Link>
                                             </td>
                                         </tr>
                                     ))}

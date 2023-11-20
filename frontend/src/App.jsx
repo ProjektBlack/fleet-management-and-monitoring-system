@@ -24,9 +24,9 @@ const App = () => {
       <Route path="/trucks" element={<PrivateRoute isAuthenticated={isAuthenticated}><ManageTruck /></PrivateRoute>} />
       <Route path="/trucks/new" element={<PrivateRoute isAuthenticated={isAuthenticated}><CreateTruck /></PrivateRoute>} />
       <Route path="/trucks/edit/:id" element={<PrivateRoute isAuthenticated={isAuthenticated}><EditTruck /></PrivateRoute>} />
-      <Route path="/expenses/new/:expensesId/:truckId" element={<PrivateRoute isAuthenticated={isAuthenticated}><CreateExpense /></PrivateRoute>} />
-      <Route path="/expenses/yearly/edit/:id/:truckId" element={<PrivateRoute isAuthenticated={isAuthenticated}><EditYearlyExpense /></PrivateRoute>} />
-      <Route path="/expenses/monthly/edit/:id/:truckId" element={<PrivateRoute isAuthenticated={isAuthenticated}><EditMonthlyExpense /></PrivateRoute>} />
+      <Route path="/expenses/new/:truckId" element={<PrivateRoute isAuthenticated={isAuthenticated}><CreateExpense /></PrivateRoute>} />
+      <Route path="/expenses/yearly/edit/:id/" element={<PrivateRoute isAuthenticated={isAuthenticated}><EditYearlyExpense /></PrivateRoute>} />
+      <Route path="/expenses/monthly/edit/:id/" element={<PrivateRoute isAuthenticated={isAuthenticated}><EditMonthlyExpense /></PrivateRoute>} />
       <Route path="/newtrips/:truckId" element={<PrivateRoute isAuthenticated={isAuthenticated}><CreateTrip /></PrivateRoute>} />
       <Route path="/trips/edit/:id" element={<PrivateRoute isAuthenticated={isAuthenticated}><EditTrip /></PrivateRoute>} />
       <Route path="/expenses" element={<PrivateRoute isAuthenticated={isAuthenticated}><ManageYearlyExpenses /></PrivateRoute>} />

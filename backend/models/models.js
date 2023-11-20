@@ -34,7 +34,7 @@ export const Truck = mongoose.model("Truck", new Schema({
         type: Boolean,
         required: true
     },
-    expenses: [{
+    expenses: {
         yearlyExpenses: [{
             type: Schema.Types.ObjectId,
             ref: 'YearlyExpense'
@@ -43,7 +43,7 @@ export const Truck = mongoose.model("Truck", new Schema({
             type: Schema.Types.ObjectId,
             ref: 'MonthlyExpense'
         }]
-    }],
+    },
     trips: [{
         type: Schema.Types.ObjectId,
         ref: 'Trip'

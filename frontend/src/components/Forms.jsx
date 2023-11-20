@@ -9,7 +9,7 @@ export const Register = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmation, setConfirmation] = useState("");
-    const [PARTY, setPARTY] = useState("");
+    const [PARTY, setPARTY] = useState("Admin");
     const [passwordFilledUp, setPasswordFilledUp] = useState(false);
     const [error, setError] = useState("");
     const navigate = useNavigate();
@@ -145,7 +145,6 @@ export const CreateTruck = () => {
 }
 
 //create trip form
-//comments: use form, use prevent default to prevent it from reloading
 export const CreateTrip = () => {
     const [loading, setLoading] = useState(false);
 
@@ -514,22 +513,27 @@ export const CreateExpense = () => {
     const [trips, setTrips] = useState("");
     const [monthlyMaintenanceCosts, setMonthlyMaintenanceCosts] = useState(0);
     const [dieselCosts, setDieselCosts] = useState("");
+    const [monthlyTotalCosts, setMonthlyTotalCosts] = useState(0);
 
     // set the expense ID state to the ID from the URL params
-    const { expensesId, truckId } = useParams();
+    const { truckId } = useParams();
 
     //function to get and compute total trips and total fuel costs
     const computeMonthlyTotalTripsAndFuelCosts = async () => {
+
         try {
-            const response = await axios.get(`http://localhost:2222/trips/${year}/${month}/${truckId}`);
+            const response = await axios.get(`http://localhost:2222/trips/${truckId}/${year}/${month}`);
             const trips = response.data.length;
             console.log(trips)
             let totalFuelCosts = 0;
             for (let i = 0; i < trips; i++) {
                 totalFuelCosts += response.data[i].dieselConsumption;
             }
+            let monthlyTotalCosts = 0
+            monthlyTotalCosts = parseFloat(totalFuelCosts) + parseFloat(monthlyMaintenanceCosts);
             setTrips(trips);
             setDieselCosts(totalFuelCosts);
+            setMonthlyTotalCosts(monthlyTotalCosts);
         } catch (error) {
             alert("Error occurred. Please check console.");
             console.error(error);
@@ -539,7 +543,7 @@ export const CreateExpense = () => {
     const computeYearlyTotalTripsAndFuelCosts = async () => {
         try {
             console.log(truckId)
-            const response = await axios.get(`http://localhost:2222/monthly/expenses/${truckId}/${year}`);
+            const response = await axios.get(`http://localhost:2222/expenses/yearly/${truckId}/${year}`);
             let totalYearlyTrips = 0;
             console.log(response.data[0].totalTrips)
             console.log(response.data[0].maintenance)
@@ -570,7 +574,7 @@ export const CreateExpense = () => {
 
     //function to create an expense - update this to include the new fields
     const handleCreateExpense = async () => {
-        console.log(expensesId);
+        console.log(truckId);
         //checks if selected type is yearly
         if (selectedType === "option1") {
             try {
@@ -586,11 +590,11 @@ export const CreateExpense = () => {
                     totalExpenses
                 };
                 setLoading(true);
-                const response = await axios.post('http://localhost:2222/yearlyexpenses', data);
-                const newObjectID = response.data._id;
-                const getObject = await axios.get(`http://localhost:2222/expenses/${expensesId}`);
-                getObject.data.yearlyExpenses.push(newObjectID);
-                await axios.put(`http://localhost:2222/expenses/${expensesId}`, getObject.data);
+                const response = await axios.post('http://localhost:2222/expenses/yearly', data); //create a new yearly expense
+                const newObjectID = response.data._id; //get yearly expense ID
+                const truckData = await axios.get(`http://localhost:2222/trucks/${truckId}`); //get the truck data
+                truckData.data.expenses.yearlyExpenses.push(newObjectID); //push the yearly expense ID to the truck data
+                await axios.put(`http://localhost:2222/trucks/${truckId}`, truckData.data); //update the truck data
                 setLoading(false);
                 alert("Record created.");
                 window.history.back();
@@ -604,16 +608,16 @@ export const CreateExpense = () => {
         else if (selectedType === "option2") {
             try {
                 const data = {
-                    truck: truckId, month, maintenance: monthlyMaintenanceCosts, dieselConsumption: dieselCosts, totalTrips: trips, year
+                    truck: truckId, month, maintenance: monthlyMaintenanceCosts, dieselConsumption: dieselCosts, totalTrips: trips, year, totalMonthlyExpenses: monthlyTotalCosts
                 };
                 setLoading(true);
-                const response = await axios.post('http://localhost:2222/monthlyexpenses', data);
-                const newObjectID = response.data._id;
-                const getObject = await axios.get(`http://localhost:2222/expenses/${expensesId}`);
-                getObject.data.monthlyExpenses.push(newObjectID);
-                await axios.put(`http://localhost:2222/expenses/${expensesId}`, getObject.data);
+                const response = await axios.post('http://localhost:2222/expenses/monthly', data); //create a new monthly expense
+                const newObjectID = response.data._id; //get monthly expense ID
+                const truckData = await axios.get(`http://localhost:2222/trucks/${truckId}`); //get the truck data
+                truckData.data.expenses.monthlyExpenses.push(newObjectID); //push the monthly expense ID to the truck data
+                await axios.put(`http://localhost:2222/trucks/${truckId}`, truckData.data); //update the truck data
                 setLoading(false);
-                alert("Expense created.");
+                alert("Record created.");
                 window.history.back();
             } catch (error) {
                 setLoading(false);
@@ -755,6 +759,15 @@ export const CreateExpense = () => {
                     onChange={(e) => setDieselCosts(e.target.value)}
                     disabled
                 />
+                <label>Total Monthly Cost:</label>
+                <input
+                    type="number"
+                    className="form-control"
+                    required
+                    value={monthlyTotalCosts}
+                    onChange={(e) => setMonthlyTotalCosts(e.target.value)}
+                    disabled
+                />
                 <div className="row">
                     <div className="col">
                         <button className="btn btn-success mx-auto d-flex mt-4 mb-4" onClick={computeMonthlyTotalTripsAndFuelCosts}>Calculate</button>
@@ -870,25 +883,29 @@ export const EditTruck = () => {
 //edit monthly expenses
 export const EditMonthlyExpense = () => {
     //states for monthly expenses
+    const [truckId, setTruckId] = useState("");
     const [year, setYear] = useState("");
     const [month, setMonth] = useState("");
     const [trips, setTrips] = useState("");
     const [monthlyMaintenanceCosts, setMonthlyMaintenanceCosts] = useState("0");
     const [dieselCosts, setDieselCosts] = useState("");
+    const [monthlyTotalCosts, setMonthlyTotalCosts] = useState("0");
     //get object id from url
-    const { id, truckId } = useParams();
+    const { id } = useParams();
 
     //function to get monthly expense
     useEffect(() => {
         const getMonthlyExpense = async () => {
             try {
-                const response = await axios.get(`http://localhost:2222/monthlyexpenses/${id}`);
+                const response = await axios.get(`http://localhost:2222/expenses/monthly/${id}`);
                 console.log(response);
+                setTruckId(response.data.truck);
                 setMonth(response.data.month);
                 setYear(response.data.year);
                 setMonthlyMaintenanceCosts(response.data.maintenance);
                 setDieselCosts(response.data.dieselConsumption);
                 setTrips(response.data.totalTrips);
+                setMonthlyTotalCosts(response.data.totalMonthlyExpenses);
             } catch (error) {
                 alert("Error occurred. Please check console.");
                 console.error(error);
@@ -900,14 +917,18 @@ export const EditMonthlyExpense = () => {
     //function to get and compute total trips and total fuel costs
     const computeMonthlyTotalTripsAndFuelCosts = async () => {
         try {
-            const response = await axios.get(`http://localhost:2222/trips/${year}/${month}/${truckId}`);
+            const response = await axios.get(`http://localhost:2222/trips/${truckId}/${year}/${month}`);
             const trips = response.data.length;
+            console.log(trips)
             let totalFuelCosts = 0;
             for (let i = 0; i < trips; i++) {
                 totalFuelCosts += response.data[i].dieselConsumption;
             }
+            let monthlyTotalCosts = 0
+            monthlyTotalCosts = parseFloat(totalFuelCosts) + parseFloat(monthlyMaintenanceCosts);
             setTrips(trips);
             setDieselCosts(totalFuelCosts);
+            setMonthlyTotalCosts(monthlyTotalCosts);
         } catch (error) {
             alert("Error occurred. Please check console.");
             console.error(error);
@@ -918,9 +939,9 @@ export const EditMonthlyExpense = () => {
     const handleUpdateExpense = async () => {
         try {
             const data = {
-                month, maintenance: monthlyMaintenanceCosts, dieselConsumption: dieselCosts, totalTrips: trips, year
+                month, maintenance: monthlyMaintenanceCosts, dieselConsumption: dieselCosts, totalTrips: trips, year, totalMonthlyExpenses: monthlyTotalCosts
             };
-            const response = await axios.put(`http://localhost:2222/monthlyexpenses/${id}`, data);
+            const response = await axios.put(`http://localhost:2222/expenses/monthly/${id}`, data);
             console.log(response.data)
             alert("Monthly expense is updated successfully.");
             window.history.back();
@@ -984,6 +1005,15 @@ export const EditMonthlyExpense = () => {
                     onChange={(e) => setTrips(e.target.value)}
                     disabled
                 />
+                <label>Total Monthly Cost:</label>
+                <input
+                    type="number"
+                    className="form-control"
+                    required
+                    value={monthlyTotalCosts}
+                    onChange={(e) => setMonthlyTotalCosts(e.target.value)}
+                    disabled
+                />
                 <div className="row">
                     <div className="col">
                         <button className="btn btn-success mx-auto d-flex mt-4 mb-4" onClick={computeMonthlyTotalTripsAndFuelCosts}>Calculate</button>
@@ -1000,6 +1030,7 @@ export const EditMonthlyExpense = () => {
 //edit yearly expenses
 export const EditYearlyExpense = () => {
     //states for yearly expenses
+    const [truckId, setTruckId] = useState("");
     const [year, setYear] = useState("");
     const [ltoFees, setLtoFees] = useState("0");
     const [fcieFees, setFcieFees] = useState("0");
@@ -1009,19 +1040,23 @@ export const EditYearlyExpense = () => {
     const [totalExpenses, setTotalExpenses] = useState("0");
     const [totalTrips, setTotalTrips] = useState("");
     //get object id from url
-    const { id, truckId } = useParams();
+    const { id } = useParams();
 
     //function to get yearly expense
     useEffect(() => {
         const getYearlyExpense = async () => {
             try {
-                const response = await axios.get(`http://localhost:2222/yearlyexpenses/${id}`);
+                const response = await axios.get(`http://localhost:2222/expenses/yearly/${id}`);
                 console.log(response);
+                setTruckId(response.data.truck);
                 setYear(response.data.year);
                 setLtoFees(response.data.ltoReg);
                 setFcieFees(response.data.fcieReg);
                 setMiscStickerFees(response.data.stickerReg);
                 setMaintenanceCosts(response.data.maintenance);
+                setTotalTrips(response.data.totalTrips);
+                setTotalDieselConsumption(response.data.totalDieselConsumption);
+                setTotalExpenses(response.data.totalExpenses);
             } catch (error) {
                 alert("Error occurred. Please check console.");
                 console.error(error);
@@ -1034,7 +1069,7 @@ export const EditYearlyExpense = () => {
     const computeYearlyTotalTripsAndFuelCosts = async () => {
         try {
             console.log(truckId)
-            const response = await axios.get(`http://localhost:2222/monthly/expenses/${truckId}/${year}`);
+            const response = await axios.get(`http://localhost:2222/expenses/yearly/${truckId}/${year}`);
             let totalYearlyTrips = 0;
             console.log(response.data[0].totalTrips)
             console.log(response.data[0].maintenance)
@@ -1075,7 +1110,7 @@ export const EditYearlyExpense = () => {
                 totalDieselConsumption,
                 totalExpenses
             };
-            const response = await axios.put(`http://localhost:2222/yearlyexpenses/${id}`, data);
+            const response = await axios.put(`http://localhost:2222/expenses/yearly/${id}`, data);
             console.log(response);
             console.log(response.data)
             alert("Yearly Expense updated.");
@@ -1167,37 +1202,43 @@ export const EditYearlyExpense = () => {
 
 //edit trip
 export const EditTrip = () => {
+    const [loading, setLoading] = useState(false);
     //states for trip details
-    const [driver, setDriver] = useState({ name: "" });
-    const [customer, setCustomer] = useState({
-        name: "John Doe",
-        location: "default location"
+    const [truckId, setTruckId] = useState("");
+    const [driver, setDriver] = useState({
     });
-    const [helper, setHelper] = useState({ name: "John Doe" });
+    const [customer, setCustomer] = useState({
+    });
+    const [helper, setHelper] = useState({
+    });
+
     const [year, setYear] = useState("");
     const [month, setMonth] = useState("");
     const [day, setDay] = useState("");
     const [timeDispatched, setTimeDispatched] = useState("");
     const [timeReceived, setTimeReceived] = useState("");
     const [timeReturned, setTimeReturned] = useState("");
-    const [status, setStatus] = useState("");
+    const [WOWEX, setWOWEX] = useState("Pending");
     const [distance, setDistance] = useState("");
-    const [dieselCost, setDieselCost] = useState("");
+    const [dieselCost, setDieselCost] = useState("60");
     const [dieselConsumption, setDieselConsumption] = useState("");
-    const [tollFee, setTollFee] = useState("");
-    const [pathway, setPathway] = useState("");
+    const [tollFee, setTollFee] = useState(0);
+    const [pathway, setPathway] = useState(0);
     const [totalTripCost, setTotalTripCost] = useState("");
 
+
+    //navigation after edit
+    const navigate = useNavigate();
     //get truck ID from URL params
     const { id } = useParams();
-    //navigation
-    const navigate = useNavigate();
 
+    //get trip ID from url then set states
     useEffect(() => {
         const getTrip = async () => {
             try {
                 const response = await axios.get(`http://localhost:2222/trips/${id}`);
                 console.log(response);
+                setTruckId(response.data.truck);
                 setDriver(response.data.driver);
                 setCustomer(response.data.customer);
                 setHelper(response.data.helper);
@@ -1207,7 +1248,7 @@ export const EditTrip = () => {
                 setTimeDispatched(response.data.timeDispatched);
                 setTimeReceived(response.data.timeReceived);
                 setTimeReturned(response.data.timeReturned);
-                setStatus(response.data.status);
+                setWOWEX(response.data.status);
                 setDistance(response.data.distance);
                 setDieselCost(response.data.dieselCost);
                 setDieselConsumption(response.data.dieselConsumption);
@@ -1220,7 +1261,7 @@ export const EditTrip = () => {
             }
         };
         getTrip();
-    }, [id]);
+    }, [])
 
     //functions to automatically compute diesel consumption and total trip cost
     function handleDistanceChange(event) {
@@ -1274,11 +1315,13 @@ export const EditTrip = () => {
         }
     }
 
+
     //function to create an expense
     const handleEditTrip = async () => {
+        event.preventDefault();
+        //construct message body
         try {
             const data = {
-                truck: id,
                 driver,
                 customer,
                 helper,
@@ -1288,7 +1331,7 @@ export const EditTrip = () => {
                 timeDispatched,
                 timeReceived,
                 timeReturned,
-                status,
+                status: WOWEX,
                 distance,
                 dieselCost,
                 dieselConsumption,
@@ -1296,181 +1339,234 @@ export const EditTrip = () => {
                 pathway,
                 totalTripExpense: totalTripCost
             };
-            const response = await axios.put(`http://localhost:2222/trips/${id}`, data);
-            console.log(response.data);
-            alert("Trip updated.");
-            window.history.back();
+            setLoading(true);
+            axios.put(`http://localhost:2222/trips/${id}`, data);
+            setLoading(false);
+            //use better alerts
+            alert("Trip edited.");
+            navigate(`/trucks/details/${truckId}`); //navigate to truck details page
         } catch (error) {
+            setLoading(false);
             alert("Error occurred.");
-            console.error(error);
+            console.log(error);
         }
     };
 
     return (
-        <div className="row">
-            <div className="p-4 mx-auto mt-4" style={{ width: '50%' }}>
-                <h5>Create New Trip</h5>
-                <label>Driver Name</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="driverName"
-                    value={driver.name}
-                    onChange={(e) => setDriver({ ...driver, name: e.target.value })}
-                />
+        <div className="container">
+            <form>
+                <h5>Edit Trip</h5>
+                <div className="row infoContainer">
+                    <div className="col border p-4">
+                        <div className="row">
+                            <h6>
+                                Trip Details
+                            </h6>
+                        </div>
+                        <div className="row">
+                            <label>Driver Name</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="driverName"
+                                value={driver.name}
+                                onChange={(e) => setDriver({ ...driver, name: e.target.value })}
+                            />
+                        </div>
+                        <div className="row">
+                            <label>Helper Name</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="helperName"
+                                value={helper.name}
+                                onChange={(e) => setHelper({ ...helper, name: e.target.value })}
+                            />
+                        </div>
+                        <div className="row">
+                            <label>Customer Name</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="customerName"
+                                value={customer.name}
+                                onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
+                            />
+                        </div>
+                        <div className="row">
+                            <label>Customer Location</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="customerLocation"
+                                value={customer.location}
+                                onChange={(e) => setCustomer({ ...customer, location: e.target.value })}
+                            />
+                        </div>
+                        <div className="row">
+                            <label>Year</label>
+                            <input
+                                type="string"
+                                className="form-control"
+                                name="year"
+                                value={year}
+                                onChange={(e) => setYear(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="row">
+                            <label>Month</label>
+                            <select class="form-select" value={month} onChange={(e) => setMonth(e.target.value)}>
+                                <option selected>Select month</option>
+                                <option value="January">January</option>
+                                <option value="February">February</option>
+                                <option value="March">March</option>
+                                <option value="April">April</option>
+                                <option value="May">May</option>
+                                <option value="June">June</option>
+                                <option value="July">July</option>
+                                <option value="August">August</option>
+                                <option value="September">September</option>
+                                <option value="October">October</option>
+                                <option value="November">November</option>
+                                <option value="December">December</option>
+                            </select>
+                        </div>
+                        <div className="row">
+                            <label>Day</label>
+                            <input
+                                type="string"
+                                className="form-control"
+                                name="day"
+                                value={day}
+                                onChange={(e) => setDay(e.target.value)}
+                                required
+                            />
+                        </div>
+                    </div>
+                    <div className="col border p-4">
+                        <div className="row">
+                            <h6>Trip Status</h6>
+                        </div>
+                        <div className="row">
+                            <label>Time Dispatched</label>
+                            <input
+                                type="time"
+                                className="form-control"
+                                name="timeDispatched"
+                                value={timeDispatched}
+                                onChange={(e) => setTimeDispatched(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="row">
+                            <label>Time Received</label>
+                            <input
+                                type="time"
+                                className="form-control"
+                                name="timeReceived"
+                                value={timeReceived}
+                                onChange={(e) => setTimeReceived(e.target.value)}
+                            />
+                        </div>
 
-                <label>Helper Name</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="helperName"
-                    value={helper.name}
-                    onChange={(e) => setHelper({ ...helper, name: e.target.value })}
-                />
+                        <div className="row">
+                            <label>Time Returned</label>
+                            <input
+                                type="time"
+                                className="form-control"
+                                name="timeReturned"
+                                value={timeReturned}
+                                onChange={(e) => setTimeReturned(e.target.value)}
+                            />
+                        </div>
+                        <div className="row">
+                            <label>Status</label>
+                            <select className="form-select" name="status" value={WOWEX} onChange={(e) => setWOWEX(e.target.value)}>
+                                <option value={"Pending"}>Pending</option>
+                                <option value={"Done"}>Done</option>
+                            </select>
+                        </div>
+                        <div className="row">
+                            <label>Distance (KM)</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="distance"
+                                value={distance}
+                                onChange={handleDistanceChange}
+                            />
+                        </div>
+                    </div>
+                    <div className="col border p-4">
+                        <div className="row">
+                            <h6>Trip Costs</h6>
+                        </div>
+                        <div className="row">
+                            <label>Diesel Price (/liter)</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="dieselCost"
+                                value={dieselCost}
+                                onChange={handleDieselCostChange}
+                            />
+                        </div>
 
-                <label>Customer Name</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="customerName"
-                    value={customer.name}
-                    onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
-                />
+                        <div className="row">
+                            <label>Toll Fees</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="tollFee"
+                                value={tollFee}
+                                onChange={handleTollFeeChange}
+                            />
+                        </div>
 
-                <label>Customer Location</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="customerLocation"
-                    value={customer.location}
-                    onChange={(e) => setCustomer({ ...customer, location: e.target.value })}
-                />
+                        <div className="row">
+                            <label>Pathway Fees</label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                name="pathway"
+                                value={pathway}
+                                onChange={handlePathwayChange}
+                            />
+                        </div>
+                        <div className="row">
+                            <label>Total Fuel Cost</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="dieselConsumption"
+                                value={dieselConsumption}
+                                readOnly
+                                disabled
+                            />
+                        </div>
+                        <div className="row">
+                            <label>Total Trip Cost</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="totalTripCost"
+                                value={totalTripCost}
+                                onChange={(e) => setTotalTripCost(e.target.value)}
+                                readOnly
+                                disabled
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div className="p-4 mx-auto mt-4" style={{ width: '50%' }}>
 
-                <label>Year</label>
-                <input
-                    type="string"
-                    className="form-control"
-                    name="year"
-                    value={year}
-                    onChange={(e) => setYear(e.target.value)}
-                    required
-                />
 
-                <label>Month</label>
-                <input
-                    type="string"
-                    className="form-control"
-                    name="month"
-                    value={month}
-                    onChange={(e) => setMonth(e.target.value)}
-                    required
-                />
-
-                <label>Day</label>
-                <input
-                    type="string"
-                    className="form-control"
-                    name="day"
-                    value={day}
-                    onChange={(e) => setDay(e.target.value)}
-                    required
-                />
-
-                <label>Time Dispatched</label>
-                <input
-                    type="time"
-                    className="form-control"
-                    name="timeDispatched"
-                    value={timeDispatched}
-                    onChange={(e) => setTimeDispatched(e.target.value)}
-                />
-
-                <label>Time Received</label>
-                <input
-                    type="time"
-                    className="form-control"
-                    name="timeReceived"
-                    value={timeReceived}
-                    onChange={(e) => setTimeReceived(e.target.value)}
-                />
-
-                <label>Time Returned</label>
-                <input
-                    type="time"
-                    className="form-control"
-                    name="timeReturned"
-                    value={timeReturned}
-                    onChange={(e) => setTimeReturned(e.target.value)}
-                />
-
-                <label>Status</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="status"
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                />
-                <label>Distance (KM)</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="distance"
-                    value={distance}
-                    onChange={handleDistanceChange}
-                />
-                <label>Diesel Price (/liter)</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="dieselCost"
-                    value={dieselCost}
-                    onChange={handleDieselCostChange}
-                />
-
-                <label>Toll Fees</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="tollFee"
-                    value={tollFee}
-                    onChange={handleTollFeeChange}
-                />
-
-                <label>Pathway Fees</label>
-                <input
-                    type="number"
-                    className="form-control"
-                    name="pathway"
-                    value={pathway}
-                    onChange={handlePathwayChange}
-                />
-
-                <label>Total Fuel Cost</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="dieselConsumption"
-                    value={dieselConsumption}
-                    readOnly
-                    disabled
-                />
-
-                <label>Total Trip Cost</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="totalTripCost"
-                    value={totalTripCost}
-                    onChange={(e) => setTotalTripCost(e.target.value)}
-                    readOnly
-                    disabled
-                />
-
-                <button className="btn btn-success mt-4 mx-auto d-flex" onClick={handleEditTrip}>
-                    Edit
-                </button>
-            </div>
+                    <button className="btn btn-success mt-4 mx-auto d-flex" onClick={handleEditTrip}>
+                        Edit
+                    </button>
+                </div>
+            </form>
         </div>
     );
 };

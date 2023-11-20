@@ -82,7 +82,7 @@ router.get("/trips/:truck/:year/:month", async (req, res) => {
     }
 });
 //route for getting pending trips
-router.get("/trips/pending", async (req, res) => {
+router.get("/trips/status/pending", async (req, res) => {
     try {
         const trips = await Trip.find({ status: "Pending" });
         if (!trips) {
@@ -101,7 +101,7 @@ router.get("/expenses/monthly", (req, res) => getAllRecords(MonthlyExpense, res)
 router.get("/expenses/monthly/:id", (req, res) => getSingleRecord(MonthlyExpense, req, res));
 router.put("/expenses/monthly/:id", (req, res) => updateRecord(MonthlyExpense, req, res));
 //power delete for monthly expenses
-router.delete("/monthlyexpenses/:id", async (req, res) => {
+router.delete("/expenses/monthly/:id", async (req, res) => {
     try {
         const { id } = req.params;
         //find the expense
@@ -168,7 +168,7 @@ router.delete("/expenses/yearly/:id", async (req, res) => {
         // Delete the expense
         await YearlyExpense.findByIdAndRemove(id);
 
-        res.status(200).json({ message: "YearlyExpense deleted successfully" });
+        res.status(200).json({ message: "Expense deleted successfully." });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
