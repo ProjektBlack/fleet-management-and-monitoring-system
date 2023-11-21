@@ -1,6 +1,7 @@
 //dependencies
 import React, { useEffect, useState } from 'react';
 import { Navigate, Link, useNavigate } from 'react-router-dom';
+import { SnackbarProvider, useSnackbar } from 'notistack';
 import axios from "axios";
 //components
 import { useAuth } from "../context/authProvider";
@@ -38,11 +39,13 @@ export const Sidebar = () => {
     const { logout } = useAuth();
     //for navigation to login page after logging out
     const navigate = useNavigate();
+    const { enqueueSnackbar } = useSnackbar();
 
     //logout function
     const handleLogout = () => {
         logout();
         setIsAuthenticated(false);
+        enqueueSnackbar("Logged out successfully.", { variant: "default" });
         navigate("/login");
     };
 
@@ -104,7 +107,7 @@ export const PendingWidget = () => {
     const [pendingTrips, setPendingTrips] = useState(0);
 
     useEffect(() => {
-        axios.get("http://localhost:2222/trips/pending")
+        axios.get("http://localhost:2222/trips/status/pending")
             .then((res) => {
                 setPendingTrips(res.data.length);
             })
@@ -126,10 +129,22 @@ export const PendingWidget = () => {
 }
 
 export const SampleWidget2 = () => {
+    const [completedTrips, setCompletedTrips] = useState(0);
+
+    useEffect(() => {
+        axios.get("http://localhost:2222/trips/status/completed")
+            .then((res) => {
+                setCompletedTrips(res.data.length);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
+
     return (
         <div className='text-center widget pt-2'>
             <div className='row'>
-                <h1><span className='logo'>17</span></h1>
+                <h1><span className='logo'>{completedTrips}</span></h1>
             </div>
             <div className='row'>
                 <p className='text-muted'>Completed trips this month</p>
@@ -145,9 +160,6 @@ export const Dashboard = () => {
         console.log(user.username)
     }, []);
     return (
-        //notifications
-        //update using js, also, insert icons
-        //update to compartmentalize css
         <div className="p-4">
             <div id="dashboardHeader" className="row border-start mb-4 bg-white rounded p-4 border-success border-5">
                 <h1>Dashboard</h1>

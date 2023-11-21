@@ -1,7 +1,9 @@
 //dependencies
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { SnackbarProvider, useSnackbar } from 'notistack';
 import axios from "axios";
+//import components
 import { BackButton } from "./Widgets";
 
 //register a new user
@@ -12,14 +14,19 @@ export const Register = () => {
     const [PARTY, setPARTY] = useState("Admin");
     const [passwordFilledUp, setPasswordFilledUp] = useState(false);
     const [error, setError] = useState("");
+    //
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { enqueueSnackbar } = useSnackbar();
 
     //function to register a new user
     const handleRegister = async () => {
         event.preventDefault();
-        console.log(PARTY)
+        setLoading(true);
         if (password !== confirmation) {
+            setLoading(false);
             setError("Passwords do not match.");
+            enqueueSnackbar("Passwords do not match.", { variant: "error" });
             return;
         } else {
             try {
@@ -30,10 +37,12 @@ export const Register = () => {
                 };
                 const response = await axios.post("http://localhost:2222/users", data);
                 console.log(response.data);
-                alert("User registered.");
+                setLoading(false);
+                enqueueSnackbar("User created.", { variant: "success" });
                 navigate("/login");
             } catch (error) {
-                alert("Error occurred. Please check console.");
+                setLoading(false);
+                enqueueSnackbar("Error occurred.", { variant: "error" });
                 setError(error.message)
             }
         }

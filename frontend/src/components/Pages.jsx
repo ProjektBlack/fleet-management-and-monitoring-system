@@ -2,10 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useAuth } from "../context/authProvider";
+import { SnackbarProvider, useSnackbar } from 'notistack';
+import { Modal, Button } from 'react-bootstrap';
 import axios from "axios";
 //components
 import { Spinner, BackButton, Sidebar, Dashboard } from "./Widgets";
-import { TruckTable, YearlyExpensesTable, TripsTable } from "./Tables";
+import { TruckTable, YearlyExpensesTable, TripsTable, MonthlyExpensesTable } from "./Tables";
 //icons
 import { BsFillFilePlusFill, BsEye, BsPen, BsFillPencilFill, BsFillTrashFill } from "react-icons/bs";
 
@@ -22,11 +24,13 @@ export const Login = () => {
     //used to navigate to home page after login
     //loading state for login
     const [loading, setLoading] = useState(false);
+    const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
 
     //function to handle login
     const handleLogin = async () => {
         event.preventDefault();
+        setLoading(true);
         try {
             const response = await axios.post("http://localhost:2222/login", {
                 username,
@@ -37,10 +41,13 @@ export const Login = () => {
             setUsername("");
             setPassword("");
             setIsAuthenticated(true);
+            setLoading(false);
+            enqueueSnackbar("Login successful!", { variant: "success" });
             navigate("/home");
         } catch (error) {
+            setLoading(false);
             console.log(error);
-            setError(error.response.data.message || "Something went wrong. Please contact support.");
+            enqueueSnackbar("Login failed!", { variant: "error" });
         }
     };
 
@@ -67,7 +74,7 @@ export const Login = () => {
                             <input className="form-control" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
                             <div className="text-danger">{error}</div>
                         </div>
-                        <button className="btn btn-success mt-3 mx-auto d-flex fs-6 ${areFormsFilled() ? '' : disabled}" type="submit" disabled={!areFormsFilled()}> Log In</button>
+                        <button className="btn btn-success mt-3 mx-auto d-flex fs-6}" type="submit" disabled={!areFormsFilled() || loading}> Log In</button>
                         <div className='text-center mt-1'>
                             <Link to={"/register"} className='text-muted text-decoration-none fw-light'>Not yet registered?</Link>
                         </div>
@@ -138,8 +145,13 @@ export const ShowTruck = () => {
     const [yearlyExpenses, setYearlyExpenses] = useState([]); //datas to map
     const [monthlyExpenses, setMonthlyExpenses] = useState([]); //datas to map
     const [trips, setTrips] = useState([]); //datas to map
+    const { enqueueSnackbar } = useSnackbar();
     const { user } = useAuth();
     const { id } = useParams();
+    const [showModal1, setShowModal1] = useState(false);
+    const [showModal2, setShowModal2] = useState(false);
+    const [showModal3, setShowModal3] = useState(false);
+    const [selectedId, setSelectedId] = useState(null);
 
     useEffect(() => {
         setLoading(true);
@@ -184,42 +196,70 @@ export const ShowTruck = () => {
         fetchData();
     }, [id]);
 
+    const handleTripConfirmation = (id) => {
+        setSelectedId(id);
+        setShowModal1(true);
+    };
+
+    const handleMEConfirmation = (id) => {
+        setSelectedId(id);
+        setShowModal2(true);
+    };
+
+    const handleYEConfirmation = (id) => {
+        setSelectedId(id);
+        setShowModal3(true);
+    };
+
+
     const deleteTrip = async (tripId) => {
         try {
             // Make the DELETE request
-            await axios.delete(`http://localhost:2222/trips/${tripId}`);
+            await axios.delete(`http://localhost:2222/trips/${selectedId}`);
 
             // Remove the deleted trip from the local state
-            setTrips(trips.filter(trip => trip._id !== tripId));
+            setTrips(trips.filter(trip => trip._id !== selectedId));
+            setShowModal1(false);
+
         } catch (error) {
             // Log the error
             console.error(error);
+        } finally {
+            enqueueSnackbar("Trip deleted!", { variant: "success" });
         }
     };
 
     const deleteMonthlyExpense = async (expenseId) => {
         try {
             // Make the DELETE request
-            await axios.delete(`http://localhost:2222/expenses/monthly/${expenseId}`);
+            await axios.delete(`http://localhost:2222/expenses/monthly/${selectedId}`);
 
             // Remove the deleted expense from the local state
-            setMonthlyExpenses(monthlyExpenses.filter(expense => expense._id !== expenseId));
+            setMonthlyExpenses(monthlyExpenses.filter(expense => expense._id !== selectedId));
+            setShowModal2(false);
+            enqueueSnackbar("Monthly expense deleted!", { variant: "success" });
         } catch (error) {
             // Log the error
             console.error(error);
+        } finally {
+            enqueueSnackbar("Monthly expense deleted!", { variant: "success" });
         }
     };
 
     const deleteYearlyExpense = async (expenseId) => {
         try {
             // Make the DELETE request
-            await axios.delete(`http://localhost:2222/expenses/yearly/${expenseId}`);
+            await axios.delete(`http://localhost:2222/expenses/yearly/${selectedId}`);
 
             // Remove the deleted expense from the local state
-            setYearlyExpenses(yearlyExpenses.filter(expense => expense._id !== expenseId));
+            setYearlyExpenses(yearlyExpenses.filter(expense => expense._id !== selectedId));
+            setShowModal3(false);
+
         } catch (error) {
             // Log the error
             console.error(error);
+        } finally {
+            enqueueSnackbar("Yearly expense deleted!", { variant: "success" });
         }
     };
 
@@ -310,7 +350,7 @@ export const ShowTruck = () => {
                                                 <td>{expense.totalExpenses}</td>
                                                 <td className="text-center">
                                                     <Link id="showIcon" to={`/expenses/yearly/edit/${expense._id}/${id}`} className="showIcon" style={{ marginRight: '2%' }}><BsEye /></Link>
-                                                    {user.role == 'Admin' && (<BsFillTrashFill className="trashIcon" onClick={() => deleteYearlyExpense(expense._id)} />)}
+                                                    {user.role == 'Admin' && (<BsFillTrashFill className="trashIcon" onClick={() => handleYEConfirmation(expense._id)} />)}
                                                     < Link to={`/expenses/yearly/edit/${expense._id}`} style={{ marginLeft: '2%' }} className='editIcon'><BsFillPencilFill /></Link>
                                                 </td>
                                             </tr>
@@ -341,7 +381,7 @@ export const ShowTruck = () => {
                                                 <td>{expense.totalMonthlyExpenses}</td>
                                                 <td className="text-center">
                                                     <Link id="showIcon" to={`/expenses/monthly/edit/${expense._id}/${id}`} style={{ marginRight: '2%' }}><BsEye className='showIcon' /></Link>
-                                                    {user.role == "Admin" && (<BsFillTrashFill className="trashIcon" onClick={() => deleteMonthlyExpense(expense._id)} />)}
+                                                    {user.role == "Admin" && (<BsFillTrashFill className="trashIcon" onClick={() => handleMEConfirmation(expense._id)} />)}
                                                     <Link to={`/expenses/monthly/edit/${expense._id}`} style={{ marginLeft: '2%' }} className='editIcon'><BsFillPencilFill /></Link>
                                                 </td>
                                             </tr>
@@ -350,7 +390,6 @@ export const ShowTruck = () => {
                                 </table>
                             </div>
                         </div>
-
                     </div>
 
                 </div>
@@ -405,7 +444,7 @@ export const ShowTruck = () => {
                                             <td>{trip.totalTripExpense}</td>
                                             <td className="text-center">
                                                 <Link to={`/trips/details/${trip._id}`}><BsEye style={{ marginRight: '2%' }} className='showIcon' /></Link>
-                                                {user.role == "Admin" && (<BsFillTrashFill className="trashIcon" onClick={() => deleteTrip(trip._id)} />)}
+                                                {user.role == "Admin" && (<BsFillTrashFill className="trashIcon" onClick={() => handleTripConfirmation(trip._id)} />)}
                                                 <Link to={`/trips/edit/${trip._id}`} style={{ marginLeft: '2%' }}><BsFillPencilFill className='editIcon' /></Link>
                                             </td>
                                         </tr>
@@ -416,6 +455,49 @@ export const ShowTruck = () => {
                     </div>
                 </div>
             </div>
+            <Modal show={showModal1} onHide={() => setShowModal1(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Deletion</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to delete this trip?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal1(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={deleteTrip}>
+                        Delete
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            <Modal show={showModal2} onHide={() => setShowModal2(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Deletion</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to delete this monthly expense?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal2(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={deleteMonthlyExpense}>
+                        Delete
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={showModal3} onHide={() => setShowModal3(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Deletion</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to delete this yearly expense?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal3(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={deleteYearlyExpense}>
+                        Delete
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div >
     );
 };
@@ -424,33 +506,55 @@ export const ShowTruck = () => {
 export const ManageYearlyExpenses = () => {
     return (
         <div>
-            <div className="row">
+            <div className="row g-2">
                 <div className="col-2">
                     <Sidebar />
                 </div>
                 <div className="col-10">
-                    <div className="row d-flex mx-auto mb-4 mt-4">
-                        <div className="col-10">
-                            <h1 style={{ marginTop: "10%" }}>Yearly Expenses</h1>
+                    <div className="container">
+                        <div className="row mb-4 mt-4 infoContainer">
+                            <div className="col">
+                                <h1>Yearly Expenses</h1>
+                            </div>
                         </div>
-                        <div className="col">
-                            <select className="form-select" style={{ marginTop: "150%" }}>
-                                <option selected>Sort</option>
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
-                            </select>
-                        </div>
-                        <div className="col">
-                            <input className='form-control' style={{ marginTop: "150%" }}></input>
+                        <div className="row">
+                            <YearlyExpensesTable />
                         </div>
                     </div>
-                    <div className="row">
-                        <YearlyExpensesTable />
+                    <div className='container'>
+                        <div className="row mb-4 mt-4 infoContainer">
+                            <div className="col">
+                                <h1>Monthly Expenses</h1>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <MonthlyExpensesTable />
+                        </div>
                     </div>
                 </div>
             </div>
-
         </div >
     )
 }
+
+//manage trips
+export const ManageTrips = () => {
+    return (
+        <div>
+            <div className='row g-2'>
+                <div className="col-2">
+                    <Sidebar />
+                </div>
+                <div className='col'>
+                    <div className="row mb-4 mt-4 infoContainer mx-auto">
+                        <div className='r'>
+                            <h1>Trips</h1>
+                        </div>
+                    </div>
+                    <TripsTable />
+                </div>
+            </div>
+        </div>
+    )
+}
+

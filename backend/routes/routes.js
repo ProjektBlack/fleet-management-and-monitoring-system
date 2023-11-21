@@ -94,6 +94,19 @@ router.get("/trips/status/pending", async (req, res) => {
         res.status(500).send({ message: error.message });
     }
 });
+//route for getting completed trips
+router.get("/trips/status/completed", async (req, res) => {
+    try {
+        const trips = await Trip.find({ status: "Done" });
+        if (!trips) {
+            res.status(404).json({ message: "There are no completed trips." });
+        }
+        res.status(200).json(trips);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send({ message: error.message });
+    }
+});
 
 //routes for monthly expenses
 router.post("/expenses/monthly", (req, res) => createRecord(MonthlyExpense, req, res));
