@@ -8,7 +8,7 @@ import { useAuth } from "../context/authProvider";
 //icons
 import { BsFillFileSpreadsheetFill, BsFillHouseDoorFill, BsFillTruckFrontFill, BsCreditCard2FrontFill, BsTruck, BsArrowReturnLeft } from "react-icons/bs";
 //table
-import { TruckTable } from "./Tables";
+import { RecentTripsTable, TruckTable, TruckStatusWidget } from "./Tables";
 
 //private route
 export const PrivateRoute = ({ isAuthenticated, children }) => {
@@ -27,7 +27,10 @@ export const BackButton = () => {
     };
 
     return (
-        <BsArrowReturnLeft onClick={goBack} id="backButton" />
+        <button className='btn btn-secondary' onClick={goBack}>
+            <BsArrowReturnLeft id="backButton" />
+            Return
+        </button >
     );
 };
 
@@ -39,6 +42,7 @@ export const Sidebar = () => {
     const { logout } = useAuth();
     //for navigation to login page after logging out
     const navigate = useNavigate();
+    const { user } = useAuth();
     const { enqueueSnackbar } = useSnackbar();
 
     //logout function
@@ -59,15 +63,21 @@ export const Sidebar = () => {
                     <div className='col'>
                         <h4 className=""><span className="logo">Green </span>Movers</h4>
                     </div>
-
-
                 </div>
+
                 <div className="row">
                     <ul className="list-group">
                         <Link to={"/home"} className="links text-decoration-none"><BsFillHouseDoorFill className="icons" id='homeIcon'></BsFillHouseDoorFill>Home</Link>
                         <Link to={"/trucks"} className="links text-decoration-none"><BsFillTruckFrontFill className="icons" id="truckIcon"></BsFillTruckFrontFill>Trucks</Link>
                         <Link to={"/trips"} className="links text-decoration-none"><BsFillFileSpreadsheetFill className="icons" id="tripsIcon"></BsFillFileSpreadsheetFill>Trips</Link>
-                        <Link to={"/expenses"} className="links text-decoration-none"><BsCreditCard2FrontFill className="icons" id="expensesIcon"></BsCreditCard2FrontFill>Expenses</Link>
+                        <button className="btn links text-decoration-none text-start" data-bs-toggle="collapse" data-bs-target="#home-collapse"><BsCreditCard2FrontFill className="icons" id="expensesIcon" />Expenses
+                        </button>
+                        <div className="collapse" id="home-collapse">
+                            <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <Link className="link-dark rounded" to={'/expenses/yearly'}>Yearly Expenses</Link><br />
+                                <Link className="link-dark rounded" to={'/expenses/monthly'}>Monthly Expenses</Link>
+                            </ul>
+                        </div>
                     </ul>
                 </div>
                 <div id="logoutSegment" className="row">
@@ -83,7 +93,7 @@ export const Sidebar = () => {
 //spinner
 export const Spinner = () => {
     return (
-        <div className="spinner-border text-success" role="status">
+        <div className="spinner text-success" role="status">
             <span className="sr-only"></span>
         </div>
     )
@@ -147,34 +157,65 @@ export const SampleWidget2 = () => {
                 <h1><span className='logo'>{completedTrips}</span></h1>
             </div>
             <div className='row'>
+                <p className='text-muted'>Completed trips this year</p>
+            </div>
+        </div>
+    );
+}
+
+export const TripsThisMonth = () => {
+    const [trips, setTrips] = useState(0);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        axios.get("http://localhost:2222/trips/status/completed/month")
+            .then((res) => {
+                setTrips(res.data.length);
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
+
+    return (
+        <div className='text-center widget pt-2'>
+            <div className='row'>
+                <h1><span className='logo'>{trips}</span></h1>
+            </div>
+            <div className='row'>
                 <p className='text-muted'>Completed trips this month</p>
             </div>
         </div>
     );
 }
 
+
 //dashboard
 export const Dashboard = () => {
     const { user } = useAuth();
-    useEffect(() => {
-        console.log(user.username)
-    }, []);
+
     return (
         <div className="p-4">
-            <div id="dashboardHeader" className="row border-start mb-4 bg-white rounded p-4 border-success border-5">
+            <div id="dashboardHeader" className="row border-start mb-4 bg-white rounded p-3 border-success border-5">
                 <h1>Dashboard</h1>
-                <h3 className="text-muted">Welcome back, <span className="logo">{user.userId}</span></h3>
             </div>
             {/*place widgets here*/}
             <div id="widgets" className='container'>
                 {/*sample widgets*/}
                 <div className="row mb-4 g-5">
-                    <div className="col-8 border-start border-success border-5 rounded dsContainer">
-                        <TruckTable />
+                    <div className="col-6 border-start border-success border-5 rounded dsContainer" style={{ maxHeight: "50vh", minHeight: "50vh" }}>
+                        <RecentTripsTable />
                     </div>
-                    <div className="col">
+                    <div className='col-4 border-success rounded dsContainer'>
+                        <TruckStatusWidget />
+                    </div>
+                    <div className="col-2">
                         <div className="row mb-2 border-start border-success border-5 rounded dsContainer">
                             <PendingWidget />
+                        </div>
+                        <div className="row mb-2 border-start border-success border-5 rounded dsContainer">
+                            <TripsThisMonth />
                         </div>
                         <div className="row border-start border-success border-5 rounded dsContainer">
                             <SampleWidget2 />
@@ -198,3 +239,4 @@ export const Dashboard = () => {
         </div>
     );
 }
+

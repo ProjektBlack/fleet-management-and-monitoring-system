@@ -136,6 +136,10 @@ body {
 
 }
 
+.createIcon {
+    color: #2E8B57;
+}
+
 #newIcon {
     color: #2E8B57;
     font-size: x-large;

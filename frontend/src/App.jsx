@@ -29,7 +29,8 @@ const App = () => {
       <Route path="/expenses/monthly/edit/:id/" element={<PrivateRoute isAuthenticated={isAuthenticated}><EditMonthlyExpense /></PrivateRoute>} />
       <Route path="/newtrips/:truckId" element={<PrivateRoute isAuthenticated={isAuthenticated}><CreateTrip /></PrivateRoute>} />
       <Route path="/trips/edit/:id" element={<PrivateRoute isAuthenticated={isAuthenticated}><EditTrip /></PrivateRoute>} />
-      <Route path="/expenses" element={<PrivateRoute isAuthenticated={isAuthenticated}><ManageYearlyExpenses /></PrivateRoute>} />
+      <Route path="/expenses/monthly" element={<PrivateRoute isAuthenticated={isAuthenticated}><ManageYearlyExpenses /></PrivateRoute>} />
+      <Route path="/expenses/yearly" element={<PrivateRoute isAuthenticated={isAuthenticated}><ManageYearlyExpenses /></PrivateRoute>} />
       <Route path="/trips" element={<PrivateRoute isAuthenticated={isAuthenticated}><ManageTrips /></PrivateRoute>} />
       <Route path="trucks/details/:id" element={<PrivateRoute isAuthenticated={isAuthenticated}><ShowTruck /></PrivateRoute>} />
       {/*error page*/}

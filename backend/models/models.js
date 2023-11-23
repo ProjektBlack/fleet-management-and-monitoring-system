@@ -55,7 +55,10 @@ export const YearlyExpense = mongoose.model("YearlyExpense", new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Truck'
     },
-    year: String,
+    year: {
+        type: String,
+        unique: true,
+    },
     ltoReg: Number,
     fcieReg: Number,
     stickerReg: Number,

@@ -17,21 +17,26 @@ router.put("/trucks/:id", (req, res) => updateRecord(Truck, req, res));
 router.delete("/trucks/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        //delete trips that are associated with the truck
+        // delete trips that are associated with the truck
         await Trip.deleteMany({ truck: id });
-        //delete all associated expenses
+        // delete all associated expenses
         const truck = await Truck.findById(id);
-        //issue with if expenses are empty, it cannot delete
-        if (truck) {
-            for (let expense of truck.expenses) {
-                await YearlyExpense.deleteMany({ _id: { $in: expense.yearlyExpenses } });
-                await MonthlyExpense.deleteMany({ _id: { $in: expense.monthlyExpenses } });
+        // issue with if expenses are empty, it cannot delete
+        if (truck && truck.expenses) {
+            const { yearlyExpenses, monthlyExpenses } = truck.expenses;
+
+            for (let yearlyExpense of yearlyExpenses) {
+                await YearlyExpense.deleteMany({ _id: yearlyExpense });
+            }
+
+            for (let monthlyExpense of monthlyExpenses) {
+                await MonthlyExpense.deleteMany({ _id: monthlyExpense });
             }
         }
-        //finally, delete the truck
+        // finally, delete the truck
         await Truck.findByIdAndRemove(id);
-        //confirm deletion
-        res.status(200).json({ message: "Truck and its associated trips and expenses deleted successfully." });
+        // confirm deletion
+        res.status(204).json({ message: "Truck and its associated trips and expenses deleted successfully." });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
@@ -107,6 +112,17 @@ router.get("/trips/status/completed", async (req, res) => {
         console.error(error.message);
         res.status(500).send({ message: error.message });
     }
+});
+router.get('/trips/status/completed/month', (req, res) => {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+
+    const tripsThisMonth = trips.filter(trip => {
+        const tripDate = new Date(trip.date);
+        return tripDate.getMonth() === currentMonth;
+    });
+
+    res.json(tripsThisMonth);
 });
 
 //routes for monthly expenses

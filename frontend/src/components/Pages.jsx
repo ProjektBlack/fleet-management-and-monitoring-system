@@ -6,7 +6,7 @@ import { SnackbarProvider, useSnackbar } from 'notistack';
 import { Modal, Button } from 'react-bootstrap';
 import axios from "axios";
 //components
-import { Spinner, BackButton, Sidebar, Dashboard } from "./Widgets";
+import { Spinner, BackButton, Sidebar, Dashboard, CardComponent } from "./Widgets";
 import { TruckTable, YearlyExpensesTable, TripsTable, MonthlyExpensesTable } from "./Tables";
 //icons
 import { BsFillFilePlusFill, BsEye, BsPen, BsFillPencilFill, BsFillTrashFill } from "react-icons/bs";
@@ -123,9 +123,6 @@ export const ManageTruck = () => {
                     <div className="row border-start border-success rounded border-5 dsContainer mb-3">
                         <div className="col-10 p-4">
                             <h1>Manage Trucks</h1>
-                        </div>
-                        <div className="col-2 mt-4 text-end">
-                            <Link to="/trucks/new"><BsFillFilePlusFill id="newIcon" /></Link>
                         </div>
                     </div>
                     <div className="row border-start border-success rounded border-5 dsContainer tableContainer">
@@ -270,7 +267,8 @@ export const ShowTruck = () => {
         }
     };
 
-    const handleDelete = (id) => {
+    const handleDelete = () => {
+        console.log(id);
         setSelectedId(id);
         setShowModal(true);
     };
@@ -279,14 +277,17 @@ export const ShowTruck = () => {
     const confirmDelete = async () => {
         setLoading(true);
         try {
-            await axios.delete(`http://localhost:2222/trucks/${selectedId}`);
-            enqueueSnackbar("Truck deleted successfully.", { variant: "success" })
-            setLoading(false)
-            setShowModal(false);
-            navigate("/trucks")
+            const response = await axios.delete(`http://localhost:2222/trucks/${selectedId}`);
+            if (response.status === 204) {
+                enqueueSnackbar("Truck deleted successfully.", { variant: "success" })
+                setLoading(false)
+                setShowModal(false);
+                navigate("/trucks")
+            }
+
         } catch (error) {
-            enqueueSnackbar("Process failed.", { variant: "error" })
             setLoading(false)
+            enqueueSnackbar("Process failed.", { variant: "error" })
             setShowModal(false)
             console.log(error);
         }
@@ -305,15 +306,15 @@ export const ShowTruck = () => {
                             <h2><span className='logo'>Plate No.</span> {truckInfo.plateNumber}</h2>
                             <div className="row mb-2">
                                 <h6>Operations</h6>
-                                <div className="col">
-                                    <button className="btn btn-success">Edit</button>
+                                <div className="col-4">
+                                    <Link className="btn btn-warning" to={`/trucks/edit/${id}`}><BsFillPencilFill />Edit</Link>
                                 </div>
                                 {user.role === 'Admin' && (
-                                    <div className="col">
-                                        <button className="btn btn-danger" onClick={handleDelete}>Delete</button>
+                                    <div className="col-4">
+                                        <button className="btn btn-danger" onClick={() => handleDelete(selectedId)}><BsFillTrashFill />Delete</button>
                                     </div>
                                 )}
-                                <div className="col">
+                                <div className="col-4">
                                     <BackButton />
                                 </div>
                             </div>
@@ -335,10 +336,11 @@ export const ShowTruck = () => {
                     <div className="col border rounded p-4 infoContainer">
                         <div className='container'>
                             <div className="row">
-                                <h2>Expenses</h2>
-                                <h6>Operations</h6>
-                                <div className="col-1">
-                                    <Link to={`/expenses/new/${id}`} className="btn btn-success">Add</Link>
+                                <div className='col-10'>
+                                    <h2>Expenses</h2>
+                                </div>
+                                <div className="col text-end">
+                                    <Link to={`/expenses/new/${id}`} className="btn"><BsFillFilePlusFill size={40} className='createIcon' /></Link>
                                 </div>
                             </div>
                             <div>
@@ -416,12 +418,14 @@ export const ShowTruck = () => {
             <div className="row p-1">
                 <div className='col'>
                     <div className='p-4 rounded infoContainer border-success border-5 border-top'>
-                        <h2>Trips</h2>
-                        <div className="col-1">
-                            <h6>Operations</h6>
-                            <Link to={`/newtrips/${id}`} className="btn btn-success">Add</Link>
-                        </div>
-                        <h5 className="mb-2">Recent Trips</h5>
+                        <div className='row'>
+                            <div className='col'>
+                                <h2>Trips</h2>
+                            </div>
+                            <div className="col text-end">
+                                <Link to={`/newtrips/${id}`} className="btn"><BsFillFilePlusFill size={40} className='createIcon' /></Link>
+                            </div>
+                        </div>                        <h5 className="mb-2">Recent Trips</h5>
                         <div style={{ overflowX: "auto", overflowY: "auto", maxHeight: "50vh" }}>
                             <table className="table table-bordered table-hover table-striped">
                                 <thead className="">
