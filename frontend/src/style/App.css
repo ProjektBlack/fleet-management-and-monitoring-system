@@ -124,6 +124,7 @@ body {
 }
 
 .trashIcon {
+    cursor: pointer;
     color: red;
     font-size: large;
 

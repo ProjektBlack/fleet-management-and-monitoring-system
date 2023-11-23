@@ -169,7 +169,7 @@ export const Dashboard = () => {
             <div id="widgets" className='container'>
                 {/*sample widgets*/}
                 <div className="row mb-4 g-5">
-                    <div className="col-10 border-start border-success border-5 rounded dsContainer">
+                    <div className="col-8 border-start border-success border-5 rounded dsContainer">
                         <TruckTable />
                     </div>
                     <div className="col">

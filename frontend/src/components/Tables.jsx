@@ -11,16 +11,20 @@ import { Spinner, BackButton } from "./Widgets"
 //icons
 import { BsFillTrashFill, BsFillPencilFill, BsEye, BsCheckLg, BsExclamationCircle, BsSearch } from "react-icons/bs";
 
-
+//has issues with deletion, format it to make it visually appealing
 //truck table
 export const TruckTable = () => {
     const { user } = useAuth();
     const [trucks, setTrucks] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [selectedTruckId, setSelectedTruckId] = useState(null);
+    const [criteria, setCriteria] = useState('');
+    const [sort, setSort] = useState('Recent');
     //
     const [loading, setLoading] = useState(false);
     const enqueueSnackbar = useSnackbar();
+
+
 
     //fetches data from backend
     const fetchData = async () => {
@@ -53,18 +57,17 @@ export const TruckTable = () => {
     };
 
     //handles delete function
-    const confirmDelete = async (id) => {
+    const confirmDelete = async () => {
         setLoading(true);
         try {
-            const response = await axios.delete(`http://localhost:2222/trucks/${id}`);
+            const response = await axios.delete(`http://localhost:2222/trucks/${selectedTruckId}`);
             if (response.status === 204) {
-                const newTrucks = trucks.filter((truck) => truck._id !== id);
+                const newTrucks = trucks.filter((truck) => truck._id !== selectedTruckId);
                 setTrucks(newTrucks);
             }
         } catch (error) {
             console.log(error);
         } finally {
-            enqueueSnackbar('Truck deleted successfully', { variant: 'success' });
             setLoading(false);
             setShowModal(false);
         }
@@ -85,32 +88,43 @@ export const TruckTable = () => {
                 </div>
             ) : (
                 <div style={{ overflowX: "auto", overflowY: "auto", maxHeight: "70vh" }}>
+                    <div className="row mb-4">
+                        <div className="col-8">
+                        </div>
+                        <div className="col-1">
+                        </div>
+                        <div className="col-3">
+                            <input className='form-control' placeholder="Search for plate number.." value={criteria} onChange={(e) => setCriteria(e.target.value)}></input>
+                        </div>
+                    </div>
                     <table className="table table-hover">
                         <thead>
                             <tr>
-                                <th>Plate Number</th>
-                                <th>Truck Type</th>
-                                <th>Availability</th>
-                                <th>Maintenance</th>
-                                <th>Operations</th>
+                                <th style={{ width: "15%" }}>Plate Number</th>
+                                <th style={{ width: "15%" }}>Truck Type</th>
+                                <th style={{ width: "10%" }}>Availability</th>
+                                <th style={{ width: "10%" }}>Maintenance</th>
+                                <th >Operations</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {trucks.map((truck) => (
-                                <tr key={truck.plateNumber}>
-                                    <td>{truck.plateNumber}</td>
-                                    <td>{truck.truckType}</td>
-                                    <td>{truckAvailability(truck)}</td>
-                                    <td>{truck.underMaintenance ? <BsExclamationCircle /> : <BsCheckLg />}</td>
-                                    <td>
-                                        <Link className="showIcon" to={`/trucks/details/${truck._id}`} style={{ marginRight: '2%' }}><BsEye /></Link>
-                                        {user.role === 'Admin' && ( //only admins can delete trucks}
-                                            <BsFillTrashFill className="trashIcon" onClick={() => handleDelete(truck._id)} style={{ marginRight: '2%', cursor: "pointer" }} />
-                                        )}
-                                        <Link className="editIcon" to={`/trucks/edit/${truck._id}`}><BsFillPencilFill /></Link>
-                                    </td>
-                                </tr>
-                            ))}
+                            {trucks
+                                .filter(truck => truck.plateNumber.includes(criteria))
+                                .map((truck) => (
+                                    <tr key={truck.plateNumber}>
+                                        <td>{truck.plateNumber}</td>
+                                        <td>{truck.truckType}</td>
+                                        <td className="text-center">{truckAvailability(truck)}</td>
+                                        <td className="text-center">{truck.underMaintenance ? <BsExclamationCircle /> : <BsCheckLg />}</td>
+                                        <td className="text-center">
+                                            <Link className="showIcon" to={`/trucks/details/${truck._id}`} style={{ marginRight: '2%' }}><BsEye /></Link>
+                                            {user.role === 'Admin' && ( //only admins can delete trucks}
+                                                <BsFillTrashFill className="trashIcon" onClick={() => handleDelete(truck._id)} style={{ marginRight: '2%', cursor: "pointer" }} />
+                                            )}
+                                            <Link className="editIcon" to={`/trucks/edit/${truck._id}`}><BsFillPencilFill /></Link>
+                                        </td>
+                                    </tr>
+                                ))}
                         </tbody>
                     </table>
                 </div>
@@ -178,6 +192,7 @@ export const YearlyExpensesTable = () => {
         // Call the print function on the new window
         printWindow.print();
     }
+
     return (
         <div>
             {loading ? (
@@ -278,6 +293,23 @@ export const MonthlyExpensesTable = () => {
         }
     }
 
+    const printReport = () => {
+        // Get the table element
+        const table = document.getElementById("ame");
+
+        // Create a new window
+        const printWindow = window.open('', '_blank');
+
+        // Write the table into the new window
+        printWindow.document.write('<html><head><title>Print</title></head><body>');
+        printWindow.document.write('<h1>My Table</h1>');
+        printWindow.document.write(table.outerHTML);
+        printWindow.document.write('</body></html>');
+
+        // Call the print function on the new window
+        printWindow.print();
+    }
+
     useEffect(() => {
         fetchData();
     }, []);
@@ -304,7 +336,7 @@ export const MonthlyExpensesTable = () => {
                         </div>
                     </div>
                     <div className="row">
-                        <table className="table table-bordered table-hover ">
+                        <table id="ame" className="table table-bordered table-hover ">
                             <thead className="">
                                 <tr className="bg-primary">
                                     <th style={{}}>Plate Number</th>
@@ -456,3 +488,8 @@ export const TripsTable = () => {
         </div >
     )
 };
+
+//truckTrips table
+export const RelatedTripsTable = () => {
+
+}

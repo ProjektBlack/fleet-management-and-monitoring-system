@@ -21,6 +21,7 @@ router.delete("/trucks/:id", async (req, res) => {
         await Trip.deleteMany({ truck: id });
         //delete all associated expenses
         const truck = await Truck.findById(id);
+        //issue with if expenses are empty, it cannot delete
         if (truck) {
             for (let expense of truck.expenses) {
                 await YearlyExpense.deleteMany({ _id: { $in: expense.yearlyExpenses } });

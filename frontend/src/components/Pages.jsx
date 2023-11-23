@@ -137,21 +137,27 @@ export const ManageTruck = () => {
     )
 }
 
+//can split into three separate tables for easier management
 //show truck details
 export const ShowTruck = () => {
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);//loading
     const [truckInfo, setTruckInfo] = useState({}); //info and ids
     const [expenses, setExpenses] = useState([]); //ids
     const [yearlyExpenses, setYearlyExpenses] = useState([]); //datas to map
     const [monthlyExpenses, setMonthlyExpenses] = useState([]); //datas to map
     const [trips, setTrips] = useState([]); //datas to map
-    const { enqueueSnackbar } = useSnackbar();
-    const { user } = useAuth();
-    const { id } = useParams();
+    const [selectedId, setSelectedId] = useState(null); //selected
+    //modals
+    const [showModal, setShowModal] = useState(false);
     const [showModal1, setShowModal1] = useState(false);
     const [showModal2, setShowModal2] = useState(false);
     const [showModal3, setShowModal3] = useState(false);
-    const [selectedId, setSelectedId] = useState(null);
+
+
+    const { user } = useAuth();
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         setLoading(true);
@@ -212,46 +218,36 @@ export const ShowTruck = () => {
     };
 
 
-    const deleteTrip = async (tripId) => {
+    const deleteTrip = async () => {
         try {
-            // Make the DELETE request
             await axios.delete(`http://localhost:2222/trips/${selectedId}`);
-
-            // Remove the deleted trip from the local state
+            //remove trip from local state
             setTrips(trips.filter(trip => trip._id !== selectedId));
             setShowModal1(false);
 
         } catch (error) {
-            // Log the error
             console.error(error);
         } finally {
             enqueueSnackbar("Trip deleted!", { variant: "success" });
         }
     };
 
-    const deleteMonthlyExpense = async (expenseId) => {
+    const deleteMonthlyExpense = async () => {
         try {
-            // Make the DELETE request
             await axios.delete(`http://localhost:2222/expenses/monthly/${selectedId}`);
-
-            // Remove the deleted expense from the local state
             setMonthlyExpenses(monthlyExpenses.filter(expense => expense._id !== selectedId));
             setShowModal2(false);
             enqueueSnackbar("Monthly expense deleted!", { variant: "success" });
         } catch (error) {
-            // Log the error
             console.error(error);
         } finally {
             enqueueSnackbar("Monthly expense deleted!", { variant: "success" });
         }
     };
 
-    const deleteYearlyExpense = async (expenseId) => {
+    const deleteYearlyExpense = async () => {
         try {
-            // Make the DELETE request
             await axios.delete(`http://localhost:2222/expenses/yearly/${selectedId}`);
-
-            // Remove the deleted expense from the local state
             setYearlyExpenses(yearlyExpenses.filter(expense => expense._id !== selectedId));
             setShowModal3(false);
 
@@ -274,6 +270,28 @@ export const ShowTruck = () => {
         }
     };
 
+    const handleDelete = (id) => {
+        setSelectedId(id);
+        setShowModal(true);
+    };
+
+    //handles delete function
+    const confirmDelete = async () => {
+        setLoading(true);
+        try {
+            await axios.delete(`http://localhost:2222/trucks/${selectedId}`);
+            enqueueSnackbar("Truck deleted successfully.", { variant: "success" })
+            setLoading(false)
+            setShowModal(false);
+            navigate("/trucks")
+        } catch (error) {
+            enqueueSnackbar("Process failed.", { variant: "error" })
+            setLoading(false)
+            setShowModal(false)
+            console.log(error);
+        }
+    };
+
     return (
         <div className="container" style={{ minHeight: "100vh" }}>
             {loading ? (
@@ -292,7 +310,7 @@ export const ShowTruck = () => {
                                 </div>
                                 {user.role === 'Admin' && (
                                     <div className="col">
-                                        <button className="btn btn-danger">Delete</button>
+                                        <button className="btn btn-danger" onClick={handleDelete}>Delete</button>
                                     </div>
                                 )}
                                 <div className="col">
@@ -498,7 +516,22 @@ export const ShowTruck = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+            <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Deletion</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to delete this truck?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={confirmDelete}>
+                        Delete
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div >
+
     );
 };
 
