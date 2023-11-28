@@ -9,7 +9,7 @@ import axios from "axios";
 import { Spinner, BackButton, Sidebar, Dashboard, CardComponent } from "./Widgets";
 import { TruckTable, YearlyExpensesTable, TripsTable, MonthlyExpensesTable } from "./Tables";
 //icons
-import { BsFillFilePlusFill, BsEye, BsPen, BsFillPencilFill, BsFillTrashFill } from "react-icons/bs";
+import { BsFillFilePlusFill, BsEye, BsPen, BsFillPencilFill, BsFillTrashFill, BsPlusCircleFill } from "react-icons/bs";
 
 //login page
 export const Login = () => {
@@ -423,7 +423,7 @@ export const ShowTruck = () => {
                                 <h2>Trips</h2>
                             </div>
                             <div className="col text-end">
-                                <Link to={`/newtrips/${id}`} className="btn"><BsFillFilePlusFill size={40} className='createIcon' /></Link>
+                                <Link to={`/newtrips/${id}`} className="btn"><BsPlusCircleFill size={50} className='createIcon' /></Link>
                             </div>
                         </div>                        <h5 className="mb-2">Recent Trips</h5>
                         <div style={{ overflowX: "auto", overflowY: "auto", maxHeight: "50vh" }}>

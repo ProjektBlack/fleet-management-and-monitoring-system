@@ -123,6 +123,7 @@ export const CreateTruck = () => {
     //function to create a new truck
     const handleCreateTruck = async () => {
         try {
+            event.preventDefault();
             const data = {
                 plateNumber,
                 truckType,
@@ -139,22 +140,33 @@ export const CreateTruck = () => {
         }
     };
     return (
-
-        <div className="row">
-            <div className="p-4 mx-auto mt-4" style={{ width: '50%' }}>
-                <h5>Create New Truck</h5>
-                <label>Plate Number </label>
-                <input type="text" value={plateNumber} onChange={(e) => setPlateNumber(e.target.value)} className="form-control"></input>
-                <label>Truck Type </label>
-                <input type="text" value={truckType} onChange={(e) => setTruckType(e.target.value)} className="form-control"></input>
+        <div className="d-flex align-items-center justify-content-center vh-100">
+            <form id="editTruckForm" className="p-4 mx-auto border-0 rounded">
+                <div className="row">
+                    <div className="col-10">
+                        <h5>Create New Truck</h5>
+                    </div>
+                    <div className="col">
+                        <BackButton />
+                    </div>
+                </div>
+                <div className="row mb-2" >
+                    <label className="mb-1">Plate Number </label>
+                    <input type="text" value={plateNumber} onChange={(e) => setPlateNumber(e.target.value)} className="form-control"></input>
+                </div>
+                <div className="row mb-2">
+                    <label className="mb-1">Truck Type </label>
+                    <input type="text" value={truckType} onChange={(e) => setTruckType(e.target.value)} className="form-control"></input>
+                </div>
                 <button className="btn btn-success mx-auto d-flex mt-4 mb-4" onClick={handleCreateTruck}>Create</button>
-            </div>
-        </div>
+            </form >
+        </div >
     )
 }
 
 //create trip form
 export const CreateTrip = () => {
+    //loading
     const [loading, setLoading] = useState(false);
 
     //states for trip details
@@ -168,7 +180,6 @@ export const CreateTrip = () => {
     const [helper, setHelper] = useState({
         name: "",
     });
-
     const [year, setYear] = useState("");
     const [month, setMonth] = useState("");
     const [day, setDay] = useState("");
@@ -274,7 +285,6 @@ export const CreateTrip = () => {
             getObject.data.trips.push(newObjectID);
             await axios.put(`http://localhost:2222/trucks/${truckId}`, getObject.data);
             setLoading(false);
-            //use better alerts
             enqueueSnackbar("Trip created.", { variant: "success" })
             navigate(`/trucks/details/${truckId}`); //navigate to truck details page
         } catch (error) {
@@ -285,216 +295,224 @@ export const CreateTrip = () => {
     };
 
     return (
-        <div className="container">
+        <div className="container p-4">
             <form>
-                <h5>Create New Trip</h5>
-                <div className="row infoContainer">
-                    <div className="col border p-4">
-                        <div className="row">
-                            <h6>
-                                Trip Details
-                            </h6>
+                <h5>Create <span className="logo">New Trip</span></h5>
+                <div className="row g-0">
+                    <div className="col p-4">
+                        <div className="container formContainer p-4 rounded">
+                            <div className="row">
+                                <h6>
+                                    Trip Details
+                                </h6>
+                            </div>
+                            <div className="row">
+                                <label>Driver Name</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="driverName"
+                                    value={driver.name}
+                                    onChange={(e) => setDriver({ ...driver, name: e.target.value })}
+                                />
+                            </div>
+                            <div className="row">
+                                <label>Helper Name</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="helperName"
+                                    value={helper.name}
+                                    onChange={(e) => setHelper({ ...helper, name: e.target.value })}
+                                />
+                            </div>
+                            <div className="row">
+                                <label>Customer Name</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="customerName"
+                                    value={customer.name}
+                                    onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
+                                />
+                            </div>
+                            <div className="row">
+                                <label>Customer Location</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="customerLocation"
+                                    value={customer.location}
+                                    onChange={(e) => setCustomer({ ...customer, location: e.target.value })}
+                                />
+                            </div>
+                            <div className="row">
+                                <label>Year</label>
+                                <input
+                                    type="string"
+                                    className="form-control"
+                                    name="year"
+                                    value={year}
+                                    onChange={(e) => setYear(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="row">
+                                <label>Month</label>
+                                <select class="form-select" value={month} onChange={(e) => setMonth(e.target.value)}>
+                                    <option selected>Select month</option>
+                                    <option value="January">January</option>
+                                    <option value="February">February</option>
+                                    <option value="March">March</option>
+                                    <option value="April">April</option>
+                                    <option value="May">May</option>
+                                    <option value="June">June</option>
+                                    <option value="July">July</option>
+                                    <option value="August">August</option>
+                                    <option value="September">September</option>
+                                    <option value="October">October</option>
+                                    <option value="November">November</option>
+                                    <option value="December">December</option>
+                                </select>
+                            </div>
+                            <div className="row">
+                                <label>Day</label>
+                                <input
+                                    type="string"
+                                    className="form-control"
+                                    name="day"
+                                    value={day}
+                                    onChange={(e) => setDay(e.target.value)}
+                                    required
+                                />
+                            </div>
                         </div>
-                        <div className="row">
-                            <label>Driver Name</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                name="driverName"
-                                value={driver.name}
-                                onChange={(e) => setDriver({ ...driver, name: e.target.value })}
-                            />
-                        </div>
-                        <div className="row">
-                            <label>Helper Name</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                name="helperName"
-                                value={helper.name}
-                                onChange={(e) => setHelper({ ...helper, name: e.target.value })}
-                            />
-                        </div>
-                        <div className="row">
-                            <label>Customer Name</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                name="customerName"
-                                value={customer.name}
-                                onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
-                            />
-                        </div>
-                        <div className="row">
-                            <label>Customer Location</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                name="customerLocation"
-                                value={customer.location}
-                                onChange={(e) => setCustomer({ ...customer, location: e.target.value })}
-                            />
-                        </div>
-                        <div className="row">
-                            <label>Year</label>
-                            <input
-                                type="string"
-                                className="form-control"
-                                name="year"
-                                value={year}
-                                onChange={(e) => setYear(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="row">
-                            <label>Month</label>
-                            <select class="form-select" value={month} onChange={(e) => setMonth(e.target.value)}>
-                                <option selected>Select month</option>
-                                <option value="January">January</option>
-                                <option value="February">February</option>
-                                <option value="March">March</option>
-                                <option value="April">April</option>
-                                <option value="May">May</option>
-                                <option value="June">June</option>
-                                <option value="July">July</option>
-                                <option value="August">August</option>
-                                <option value="September">September</option>
-                                <option value="October">October</option>
-                                <option value="November">November</option>
-                                <option value="December">December</option>
-                            </select>
-                        </div>
-                        <div className="row">
-                            <label>Day</label>
-                            <input
-                                type="string"
-                                className="form-control"
-                                name="day"
-                                value={day}
-                                onChange={(e) => setDay(e.target.value)}
-                                required
-                            />
-                        </div>
+
+
+
                     </div>
-                    <div className="col border p-4">
-                        <div className="row">
-                            <h6>Trip Status</h6>
-                        </div>
-                        <div className="row">
-                            <label>Time Dispatched</label>
-                            <input
-                                type="time"
-                                className="form-control"
-                                name="timeDispatched"
-                                value={timeDispatched}
-                                onChange={(e) => setTimeDispatched(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="row">
-                            <label>Time Received</label>
-                            <input
-                                type="time"
-                                className="form-control"
-                                name="timeReceived"
-                                value={timeReceived}
-                                onChange={(e) => setTimeReceived(e.target.value)}
-                            />
+                    <div className="col p-4 ">
+                        <div className="container formContainer p-4">
+                            <div className="row">
+                                <h6>Trip Status</h6>
+                            </div>
+                            <div className="row">
+                                <label>Time Dispatched</label>
+                                <input
+                                    type="time"
+                                    className="form-control"
+                                    name="timeDispatched"
+                                    value={timeDispatched}
+                                    onChange={(e) => setTimeDispatched(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="row">
+                                <label>Time Received</label>
+                                <input
+                                    type="time"
+                                    className="form-control"
+                                    name="timeReceived"
+                                    value={timeReceived}
+                                    onChange={(e) => setTimeReceived(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="row">
+                                <label>Time Returned</label>
+                                <input
+                                    type="time"
+                                    className="form-control"
+                                    name="timeReturned"
+                                    value={timeReturned}
+                                    onChange={(e) => setTimeReturned(e.target.value)}
+                                />
+                            </div>
+                            <div className="row">
+                                <label>Status</label>
+                                <select className="form-select" name="status" value={WOWEX} onChange={(e) => setWOWEX(e.target.value)}>
+                                    <option value={"Pending"}>Pending</option>
+                                    <option value={"Done"}>Done</option>
+                                </select>
+                            </div>
+                            <div className="row">
+                                <label>Distance (KM)</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="distance"
+                                    value={distance}
+                                    onChange={handleDistanceChange}
+                                />
+                            </div>
                         </div>
 
-                        <div className="row">
-                            <label>Time Returned</label>
-                            <input
-                                type="time"
-                                className="form-control"
-                                name="timeReturned"
-                                value={timeReturned}
-                                onChange={(e) => setTimeReturned(e.target.value)}
-                            />
-                        </div>
-                        <div className="row">
-                            <label>Status</label>
-                            <select className="form-select" name="status" value={WOWEX} onChange={(e) => setWOWEX(e.target.value)}>
-                                <option value={"Pending"}>Pending</option>
-                                <option value={"Done"}>Done</option>
-                            </select>
-                        </div>
-                        <div className="row">
-                            <label>Distance (KM)</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                name="distance"
-                                value={distance}
-                                onChange={handleDistanceChange}
-                            />
-                        </div>
                     </div>
-                    <div className="col border p-4">
-                        <div className="row">
-                            <h6>Trip Costs</h6>
-                        </div>
-                        <div className="row">
-                            <label>Diesel Price (/liter)</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                name="dieselCost"
-                                value={dieselCost}
-                                onChange={handleDieselCostChange}
-                            />
-                        </div>
+                    <div className="col p-4">
+                        <div className="container formContainer p-4">
+                            <div className="row">
+                                <h6>Trip Costs</h6>
+                            </div>
+                            <div className="row">
+                                <label>Diesel Price (/liter)</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="dieselCost"
+                                    value={dieselCost}
+                                    onChange={handleDieselCostChange}
+                                />
+                            </div>
 
-                        <div className="row">
-                            <label>Toll Fees</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                name="tollFee"
-                                value={tollFee}
-                                onChange={handleTollFeeChange}
-                            />
-                        </div>
+                            <div className="row">
+                                <label>Toll Fees</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="tollFee"
+                                    value={tollFee}
+                                    onChange={handleTollFeeChange}
+                                />
+                            </div>
 
-                        <div className="row">
-                            <label>Pathway Fees</label>
-                            <input
-                                type="number"
-                                className="form-control"
-                                name="pathway"
-                                value={pathway}
-                                onChange={handlePathwayChange}
-                            />
-                        </div>
-                        <div className="row">
-                            <label>Total Fuel Cost</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                name="dieselConsumption"
-                                value={dieselConsumption}
-                                readOnly
-                                disabled
-                            />
-                        </div>
-                        <div className="row">
-                            <label>Total Trip Cost</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                name="totalTripCost"
-                                value={totalTripCost}
-                                onChange={(e) => setTotalTripCost(e.target.value)}
-                                readOnly
-                                disabled
-                            />
+                            <div className="row">
+                                <label>Pathway Fees</label>
+                                <input
+                                    type="number"
+                                    className="form-control"
+                                    name="pathway"
+                                    value={pathway}
+                                    onChange={handlePathwayChange}
+                                />
+                            </div>
+                            <div className="row">
+                                <label>Total Fuel Cost</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="dieselConsumption"
+                                    value={dieselConsumption}
+                                    readOnly
+                                    disabled
+                                />
+                            </div>
+                            <div className="row">
+                                <label>Total Trip Cost</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="totalTripCost"
+                                    value={totalTripCost}
+                                    onChange={(e) => setTotalTripCost(e.target.value)}
+                                    readOnly
+                                    disabled
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div className="p-4 mx-auto mt-4" style={{ width: '50%' }}>
-
-
-                    <button className="btn btn-success mt-4 mx-auto d-flex" onClick={handleCreateTrip}>
+                <div className="p-4 mx-auto border" style={{ width: '100%' }}>
+                    <button className="btn btn-success mx-auto d-flex" onClick={handleCreateTrip}>
                         Create
                     </button>
                 </div>
@@ -861,7 +879,7 @@ export const EditTruck = () => {
         <div className="d-flex align-items-center justify-content-center vh-100">
             <form id="editTruckForm" className="p-4 mx-auto border-0 rounded">
                 <div className="row">
-                    <div className="col-11">
+                    <div className="col-10">
                         <h5>Edit Truck</h5>
                     </div>
                     <div className="col">

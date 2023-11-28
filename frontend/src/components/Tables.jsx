@@ -554,11 +554,11 @@ export const RecentTripsTable = () => {
     return (
         <div>
             {loading ? (
-                <div className="border d-flex justify-content-center align-items-center infoContainer" style={{ height: '50vh' }}>
+                <div className="border d-flex justify-content-center align-items-center infoContainer" style={{ height: '78vh' }}>
                     <Spinner />
                 </div>
             ) : (
-                <div className="p-4 infoContainer rounded border-start border-success border-5" style={{ overflowX: "auto", overflowY: "auto", maxHeight: "50vh" }}>
+                <div className="p-4 infoContainer rounded border-start border-success border-5" style={{ overflowX: "auto", overflowY: "auto", maxHeight: "78vh" }}>
                     <div className="row">
                         <h4>Recent <span className="logo">Trips</span></h4>
                         <table className="table table-hover table-small" >
@@ -674,17 +674,18 @@ export const TruckStatusWidget = () => {
     return (
         <div>
             {loading ? (
-                <div className=" d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
+                <div className=" d-flex justify-content-center align-items-center" style={{ height: '55vh' }}>
                     <Spinner />
                 </div>
             ) : (
-                <div className="p-4 rounded border-start border-success border-5" style={{ overflowX: "auto", overflowY: "auto", maxHeight: "50vh" }}>
+                <div className="p-4 rounded border-start border-success border-5" style={{ overflowX: "auto", overflowY: "auto", maxHeight: "55vh" }}>
                     <h4>Truck <span className="logo">Status</span></h4>
                     <table className="table table-hover table-sm">
                         <thead>
                             <tr>
-                                <th style={{ width: "75%" }}>Plate Number</th>
+                                <th style={{ width: "33%" }}>Plate Number</th>
                                 <th className="text-center" style={{ width: "33%" }}>Availability</th>
+                                <th className="text-center" style={{ width: "33%" }}>Maintenance</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -693,6 +694,7 @@ export const TruckStatusWidget = () => {
                                     <tr key={truck.plateNumber}>
                                         <td>{truck.plateNumber}</td>
                                         <td className="text-center" style={{ color: truckAvailability(truck) === 'Available' ? 'green' : 'red' }}>{truckAvailability(truck)}</td>
+                                        <td className="text-center" style={{ color: truck.underMaintenance ? 'red' : 'green' }}>{truck.underMaintenance ? <BsExclamationCircle /> : <BsCheckLg />}</td>
                                     </tr>
                                 ))}
                         </tbody>

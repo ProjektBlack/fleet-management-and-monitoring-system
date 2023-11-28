@@ -35,6 +35,8 @@ const App = () => {
       <Route path="trucks/details/:id" element={<PrivateRoute isAuthenticated={isAuthenticated}><ShowTruck /></PrivateRoute>} />
       {/*error page*/}
       <Route path="*" element={<Missing />} />
+      {/*initial*/}
+      <Route path="/" element={<Login />} />
     </Routes>
   );
 };

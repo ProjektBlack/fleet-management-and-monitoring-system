@@ -23,13 +23,13 @@ export const PrivateRoute = ({ isAuthenticated, children }) => {
 //add an icon
 export const BackButton = () => {
     const goBack = () => {
+        event.preventDefault();
         window.history.back();
     };
 
     return (
         <button className='btn btn-secondary' onClick={goBack}>
             <BsArrowReturnLeft id="backButton" />
-            Return
         </button >
     );
 };
@@ -152,12 +152,12 @@ export const TripsThisYear = () => {
     }, []);
 
     return (
-        <div className='text-center widget pt-2'>
+        <div className='text-center widget pt-3'>
             <div className='row'>
                 <h1><span className='logo'>{completedTrips}</span></h1>
             </div>
             <div className='row'>
-                <p className='text-muted'>Completed trips this year</p>
+                <p className='text-muted'>Trips done this year</p>
             </div>
         </div>
     );
@@ -179,17 +179,16 @@ export const TripsThisMonth = () => {
     }, []);
 
     return (
-        <div className='text-center widget pt-2'>
+        <div className='text-center widget pt-3'>
             <div className='row'>
                 <h1><span className='logo'>{trips}</span></h1>
             </div>
             <div className='row'>
-                <p className='text-muted'>Completed trips this month</p>
+                <p className='text-muted'>Trips done this year</p>
             </div>
         </div>
     );
 }
-
 
 //dashboard
 export const Dashboard = () => {
@@ -207,30 +206,39 @@ export const Dashboard = () => {
             <div className='container'>
                 <div className='row'>
                     <div className='col-7 col-start'>
-                        <div style={{ maxHeight: "50vh" }}>
+                        <div className="row" style={{ maxHeight: "80vh" }}>
                             <RecentTripsTable />
                         </div>
                     </div>
                     <div className='col'>
-                        <div className='infoContainer'>
-                            <TruckStatusWidget />
+                        <div className='row g-2 mb-3'>
+                            <h5>Quick <span className='logo'>Glance</span></h5>
+                            <div className='col'>
+                                <div id="pendingContainer" className='rounded'>
+                                    <PendingWidget />
+                                </div>
+                            </div>
+                            <div className='col'>
+                                <div className='infoContainer rounded'>
+                                    <TripsThisMonth />
+                                </div>
+                            </div>
+                            <div className='col'>
+                                <div className='infoContainer rounded'>
+                                    <TripsThisYear />
+                                </div>
+                            </div>
+                        </div>
+                        <div className='row'>
+                            <div className='col'>
+                                <div className='infoContainer'>
+                                    <TruckStatusWidget />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div className='row'>
-                    <div className='col'>
-                        <PendingWidget />
-                    </div>
-                    <div className='col'>
-                        <TripsThisMonth />
-                    </div>
-                    <div className='col'>
-                        <TripsThisYear />
-                    </div>
-                </div>
-
             </div>
-
         </div >
     );
 }
