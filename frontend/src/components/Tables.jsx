@@ -9,37 +9,53 @@ import { useAuth } from "../context/authProvider";
 //import components
 import { Spinner, BackButton } from "./Widgets"
 //icons
-import { BsFillTrashFill, BsFillPencilFill, BsEye, BsCheckLg, BsExclamationCircle, BsFillFilePlusFill, BsPlusCircleFill } from "react-icons/bs";
+import { BsFillTrashFill, BsFillPencilFill, BsEye, BsCheckLg, BsExclamationCircle, BsPrinter, BsPlusCircleFill } from "react-icons/bs";
 
 //has issues with deletion, format it to make it visually appealing
 //truck table
 export const TruckTable = () => {
-    const { user } = useAuth();
+    //states
+    const [loading, setLoading] = useState(false);
     const [trucks, setTrucks] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [selectedTruckId, setSelectedTruckId] = useState(null);
     const [criteria, setCriteria] = useState('');
-    const [sort, setSort] = useState('Recent');
-    //
-    const [loading, setLoading] = useState(false);
-    const enqueueSnackbar = useSnackbar();
-
-
+    //functions from context
+    const { user } = useAuth();
+    const { enqueueSnackbar } = useSnackbar();
 
     //fetches data from backend
     const fetchData = async () => {
         setLoading(true);
         try {
             const response = await axios.get("http://localhost:2222/trucks");
-            setTrucks(response.data.data);
-            console.log(response.data.data);
+            const trucks = response.data.data;
+
+            const trucksWithTrips = await Promise.all(trucks.map(async (truck) => {
+                const trips = await Promise.all(truck.trips.map(fetchTripData));
+                return { ...truck, trips };
+            }));
+            setTrucks(trucksWithTrips);
             setLoading(false);
         } catch (error) {
-            console.log(error);
             setLoading(false);
+            console.log(error);
+            enqueueSnackbar("Failed to fetch data.", { variant: 'error' });
         }
     };
 
+    //fetch trip data - crucial for truckAvailability function
+    const fetchTripData = async (tripId) => {
+        try {
+            const response = await axios.get(`http://localhost:2222/trips/${tripId}`);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    };
+
+    //check if truck object has pending trips or is under maintenance
     const truckAvailability = (truck) => {
         const hasPendingTrips = truck.trips.some(trip => trip.status === 'pending' || trip.status === 'Pending');
         const isUnderMaintenance = truck.underMaintenance;
@@ -51,6 +67,7 @@ export const TruckTable = () => {
         }
     };
 
+    //shows the confirmation modal
     const handleDelete = (id) => {
         setSelectedTruckId(id);
         setShowModal(true);
@@ -61,19 +78,19 @@ export const TruckTable = () => {
         setLoading(true);
         try {
             const response = await axios.delete(`http://localhost:2222/trucks/${selectedTruckId}`);
+            enqueueSnackbar('Truck deleted successfully.', { variant: 'success' });
             if (response.status === 204) {
                 const newTrucks = trucks.filter((truck) => truck._id !== selectedTruckId);
                 setTrucks(newTrucks);
             }
         } catch (error) {
             console.log(error);
+            enqueueSnackbar('Process failed.', { variant: 'error' });
         } finally {
             setLoading(false);
             setShowModal(false);
         }
     };
-
-
 
     //fetches data on render and state change
     useEffect(() => {
@@ -83,11 +100,11 @@ export const TruckTable = () => {
     return (
         <div>
             {loading ? (
-                <div className="s d-flex justify-content-center align-items-center" style={{ height: '40vh' }}>
+                <div className="d-flex justify-content-center align-items-center" style={{ height: '70vh' }}>
                     <Spinner />
                 </div>
             ) : (
-                <div className="p-4" style={{ overflowX: "auto", overflowY: "auto", maxHeight: "80vh" }}>
+                <div className="p-4" style={{ overflowX: "auto", overflowY: "auto", maxHeight: "70vh" }}>
                     <div className="row mb-4">
                         <div className="col-8">
                         </div>
@@ -95,15 +112,15 @@ export const TruckTable = () => {
                             <input className='form-control' placeholder="Search for plate number.." value={criteria} onChange={(e) => setCriteria(e.target.value)}></input>
                         </div>
                         <div className="col-1">
-                            <Link to="/trucks/new"><BsPlusCircleFill id="newIcon" size={35} /></Link>
+                            <Link to="/trucks/new" title="Create new truck"><BsPlusCircleFill id="newIcon" size={35} /></Link>
                         </div>
 
                     </div>
                     <div className="row">
-                        <table className="table table-hover">
+                        <table className="table table-hover table-striped">
                             <thead>
                                 <tr>
-                                    <th className="text-center">Plate Number</th>
+                                    <th className="text-center" scope="row">Plate Number</th>
                                     <th className="text-center">Truck Type</th>
                                     <th className="text-center">Availability</th>
                                     <th className="text-center">Maintenance</th>
@@ -115,16 +132,16 @@ export const TruckTable = () => {
                                     .filter(truck => truck.plateNumber.includes(criteria))
                                     .map((truck) => (
                                         <tr key={truck.plateNumber}>
-                                            <td className="text-center">{truck.plateNumber}</td>
+                                            <td className="text-center" scope="row">{truck.plateNumber}</td>
                                             <td className="text-center">{truck.truckType}</td>
-                                            <td className="text-center">{truckAvailability(truck)}</td>
-                                            <td className="text-center">{truck.underMaintenance ? <BsExclamationCircle /> : <BsCheckLg />}</td>
+                                            <td className="text-center" style={{ color: truckAvailability(truck) === 'Available' ? 'green' : 'red' }}>{truckAvailability(truck)}</td>
+                                            <td className="text-center" style={{ color: truck.underMaintenance ? 'red' : 'green' }}>{truck.underMaintenance ? <BsExclamationCircle /> : <BsCheckLg />}</td>
                                             <td className="text-center">
-                                                <Link className="showIcon" to={`/trucks/details/${truck._id}`} style={{ marginRight: '2%' }}><BsEye /></Link>
+                                                <Link title="Show all related information" className="showIcon" to={`/trucks/details/${truck._id}`} style={{ marginRight: '2%' }}><BsEye /></Link>
                                                 {user.role === 'Admin' && ( //only admins can delete trucks}
-                                                    <BsFillTrashFill className="trashIcon" onClick={() => handleDelete(truck._id)} style={{ marginRight: '2%', cursor: "pointer" }} />
+                                                    <BsFillTrashFill title="Delete this truck" className="trashIcon" onClick={() => handleDelete(truck._id)} style={{ marginRight: '2%', cursor: "pointer" }} />
                                                 )}
-                                                <Link className="editIcon" to={`/trucks/edit/${truck._id}`}><BsFillPencilFill /></Link>
+                                                <Link title="Edit this truck" className="editIcon" to={`/trucks/edit/${truck._id}`}><BsFillPencilFill /></Link>
                                             </td>
                                         </tr>
                                     ))}
@@ -134,7 +151,7 @@ export const TruckTable = () => {
 
                 </div>
             )}
-            <Modal show={showModal} onHide={() => setShowModal(false)}>
+            <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="gmsModal">
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Deletion</Modal.Title>
                 </Modal.Header>
@@ -165,28 +182,24 @@ export const YearlyExpensesTable = () => {
         try {
             setLoading(true);
             const allYearlyExpenses = await axios.get("http://localhost:2222/expenses/yearly");
+            let calculatedTotalExpenses = 0;
             for (let i = 0; i < allYearlyExpenses.data.data.length; i++) {
                 const truck = await axios.get(`http://localhost:2222/trucks/${allYearlyExpenses.data.data[i].truck}`);
                 console.log(truck.data.plateNumber)
                 allYearlyExpenses.data.data[i].plateNumber = truck.data.plateNumber;
+                calculatedTotalExpenses += allYearlyExpenses.data.data[i].totalExpenses;
             }
             setYearlyExpenses(allYearlyExpenses.data.data);
+            setTotalExpenses(calculatedTotalExpenses);
             setLoading(false);
         } catch (error) {
             setLoading(false);
             console.log(error);
         }
     }
-    function calculateTotalExpenses() {
-        let calculatedTotalExpenses = 0;
-        for (let i = 0; i < yearlyExpenses.length; i++) {
-            calculatedTotalExpenses += yearlyExpenses[i].totalExpenses;
-        }
-        setTotalExpenses(calculatedTotalExpenses);
-    }
+
     useEffect(() => {
         fetchData();
-        calculateTotalExpenses();
     }, []);
 
     const printReport = () => {
@@ -212,11 +225,11 @@ export const YearlyExpensesTable = () => {
     return (
         <div>
             {loading ? (
-                <div className="border d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
+                <div className="border d-flex justify-content-center align-items-center" style={{ height: '70vh' }}>
                     <Spinner />
                 </div>
             ) : (
-                <div className="p-4 infoContainer rounded border-success border-start border-5">
+                <div className="p-4 infoContainer rounded border-success border-start border-5" style={{ height: '70vh' }}>
                     <div className="row mb-4">
                         <div className="col-7">
                         </div>
@@ -230,7 +243,7 @@ export const YearlyExpensesTable = () => {
                             <input className='form-control' placeholder="Search for anything" value={criteria} onChange={(e) => setCriteria(e.target.value)}></input>
                         </div>
                         <div className="col-1">
-                            <button className="btn btn-success" onClick={printReport}>Print</button>
+                            <button title="Generate report" className="btn btn-success" onClick={printReport}><BsPrinter size={20} /></button>
                         </div>
                     </div>
                     <div className="row">
@@ -338,11 +351,11 @@ export const MonthlyExpensesTable = () => {
     return (
         <div>
             {loading ? (
-                <div className="border d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
+                <div className="border d-flex justify-content-center align-items-center" style={{ height: '70vh' }}>
                     <Spinner />
                 </div>
             ) : (
-                <div className="p-4 infoContainer rounded border-success border-start border-5">
+                <div className="p-4 infoContainer rounded border-success border-start border-5" style={{ height: '70vh' }}>
                     <div className="row mb-4">
                         <div className="col-7">
                         </div>
@@ -541,21 +554,22 @@ export const RecentTripsTable = () => {
     return (
         <div>
             {loading ? (
-                <div className="border d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
+                <div className="border d-flex justify-content-center align-items-center infoContainer" style={{ height: '50vh' }}>
                     <Spinner />
                 </div>
             ) : (
-                <div>
+                <div className="p-4 infoContainer rounded border-start border-success border-5" style={{ overflowX: "auto", overflowY: "auto", maxHeight: "50vh" }}>
                     <div className="row">
-                        <table className="table table-hover ">
+                        <h4>Recent <span className="logo">Trips</span></h4>
+                        <table className="table table-hover table-small" >
                             <thead className="">
                                 <tr className="bg-primary">
-                                    <th style={{}}>Plate Number</th>
-                                    <th style={{}}>Customer Name</th>
-                                    <th style={{}}>Customer Location</th>
-                                    <th style={{}}>Date</th>
-                                    <th style={{}}>Status</th>
-                                    <th style={{}}>Distance</th>
+                                    <th className="text-center">Plate Number</th>
+                                    <th className="text-center">Customer Name</th>
+                                    <th className="text-center">Customer Location</th>
+                                    <th className="text-center">Date</th>
+                                    <th className="text-center">Status</th>
+                                    <th className="text-center">Distance</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -583,12 +597,12 @@ export const RecentTripsTable = () => {
                                         })
                                         .map((trip) => (
                                             <tr key={trip._id}>
-                                                <td>{trip.plateNumber}</td>
-                                                <td>{trip.customer.name}</td>
-                                                <td>{trip.customer.location}</td>
-                                                <td>{trip.month} {trip.day}, {trip.year}</td>
-                                                <td>{trip.status}</td>
-                                                <td>{trip.distance} <span className="text-muted">km</span></td>
+                                                <td className="text-center">{trip.plateNumber}</td>
+                                                <td className="text-center">{trip.customer.name}</td>
+                                                <td className="text-center">{trip.customer.location}</td>
+                                                <td className="text-center">{trip.month} {trip.day}, {trip.year}</td>
+                                                <td style={{ color: trip.status === 'Pending' ? 'orange' : 'green' }} className="text-center">{trip.status}</td>
+                                                <td className="text-center">{trip.distance} <span className="text-muted">km</span></td>
                                             </tr>
                                         ))
                                 }
@@ -606,24 +620,41 @@ export const RecentTripsTable = () => {
 export const TruckStatusWidget = () => {
     const [trucks, setTrucks] = useState([]);
     const [loading, setLoading] = useState(false);
+    //functions
+    const { enqueueSnackbar } = useSnackbar();
 
+    //fetches data from backend
     const fetchData = async () => {
         setLoading(true);
         try {
             const response = await axios.get("http://localhost:2222/trucks");
-            setTrucks(response.data.data);
-            console.log(response.data.data);
+            const trucks = response.data.data;
+
+            const trucksWithTrips = await Promise.all(trucks.map(async (truck) => {
+                const trips = await Promise.all(truck.trips.map(fetchTripData));
+                return { ...truck, trips };
+            }));
+            setTrucks(trucksWithTrips);
             setLoading(false);
         } catch (error) {
-            console.log(error);
             setLoading(false);
+            console.log(error);
+            enqueueSnackbar("Failed to fetch data.", { variant: 'error' });
         }
     };
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    //fetch trip data - crucial for truckAvailability function
+    const fetchTripData = async (tripId) => {
+        try {
+            const response = await axios.get(`http://localhost:2222/trips/${tripId}`);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    };
 
+    //check if truck object has pending trips or is under maintenance
     const truckAvailability = (truck) => {
         const hasPendingTrips = truck.trips.some(trip => trip.status === 'pending' || trip.status === 'Pending');
         const isUnderMaintenance = truck.underMaintenance;
@@ -635,21 +666,25 @@ export const TruckStatusWidget = () => {
         }
     };
 
+    useEffect(() => {
+        fetchData();
+    }, []);
+
 
     return (
         <div>
             {loading ? (
-                <div className="s d-flex justify-content-center align-items-center" style={{ height: '40vh' }}>
+                <div className=" d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
                     <Spinner />
                 </div>
             ) : (
-                <div style={{ overflowX: "auto", overflowY: "auto", maxHeight: "70vh" }}>
-                    <table className="table table-hover">
+                <div className="p-4 rounded border-start border-success border-5" style={{ overflowX: "auto", overflowY: "auto", maxHeight: "50vh" }}>
+                    <h4>Truck <span className="logo">Status</span></h4>
+                    <table className="table table-hover table-sm">
                         <thead>
                             <tr>
-                                <th style={{ width: "33%" }}>Plate Number</th>
+                                <th style={{ width: "75%" }}>Plate Number</th>
                                 <th className="text-center" style={{ width: "33%" }}>Availability</th>
-                                <th className="text-center" style={{ width: "33%" }}>Maintenance</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -657,8 +692,7 @@ export const TruckStatusWidget = () => {
                                 .map((truck) => (
                                     <tr key={truck.plateNumber}>
                                         <td>{truck.plateNumber}</td>
-                                        <td className="text-center">{truckAvailability(truck)}</td>
-                                        <td className="text-center">{truck.underMaintenance ? <BsExclamationCircle className="trashIcon" /> : <BsCheckLg className="showIcon" />}</td>
+                                        <td className="text-center" style={{ color: truckAvailability(truck) === 'Available' ? 'green' : 'red' }}>{truckAvailability(truck)}</td>
                                     </tr>
                                 ))}
                         </tbody>

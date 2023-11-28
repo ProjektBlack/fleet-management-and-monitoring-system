@@ -5,7 +5,7 @@ import { Routes, Route } from 'react-router-dom'
 //import contexts
 import { useAuth } from "./context/authProvider";
 //import pages
-import { Home, Login, Missing, ManageTruck, ManageYearlyExpenses, ShowTruck, ManageTrips } from "./components/Pages";
+import { Home, Login, Missing, ManageTruck, ManageYearlyExpenses, ManageMonthlyExpenses, ShowTruck, ManageTrips } from "./components/Pages";
 //import forms
 import { CreateTruck, CreateTrip, CreateExpense, EditTruck, EditMonthlyExpense, EditYearlyExpense, EditTrip, Register } from "./components/Forms";
 //import private route
@@ -29,7 +29,7 @@ const App = () => {
       <Route path="/expenses/monthly/edit/:id/" element={<PrivateRoute isAuthenticated={isAuthenticated}><EditMonthlyExpense /></PrivateRoute>} />
       <Route path="/newtrips/:truckId" element={<PrivateRoute isAuthenticated={isAuthenticated}><CreateTrip /></PrivateRoute>} />
       <Route path="/trips/edit/:id" element={<PrivateRoute isAuthenticated={isAuthenticated}><EditTrip /></PrivateRoute>} />
-      <Route path="/expenses/monthly" element={<PrivateRoute isAuthenticated={isAuthenticated}><ManageYearlyExpenses /></PrivateRoute>} />
+      <Route path="/expenses/monthly" element={<PrivateRoute isAuthenticated={isAuthenticated}><ManageMonthlyExpenses /></PrivateRoute>} />
       <Route path="/expenses/yearly" element={<PrivateRoute isAuthenticated={isAuthenticated}><ManageYearlyExpenses /></PrivateRoute>} />
       <Route path="/trips" element={<PrivateRoute isAuthenticated={isAuthenticated}><ManageTrips /></PrivateRoute>} />
       <Route path="trucks/details/:id" element={<PrivateRoute isAuthenticated={isAuthenticated}><ShowTruck /></PrivateRoute>} />

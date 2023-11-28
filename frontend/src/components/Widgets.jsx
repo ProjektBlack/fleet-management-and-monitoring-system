@@ -93,8 +93,8 @@ export const Sidebar = () => {
 //spinner
 export const Spinner = () => {
     return (
-        <div className="spinner text-success" role="status">
-            <span className="sr-only"></span>
+        <div class="spinner-border text-success" role="status">
+            <span class="sr-only"></span>
         </div>
     )
 }
@@ -138,7 +138,7 @@ export const PendingWidget = () => {
     );
 }
 
-export const SampleWidget2 = () => {
+export const TripsThisYear = () => {
     const [completedTrips, setCompletedTrips] = useState(0);
 
     useEffect(() => {
@@ -197,46 +197,41 @@ export const Dashboard = () => {
 
     return (
         <div className="p-4">
-            <div id="dashboardHeader" className="row border-start mb-4 bg-white rounded p-3 border-success border-5">
-                <h1>Dashboard</h1>
+            <div id="dashboardHeader" className='container'>
+                <div className="border-start mb-4 bg-white rounded p-3 border-success border-5">
+                    <h1>Dashboard</h1>
+                </div>
+
             </div>
             {/*place widgets here*/}
-            <div id="widgets" className='container'>
-                {/*sample widgets*/}
-                <div className="row mb-4 g-5">
-                    <div className="col-6 border-start border-success border-5 rounded dsContainer" style={{ maxHeight: "50vh", minHeight: "50vh" }}>
-                        <RecentTripsTable />
-                    </div>
-                    <div className='col-4 border-success rounded dsContainer'>
-                        <TruckStatusWidget />
-                    </div>
-                    <div className="col-2">
-                        <div className="row mb-2 border-start border-success border-5 rounded dsContainer">
-                            <PendingWidget />
+            <div className='container'>
+                <div className='row'>
+                    <div className='col-7 col-start'>
+                        <div style={{ maxHeight: "50vh" }}>
+                            <RecentTripsTable />
                         </div>
-                        <div className="row mb-2 border-start border-success border-5 rounded dsContainer">
-                            <TripsThisMonth />
-                        </div>
-                        <div className="row border-start border-success border-5 rounded dsContainer">
-                            <SampleWidget2 />
+                    </div>
+                    <div className='col'>
+                        <div className='infoContainer'>
+                            <TruckStatusWidget />
                         </div>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col" style={{ marginRight: '1%' }}>
-                        <div className="row-1" style={{ height: '25vh' }}>
-                            <CardComponent />
-                        </div>
+                <div className='row'>
+                    <div className='col'>
+                        <PendingWidget />
+                    </div>
+                    <div className='col'>
+                        <TripsThisMonth />
+                    </div>
+                    <div className='col'>
+                        <TripsThisYear />
+                    </div>
+                </div>
 
-                    </div>
-                    <div className="col-7">
-                        <div className="row" style={{ height: '25vh' }}>
-                            <CardComponent />
-                        </div>
-                    </div>
-                </div>
             </div>
-        </div>
+
+        </div >
     );
 }
 

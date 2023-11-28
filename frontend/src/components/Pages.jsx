@@ -558,7 +558,21 @@ export const ManageYearlyExpenses = () => {
                             <YearlyExpensesTable />
                         </div>
                     </div>
-                    <div className='container'>
+                </div>
+            </div>
+        </div >
+    )
+}
+
+export const ManageMonthlyExpenses = () => {
+    return (
+        <div>
+            <div className="row g-2">
+                <div className="col-2">
+                    <Sidebar />
+                </div>
+                <div className="col-10">
+                    <div className="container">
                         <div className="row mb-4 mt-4 infoContainer">
                             <div className="col">
                                 <h1>Monthly Expenses</h1>
@@ -573,7 +587,6 @@ export const ManageYearlyExpenses = () => {
         </div >
     )
 }
-
 //manage trips
 export const ManageTrips = () => {
     return (

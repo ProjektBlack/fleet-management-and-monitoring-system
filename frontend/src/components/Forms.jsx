@@ -1,7 +1,7 @@
 //dependencies
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { SnackbarProvider, useSnackbar } from 'notistack';
+import { SnackbarProvider, enqueueSnackbar, useSnackbar } from 'notistack';
 import axios from "axios";
 //import components
 import { BackButton } from "./Widgets";
@@ -131,10 +131,10 @@ export const CreateTruck = () => {
             };
             const response = await axios.post('http://localhost:2222/trucks', data) //create new truck
             console.log(response.data);
-            alert("Truck created.");
+            enqueueSnackbar("Truck created.", { variant: "success" })
             navigate(`/trucks`); //navigate to truck details page
         } catch (error) {
-            alert("Error occurred. Please check console.");
+            enqueueSnackbar("Process failed.", { variant: "error" })
             console.error(error);
         }
     };
@@ -275,11 +275,11 @@ export const CreateTrip = () => {
             await axios.put(`http://localhost:2222/trucks/${truckId}`, getObject.data);
             setLoading(false);
             //use better alerts
-            alert("Trip created.");
+            enqueueSnackbar("Trip created.", { variant: "success" })
             navigate(`/trucks/details/${truckId}`); //navigate to truck details page
         } catch (error) {
             setLoading(false);
-            alert("Error occurred.");
+            enqueueSnackbar("Process failed.", { variant: "error" })
             console.log(error);
         }
     };
@@ -544,7 +544,7 @@ export const CreateExpense = () => {
             setDieselCosts(totalFuelCosts);
             setMonthlyTotalCosts(monthlyTotalCosts);
         } catch (error) {
-            alert("Error occurred. Please check console.");
+            enqueueSnackbar("Process failed.", { variant: error })
             console.error(error);
         }
     }
@@ -605,7 +605,7 @@ export const CreateExpense = () => {
                 truckData.data.expenses.yearlyExpenses.push(newObjectID); //push the yearly expense ID to the truck data
                 await axios.put(`http://localhost:2222/trucks/${truckId}`, truckData.data); //update the truck data
                 setLoading(false);
-                alert("Record created.");
+                enqueueSnackbar("Yearly expense created.")
                 window.history.back();
             } catch (error) {
                 setLoading(false);
