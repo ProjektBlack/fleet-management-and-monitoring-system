@@ -32,7 +32,7 @@ export const Login = () => {
         event.preventDefault();
         setLoading(true);
         try {
-            const response = await axios.post("http://localhost:2222/login", {
+            const response = await axios.post("https://fmms-api.vercel.app/login", {
                 username,
                 password,
             });

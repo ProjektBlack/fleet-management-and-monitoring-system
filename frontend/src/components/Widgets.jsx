@@ -50,7 +50,7 @@ export const Sidebar = () => {
         logout();
         setIsAuthenticated(false);
         enqueueSnackbar("Logged out successfully.", { variant: "default" });
-        navigate("/login");
+        navigate("/");
     };
 
     return (
@@ -142,7 +142,7 @@ export const TripsThisYear = () => {
     const [completedTrips, setCompletedTrips] = useState(0);
 
     useEffect(() => {
-        axios.get("http://localhost:2222/trips/status/completed")
+        axios.get("https://fmms-api.vercel.app/trips/status/completed/?year=2022")
             .then((res) => {
                 setCompletedTrips(res.data.length);
             })
