@@ -117,7 +117,7 @@ export const PendingWidget = () => {
     const [pendingTrips, setPendingTrips] = useState(0);
 
     useEffect(() => {
-        axios.get("http://localhost:2222/trips/status/pending")
+        axios.get("https://fmms-api.vercel.app/trips/status/pending")
             .then((res) => {
                 setPendingTrips(res.data.length);
             })
@@ -139,6 +139,7 @@ export const PendingWidget = () => {
 }
 
 export const TripsThisYear = () => {
+    //create function that gets current year and month
     const [completedTrips, setCompletedTrips] = useState(0);
 
     useEffect(() => {
@@ -164,11 +165,12 @@ export const TripsThisYear = () => {
 }
 
 export const TripsThisMonth = () => {
+    //create function to get current month and year
     const [trips, setTrips] = useState(0);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get("http://localhost:2222/trips/status/completed/month")
+        axios.get("https://fmms-api.vercel.app/trips/status/completed/march/2022")
             .then((res) => {
                 setTrips(res.data.length);
                 setLoading(false);

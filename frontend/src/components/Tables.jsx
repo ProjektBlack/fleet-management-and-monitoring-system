@@ -534,10 +534,15 @@ export const RecentTripsTable = () => {
     async function fetchData() {
         try {
             setLoading(true);
-            const allTrips = await axios.get("http://localhost:2222/trips");
+            const allTrips = await axios.get("https://fmms-api.vercel.app/trips");
+            console.log(allTrips.data.data)
             for (let i = 0; i < allTrips.data.data.length; i++) {
-                const truck = await axios.get(`http://localhost:2222/trucks/${allTrips.data.data[i].truck}`);
-                allTrips.data.data[i].plateNumber = truck.data.plateNumber;
+                console.log(allTrips.data.data[i].truck)
+                const id = allTrips.data.data[i].truck;
+                if (id) {
+                    const truck = await axios.get(`https://fmms-api.vercel.app/trucks/?id=${id}`);
+                    allTrips.data.data[i].plateNumber = truck.data.plateNumber;
+                }
             }
             setTrips(allTrips.data.data);
             setLoading(false);
