@@ -535,13 +535,11 @@ export const RecentTripsTable = () => {
         try {
             setLoading(true);
             const allTrips = await axios.get("https://fmms-api.vercel.app/trips");
-            console.log(allTrips.data.data)
             for (let i = 0; i < allTrips.data.data.length; i++) {
-                console.log(allTrips.data.data[i].truck)
                 const id = allTrips.data.data[i].truck;
                 if (id) {
                     const truck = await axios.get(`https://fmms-api.vercel.app/trucks/?id=${id}`);
-                    allTrips.data.data[i].plateNumber = truck.data.plateNumber;
+                    allTrips.data.data[i].plateNumber = truck.data.data.plateNumber;
                 }
             }
             setTrips(allTrips.data.data);
@@ -632,30 +630,14 @@ export const TruckStatusWidget = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const response = await axios.get("http://localhost:2222/trucks");
-            const trucks = response.data.data;
-
-            const trucksWithTrips = await Promise.all(trucks.map(async (truck) => {
-                const trips = await Promise.all(truck.trips.map(fetchTripData));
-                return { ...truck, trips };
-            }));
-            setTrucks(trucksWithTrips);
+            const response = await axios.get("https://fmms-api.vercel.app/trucks/status");
+            console.log(response.data);
+            setTrucks(response.data);
             setLoading(false);
         } catch (error) {
             setLoading(false);
             console.log(error);
             enqueueSnackbar("Failed to fetch data.", { variant: 'error' });
-        }
-    };
-
-    //fetch trip data - crucial for truckAvailability function
-    const fetchTripData = async (tripId) => {
-        try {
-            const response = await axios.get(`http://localhost:2222/trips/${tripId}`);
-            return response.data;
-        } catch (error) {
-            console.error(error);
-            return null;
         }
     };
 
