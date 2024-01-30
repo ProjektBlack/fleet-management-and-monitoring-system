@@ -219,7 +219,8 @@ export const Dashboard = () => {
                         </div>
                     </div>
                 </div>
-                <div className='row'>
+                {/*update style*/}
+                <div className='row border-start mt-4 bg-white rounded p-3 border-success border-5'>
                     <div className='col'>
                         <PendingWidget />
                     </div>

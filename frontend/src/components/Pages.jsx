@@ -86,7 +86,7 @@ export const Login = () => {
     );
 };
 
-//page not found
+//page not found - improve this
 export const Missing = () => {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -97,7 +97,7 @@ export const Missing = () => {
     );
 };
 
-//dashboard
+//home page
 export const Home = () => {
     return (
         <div className="row g-2">
