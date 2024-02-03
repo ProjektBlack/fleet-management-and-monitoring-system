@@ -165,16 +165,24 @@ export const YearlyExpensesTable = () => {
     async function fetchData() {
         try {
             setLoading(true);
-            const allYearlyExpenses = await axios.get("http://localhost:2222/expenses/yearly");
-            let calculatedTotalExpenses = 0;
-            for (let i = 0; i < allYearlyExpenses.data.data.length; i++) {
-                const truck = await axios.get(`http://localhost:2222/trucks/${allYearlyExpenses.data.data[i].truck}`);
-                console.log(truck.data.plateNumber)
-                allYearlyExpenses.data.data[i].plateNumber = truck.data.plateNumber;
-                calculatedTotalExpenses += allYearlyExpenses.data.data[i].totalExpenses;
+            const allYearlyExpenses = await axios.get("https://fmms-api.vercel.app/expenses/yearly");
+            console.log(allYearlyExpenses.data.data)
+            if (allYearlyExpenses.data.data.length == 1) {
+                const id = allYearlyExpenses.data.data[0].truck;
+                if (id) {
+                    const truck = await axios.get(`https://fmms-api.vercel.app/trucks/?id=${id}`);
+                    allYearlyExpenses.data.data[0].plateNumber = truck.data.data.plateNumber;
+                }
+            } else {
+                for (let i = 0; i < allYearlyExpenses.data.data.length; i++) {
+                    const id = allYearlyExpenses.data.data[i].truck;
+                    if (id) {
+                        const truck = await axios.get(`https://fmms-api.vercel.app/trucks/?id=${id}`);
+                        allYearlyExpenses.data.data[i].plateNumber = truck.data.data.plateNumber;
+                    }
+                }
             }
             setYearlyExpenses(allYearlyExpenses.data.data);
-            setTotalExpenses(calculatedTotalExpenses);
             setLoading(false);
         } catch (error) {
             setLoading(false);
@@ -297,11 +305,22 @@ export const MonthlyExpensesTable = () => {
     async function fetchData() {
         try {
             setLoading(true);
-            const allMonthlyExpenses = await axios.get("http://localhost:2222/expenses/monthly");
-            for (let i = 0; i < allMonthlyExpenses.data.data.length; i++) {
-                const truck = await axios.get(`http://localhost:2222/trucks/${allMonthlyExpenses.data.data[i].truck}`);
-                console.log(truck.data.plateNumber)
-                allMonthlyExpenses.data.data[i].plateNumber = truck.data.plateNumber;
+            const allMonthlyExpenses = await axios.get("https://fmms-api.vercel.app/expenses/monthly");
+            console.log(allMonthlyExpenses.data.data)
+            if (allMonthlyExpenses.data.data.length == 1) {
+                const id = allMonthlyExpenses.data.data[0].truck;
+                if (id) {
+                    const truck = await axios.get(`https://fmms-api.vercel.app/trucks/?id=${id}`);
+                    allMonthlyExpenses.data.data[0].plateNumber = truck.data.data.plateNumber;
+                }
+            } else {
+                for (let i = 0; i < allMonthlyExpenses.data.data.length; i++) {
+                    const id = allMonthlyExpenses.data.data[i].truck;
+                    if (id) {
+                        const truck = await axios.get(`https://fmms-api.vercel.app/trucks/?id=${id}`);
+                        allMonthlyExpenses.data.data[i].plateNumber = truck.data.data.plateNumber;
+                    }
+                }
             }
             setMonthlyExpenses(allMonthlyExpenses.data.data);
             setLoading(false);
@@ -414,12 +433,15 @@ export const TripsTable = () => {
     async function fetchData() {
         try {
             setLoading(true);
-            const allTrips = await axios.get("http://localhost:2222/trips");
+            const allTrips = await axios.get("https://fmms-api.vercel.app/trips");
             for (let i = 0; i < allTrips.data.data.length; i++) {
-                const truck = await axios.get(`http://localhost:2222/trucks/${allTrips.data.data[i].truck}`);
-                console.log(truck.data.plateNumber)
-                allTrips.data.data[i].plateNumber = truck.data.plateNumber;
+                const id = allTrips.data.data[i].truck;
+                if (id) {
+                    const truck = await axios.get(`https://fmms-api.vercel.app/trucks/?id=${id}`);
+                    allTrips.data.data[i].plateNumber = truck.data.data.plateNumber;
+                }
             }
+            console.log(allTrips.data.data)
             setTrips(allTrips.data.data);
             setLoading(false);
         } catch (error) {
