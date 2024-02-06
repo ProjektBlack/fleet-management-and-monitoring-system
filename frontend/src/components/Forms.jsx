@@ -6,7 +6,7 @@ import axios from "axios";
 //import components
 import { BackButton } from "./Widgets";
 
-//register a new user
+//register a new user - not configured yet
 export const Register = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -1209,7 +1209,7 @@ export const EditYearlyExpense = () => {
     )
 }
 
-//edit trip
+//edit trip - could use snackbars
 export const EditTrip = () => {
     const [loading, setLoading] = useState(false);
     //states for trip details
@@ -1220,7 +1220,6 @@ export const EditTrip = () => {
     });
     const [helper, setHelper] = useState({
     });
-
     const [year, setYear] = useState("");
     const [month, setMonth] = useState("");
     const [day, setDay] = useState("");
@@ -1245,27 +1244,26 @@ export const EditTrip = () => {
     useEffect(() => {
         const getTrip = async () => {
             try {
-                const response = await axios.get(`http://localhost:2222/trips/${id}`);
-                console.log(response);
-                setTruckId(response.data.truck);
-                setDriver(response.data.driver);
-                setCustomer(response.data.customer);
-                setHelper(response.data.helper);
-                setYear(response.data.year);
-                setMonth(response.data.month);
-                setDay(response.data.day);
-                setTimeDispatched(response.data.timeDispatched);
-                setTimeReceived(response.data.timeReceived);
-                setTimeReturned(response.data.timeReturned);
-                setWOWEX(response.data.status);
-                setDistance(response.data.distance);
-                setDieselCost(response.data.dieselCost);
-                setDieselConsumption(response.data.dieselConsumption);
-                setTollFee(response.data.tollFee);
-                setPathway(response.data.pathway);
-                setTotalTripCost(response.data.totalTripExpense);
+                const response = await axios.get(`https://fmms-api.vercel.app/trips/?id=${id}`);
+                console.log(response.data);
+                setTruckId(response.data.data.truck);
+                setDriver(response.data.data.driver);
+                setCustomer(response.data.data.customer);
+                setHelper(response.data.data.helper);
+                setYear(response.data.data.year);
+                setMonth(response.data.data.month);
+                setDay(response.data.data.day);
+                setTimeDispatched(response.data.data.timeDispatched);
+                setTimeReceived(response.data.data.timeReceived);
+                setTimeReturned(response.data.data.timeReturned);
+                setWOWEX(response.data.data.status);
+                setDistance(response.data.data.distance);
+                setDieselCost(response.data.data.dieselCost);
+                setDieselConsumption(response.data.data.dieselConsumption);
+                setTollFee(response.data.data.tollFee);
+                setPathway(response.data.data.pathway);
+                setTotalTripCost(response.data.data.totalTripExpense);
             } catch (error) {
-                alert("Error occurred. Please check console.");
                 console.error(error);
             }
         };
@@ -1349,14 +1347,13 @@ export const EditTrip = () => {
                 totalTripExpense: totalTripCost
             };
             setLoading(true);
-            axios.put(`http://localhost:2222/trips/${id}`, data);
+            axios.put(`https://fmms-api.vercel.app/trips/?id=${id}`, data);
             setLoading(false);
             //use better alerts
             alert("Trip edited.");
             navigate(`/trucks/details/${truckId}`); //navigate to truck details page
         } catch (error) {
             setLoading(false);
-            alert("Error occurred.");
             console.log(error);
         }
     };

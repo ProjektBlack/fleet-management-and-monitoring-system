@@ -11,7 +11,6 @@ import { Spinner, BackButton } from "./Widgets"
 //icons
 import { BsFillTrashFill, BsFillPencilFill, BsEye, BsCheckLg, BsExclamationCircle, BsPrinter, BsPlusCircleFill } from "react-icons/bs";
 
-//has issues with deletion, format it to make it visually appealing
 //truck table
 export const TruckTable = () => {
     //states

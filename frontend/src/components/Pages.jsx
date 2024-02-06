@@ -9,7 +9,7 @@ import axios from "axios";
 import { Spinner, BackButton, Sidebar, Dashboard, CardComponent } from "./Widgets";
 import { TruckTable, YearlyExpensesTable, TripsTable, MonthlyExpensesTable } from "./Tables";
 //icons
-import { BsFillFilePlusFill, BsEye, BsPen, BsFillPencilFill, BsFillTrashFill } from "react-icons/bs";
+import { BsFillFilePlusFill, BsEye, BsFillPencilFill, BsFillTrashFill } from "react-icons/bs";
 
 //login page
 export const Login = () => {
@@ -86,11 +86,10 @@ export const Login = () => {
     );
 };
 
-//page not found - improve this
 export const Missing = () => {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-            <h1>404 - Page Not Found</h1>
+            <h1>Page Not Found</h1>
             <p>The page you are looking for does not exist.</p>
             <BackButton />
         </div>
@@ -140,19 +139,18 @@ export const ShowTruck = () => {
     const [loading, setLoading] = useState(false);//loading
     const [truckInfo, setTruckInfo] = useState({}); //info and ids
     const [expenses, setExpenses] = useState([]); //ids
-    const [yearlyExpenses, setYearlyExpenses] = useState([]); //datas to map
-    const [monthlyExpenses, setMonthlyExpenses] = useState([]); //datas to map
-    const [trips, setTrips] = useState([]); //datas to map
+    const [yearlyExpenses, setYearlyExpenses] = useState([]); //records to map
+    const [monthlyExpenses, setMonthlyExpenses] = useState([]); //records to map
+    const [trips, setTrips] = useState([]); //records to map
     const [selectedId, setSelectedId] = useState(null); //selected
     //modals
     const [showModal, setShowModal] = useState(false);
     const [showModal1, setShowModal1] = useState(false);
     const [showModal2, setShowModal2] = useState(false);
     const [showModal3, setShowModal3] = useState(false);
-
-
+    //misc
     const { user } = useAuth();
-    const { id } = useParams();
+    const { id } = useParams(); //identify which truck
     const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
 
@@ -161,34 +159,45 @@ export const ShowTruck = () => {
         const fetchData = async () => {
             try {
                 //get single truck
-                const response = await axios.get(`http://localhost:2222/trucks/${id}`);
-                const truckData = response.data;
+                const response = await axios.get(`https://fmms-api.vercel.app/trucks/?id=${id}`);
+                const truckData = response.data.data;
                 setTruckInfo(truckData);
-                console.log(truckData);
                 setExpenses(truckData.expenses);
+                console.log(truckData);
                 //get all yearly expenses and their data based on the references on expenses.yearlyExpenses
                 if (truckData && truckData.expenses && truckData.expenses.yearlyExpenses && truckData.expenses.yearlyExpenses.length > 0) {
-                    const yearlyExpensesData = await Promise.all(truckData.expenses.yearlyExpenses.map(async (expense) => {
-                        const response = await axios.get(`http://localhost:2222/expenses/yearly/${expense}`);
-                        return response.data;
-                    }));
-                    setYearlyExpenses(yearlyExpensesData);
+                    let newYearlyExpenses = [];
+                    //get all yearly expenses based on the references on expenses.yearlyExpenses
+                    for (let i = 0; i < truckData.expenses.yearlyExpenses.length; i++) {
+                        const response = await axios.get(`https://fmms-api.vercel.app/expenses/yearly/?id=${truckData.expenses.yearlyExpenses[i]}`);
+                        newYearlyExpenses.push(response.data.data);
+                    }
+                    setYearlyExpenses(prev => [...prev, ...newYearlyExpenses.filter(newExpense => !prev.some(prevExpense => prevExpense.id === newExpense.id))]);
                 }
                 if (truckData && truckData.expenses && truckData.expenses.monthlyExpenses && truckData.expenses.monthlyExpenses.length > 0) {
+                    let newMonthlyExpenses = [];
                     //get all monthly expenses based on the references on expenses.monthlyExpenses
-                    const monthlyExpensesData = await Promise.all(truckData.expenses.monthlyExpenses.map(async (expense) => {
-                        const response = await axios.get(`http://localhost:2222/expenses/monthly/${expense}`);
-                        return response.data;
-                    }));
-                    setMonthlyExpenses(monthlyExpensesData);
+                    for (let i = 0; i < truckData.expenses.monthlyExpenses.length; i++) {
+                        const response = await axios.get(`https://fmms-api.vercel.app/expenses/monthly/?id=${truckData.expenses.monthlyExpenses[i]}`);
+                        newMonthlyExpenses.push(response.data.data);
+                    }
+                    setMonthlyExpenses(prev => [...prev, ...newMonthlyExpenses.filter(newExpense => !prev.some(prevExpense => prevExpense.id === newExpense.id))]);
                 }
                 if (truckData && truckData.trips.length > 0) {
-                    //get all trips and their data based on the reference ids
-                    const tripData = await Promise.all(truckData.trips.map(async (trip) => {
-                        const response = await axios.get(`http://localhost:2222/trips/${trip}`);
-                        return response.data;
-                    }));
-                    setTrips(tripData);
+                    let newTrips = [];
+                    if (truckData.trips.length === 1) {
+                        console.log("single trip")
+                        const response = await axios.get(`https://fmms-api.vercel.app/trips/?id=${truckData.trips[0]}`);
+                        newTrips.push(response.data.data);
+                    } else if (truckData.trips.length > 1) {
+                        //get all trips and their data based on the reference ids
+                        for (let i = 0; i < truckData.trips.length; i++) {
+                            const response = await axios.get(`https://fmms-api.vercel.app/trips/?id=${truckData.trips[i]}`);
+                            newTrips.push(response.data.data);
+                            console.log(newTrips);
+                        }
+                    }
+                    setTrips(prev => [...prev, ...newTrips.filter(newTrip => !prev.some(prevTrip => prevTrip.id === newTrip.id))]);
                 }
             } catch (error) {
                 console.error(error);
@@ -217,7 +226,7 @@ export const ShowTruck = () => {
 
     const deleteTrip = async () => {
         try {
-            await axios.delete(`http://localhost:2222/trips/${selectedId}`);
+            await axios.delete(`https://fmms-api.vercel.app/trips/?id=${selectedId}`);
             //remove trip from local state
             setTrips(trips.filter(trip => trip._id !== selectedId));
             setShowModal1(false);
@@ -231,7 +240,7 @@ export const ShowTruck = () => {
 
     const deleteMonthlyExpense = async () => {
         try {
-            await axios.delete(`http://localhost:2222/expenses/monthly/${selectedId}`);
+            await axios.delete(`https://fmms-api.vercel.app/expenses/monthly/?id=${selectedId}`);
             setMonthlyExpenses(monthlyExpenses.filter(expense => expense._id !== selectedId));
             setShowModal2(false);
             enqueueSnackbar("Monthly expense deleted!", { variant: "success" });
@@ -244,7 +253,7 @@ export const ShowTruck = () => {
 
     const deleteYearlyExpense = async () => {
         try {
-            await axios.delete(`http://localhost:2222/expenses/yearly/${selectedId}`);
+            await axios.delete(`https://fmms-api.vercel.app/expenses/yearly/?id=${selectedId}`);
             setYearlyExpenses(yearlyExpenses.filter(expense => expense._id !== selectedId));
             setShowModal3(false);
 
@@ -277,7 +286,7 @@ export const ShowTruck = () => {
     const confirmDelete = async () => {
         setLoading(true);
         try {
-            const response = await axios.delete(`http://localhost:2222/trucks/${selectedId}`);
+            const response = await axios.delete(`https://fmms-api.vercel.app/trucks/?id=${selectedId}`);
             if (response.status === 204) {
                 enqueueSnackbar("Truck deleted successfully.", { variant: "success" })
                 setLoading(false)
@@ -331,7 +340,6 @@ export const ShowTruck = () => {
                                 <p className='text-muted'>{truckInfo.underMaintenance ? "Under Maintenance" : "Not Under Maintenance"}</p>
                             </div>
                         </div>
-
                     </div>
                     <div className="col border rounded p-4 infoContainer">
                         <div className='container'>
@@ -465,7 +473,6 @@ export const ShowTruck = () => {
                                             <td>{trip.pathway}</td>
                                             <td>{trip.totalTripExpense}</td>
                                             <td className="text-center">
-                                                <Link to={`/trips/details/${trip._id}`}><BsEye style={{ marginRight: '2%' }} className='showIcon' /></Link>
                                                 {user.role == "Admin" && (<BsFillTrashFill className="trashIcon" onClick={() => handleTripConfirmation(trip._id)} />)}
                                                 <Link to={`/trips/edit/${trip._id}`} style={{ marginLeft: '2%' }}><BsFillPencilFill className='editIcon' /></Link>
                                             </td>
