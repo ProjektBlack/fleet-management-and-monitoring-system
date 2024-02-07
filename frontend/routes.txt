@@ -6,8 +6,8 @@ https://fmms-api.vercel.app/register
 https://fmms-api.vercel.app/trucks/status
 https://fmms-api.vercel.app/trucks/?id=
 https://fmms-api.vercel.app/trips/?id=
-https://fmms-api.vercel.app/expenses/monthly?id=
-https://fmms-api.vercel.app/expenses/yearly?id=
+https://fmms-api.vercel.app/expenses/monthly/?id=
+https://fmms-api.vercel.app/expenses/yearly/?id=
 https://fmms-api.vercel.app/trips/status/completed/?year=
 https://fmms-api.vercel.app/trips/status/completed/*month*/*year*
 https://fmms-api.vercel.app/trips/status/pending

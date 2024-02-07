@@ -6,6 +6,8 @@ import axios from "axios";
 //import components
 import { BackButton } from "./Widgets";
 
+//MOSTLY NOTIFICATIONS AND PROPER ERROR MESSAGES
+
 //register a new user - not configured yet
 export const Register = () => {
     const [username, setUsername] = useState("");
@@ -906,15 +908,15 @@ export const EditMonthlyExpense = () => {
     useEffect(() => {
         const getMonthlyExpense = async () => {
             try {
-                const response = await axios.get(`http://localhost:2222/expenses/monthly/${id}`);
+                const response = await axios.get(`https://fmms-api.vercel.app/expenses/monthly/?id=${id}`);
                 console.log(response);
-                setTruckId(response.data.truck);
-                setMonth(response.data.month);
-                setYear(response.data.year);
-                setMonthlyMaintenanceCosts(response.data.maintenance);
-                setDieselCosts(response.data.dieselConsumption);
-                setTrips(response.data.totalTrips);
-                setMonthlyTotalCosts(response.data.totalMonthlyExpenses);
+                setTruckId(response.data.data.truck);
+                setMonth(response.data.data.month);
+                setYear(response.data.data.year);
+                setMonthlyMaintenanceCosts(response.data.data.maintenance);
+                setDieselCosts(response.data.data.dieselConsumption);
+                setTrips(response.data.data.totalTrips);
+                setMonthlyTotalCosts(response.data.data.totalMonthlyExpenses);
             } catch (error) {
                 alert("Error occurred. Please check console.");
                 console.error(error);
@@ -926,7 +928,7 @@ export const EditMonthlyExpense = () => {
     //function to get and compute total trips and total fuel costs
     const computeMonthlyTotalTripsAndFuelCosts = async () => {
         try {
-            const response = await axios.get(`http://localhost:2222/trips/${truckId}/${year}/${month}`);
+            const response = await axios.get(`https://fmms-api.vercel.app/trips/${truckId}/${year}/${month}`);
             const trips = response.data.length;
             console.log(trips)
             let totalFuelCosts = 0;
@@ -950,7 +952,7 @@ export const EditMonthlyExpense = () => {
             const data = {
                 month, maintenance: monthlyMaintenanceCosts, dieselConsumption: dieselCosts, totalTrips: trips, year, totalMonthlyExpenses: monthlyTotalCosts
             };
-            const response = await axios.put(`http://localhost:2222/expenses/monthly/${id}`, data);
+            const response = await axios.put(`https://fmms-api.vercel.app/expenses/monthly/?id=${id}`, data);
             console.log(response.data)
             alert("Monthly expense is updated successfully.");
             window.history.back();
@@ -1055,17 +1057,17 @@ export const EditYearlyExpense = () => {
     useEffect(() => {
         const getYearlyExpense = async () => {
             try {
-                const response = await axios.get(`http://localhost:2222/expenses/yearly/${id}`);
+                const response = await axios.get(`https://fmms-api.vercel.app/expenses/yearly/?id=${id}`);
                 console.log(response);
-                setTruckId(response.data.truck);
-                setYear(response.data.year);
-                setLtoFees(response.data.ltoReg);
-                setFcieFees(response.data.fcieReg);
-                setMiscStickerFees(response.data.stickerReg);
-                setMaintenanceCosts(response.data.maintenance);
-                setTotalTrips(response.data.totalTrips);
-                setTotalDieselConsumption(response.data.totalDieselConsumption);
-                setTotalExpenses(response.data.totalExpenses);
+                setTruckId(response.data.data.truck);
+                setYear(response.data.data.year);
+                setLtoFees(response.data.data.ltoReg);
+                setFcieFees(response.data.data.fcieReg);
+                setMiscStickerFees(response.data.data.stickerReg);
+                setMaintenanceCosts(response.data.data.maintenance);
+                setTotalTrips(response.data.data.totalTrips);
+                setTotalDieselConsumption(response.data.data.totalDieselConsumption);
+                setTotalExpenses(response.data.data.totalExpenses);
             } catch (error) {
                 alert("Error occurred. Please check console.");
                 console.error(error);
