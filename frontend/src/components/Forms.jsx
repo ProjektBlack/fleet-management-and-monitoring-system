@@ -814,7 +814,7 @@ export const CreateExpense = () => {
     );
 };
 
-//edit truck form
+//edit truck form -- not yet done
 export const EditTruck = () => {
     const [newTruck, setNewTruck] = useState({}) //state for new truck object
     const [plateNumber, setPlateNumber] = useState('')
@@ -1080,7 +1080,9 @@ export const EditYearlyExpense = () => {
     const computeYearlyTotalTripsAndFuelCosts = async () => {
         try {
             console.log(truckId)
-            const response = await axios.get(`http://localhost:2222/expenses/yearly/${truckId}/${year}`);
+            const response = await axios.get(`https://fmms-api.vercel.app/expenses/monthly/${truckId}/${year}`);
+            console.log(response)
+            console.log(response.data)
             let totalYearlyTrips = 0;
             console.log(response.data[0].totalTrips)
             console.log(response.data[0].maintenance)
@@ -1121,7 +1123,7 @@ export const EditYearlyExpense = () => {
                 totalDieselConsumption,
                 totalExpenses
             };
-            const response = await axios.put(`http://localhost:2222/expenses/yearly/${id}`, data);
+            const response = await axios.put(`https://fmms-api.vercel.app/expenses/yearly/?id=${id}`, data);
             console.log(response);
             console.log(response.data)
             alert("Yearly Expense updated.");
