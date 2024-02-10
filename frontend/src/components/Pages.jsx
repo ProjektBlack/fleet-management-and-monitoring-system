@@ -32,7 +32,7 @@ export const Login = () => {
         event.preventDefault();
         setLoading(true);
         try {
-            const response = await axios.post("https://fmms-api.vercel.app/login", {
+            const response = await axios.post("http://localhost:2222/login            ", {
                 username,
                 password,
             });
@@ -159,45 +159,34 @@ export const ShowTruck = () => {
         const fetchData = async () => {
             try {
                 //get single truck
-                const response = await axios.get(`https://fmms-api.vercel.app/trucks/?id=${id}`);
-                const truckData = response.data.data;
+                const response = await axios.get(`http://localhost:2222/trucks/${id}`);
+                const truckData = response.data;
                 setTruckInfo(truckData);
-                setExpenses(truckData.expenses);
                 console.log(truckData);
+                setExpenses(truckData.expenses);
                 //get all yearly expenses and their data based on the references on expenses.yearlyExpenses
                 if (truckData && truckData.expenses && truckData.expenses.yearlyExpenses && truckData.expenses.yearlyExpenses.length > 0) {
-                    let newYearlyExpenses = [];
-                    //get all yearly expenses based on the references on expenses.yearlyExpenses
-                    for (let i = 0; i < truckData.expenses.yearlyExpenses.length; i++) {
-                        const response = await axios.get(`https://fmms-api.vercel.app/expenses/yearly/?id=${truckData.expenses.yearlyExpenses[i]}`);
-                        newYearlyExpenses.push(response.data.data);
-                    }
-                    setYearlyExpenses(prev => [...prev, ...newYearlyExpenses.filter(newExpense => !prev.some(prevExpense => prevExpense.id === newExpense.id))]);
+                    const yearlyExpensesData = await Promise.all(truckData.expenses.yearlyExpenses.map(async (expense) => {
+                        const response = await axios.get(`http://localhost:2222/expenses/yearly/${expense}`);
+                        return response.data;
+                    }));
+                    setYearlyExpenses(yearlyExpensesData);
                 }
                 if (truckData && truckData.expenses && truckData.expenses.monthlyExpenses && truckData.expenses.monthlyExpenses.length > 0) {
-                    let newMonthlyExpenses = [];
                     //get all monthly expenses based on the references on expenses.monthlyExpenses
-                    for (let i = 0; i < truckData.expenses.monthlyExpenses.length; i++) {
-                        const response = await axios.get(`https://fmms-api.vercel.app/expenses/monthly/?id=${truckData.expenses.monthlyExpenses[i]}`);
-                        newMonthlyExpenses.push(response.data.data);
-                    }
-                    setMonthlyExpenses(prev => [...prev, ...newMonthlyExpenses.filter(newExpense => !prev.some(prevExpense => prevExpense.id === newExpense.id))]);
+                    const monthlyExpensesData = await Promise.all(truckData.expenses.monthlyExpenses.map(async (expense) => {
+                        const response = await axios.get(`http://localhost:2222/expenses/monthly/${expense}`);
+                        return response.data;
+                    }));
+                    setMonthlyExpenses(monthlyExpensesData);
                 }
                 if (truckData && truckData.trips.length > 0) {
-                    let newTrips = [];
-                    if (truckData.trips.length === 1) {
-                        console.log("single trip")
-                        const response = await axios.get(`https://fmms-api.vercel.app/trips/?id=${truckData.trips[0]}`);
-                        newTrips.push(response.data.data);
-                    } else if (truckData.trips.length > 1) {
-                        //get all trips and their data based on the reference ids
-                        for (let i = 0; i < truckData.trips.length; i++) {
-                            const response = await axios.get(`https://fmms-api.vercel.app/trips/?id=${truckData.trips[i]}`);
-                            newTrips.push(response.data.data);
-                            console.log(newTrips);
-                        }
-                    }
-                    setTrips(prev => [...prev, ...newTrips.filter(newTrip => !prev.some(prevTrip => prevTrip.id === newTrip.id))]);
+                    //get all trips and their data based on the reference ids
+                    const tripData = await Promise.all(truckData.trips.map(async (trip) => {
+                        const response = await axios.get(`http://localhost:2222/trips/${trip}`);
+                        return response.data;
+                    }));
+                    setTrips(tripData);
                 }
             } catch (error) {
                 console.error(error);
@@ -223,10 +212,9 @@ export const ShowTruck = () => {
         setShowModal3(true);
     };
 
-
     const deleteTrip = async () => {
         try {
-            await axios.delete(`https://fmms-api.vercel.app/trips/?id=${selectedId}`);
+            await axios.delete(`http://localhost:2222/trips/${selectedId}`);
             //remove trip from local state
             setTrips(trips.filter(trip => trip._id !== selectedId));
             setShowModal1(false);
@@ -240,7 +228,7 @@ export const ShowTruck = () => {
 
     const deleteMonthlyExpense = async () => {
         try {
-            await axios.delete(`https://fmms-api.vercel.app/expenses/monthly/?id=${selectedId}`);
+            await axios.delete(`http://localhost:2222/expenses/monthly/${selectedId}`);
             setMonthlyExpenses(monthlyExpenses.filter(expense => expense._id !== selectedId));
             setShowModal2(false);
             enqueueSnackbar("Monthly expense deleted!", { variant: "success" });
@@ -253,7 +241,7 @@ export const ShowTruck = () => {
 
     const deleteYearlyExpense = async () => {
         try {
-            await axios.delete(`https://fmms-api.vercel.app/expenses/yearly/?id=${selectedId}`);
+            await axios.delete(`http://localhost:2222/expenses/yearly/${selectedId}`);
             setYearlyExpenses(yearlyExpenses.filter(expense => expense._id !== selectedId));
             setShowModal3(false);
 

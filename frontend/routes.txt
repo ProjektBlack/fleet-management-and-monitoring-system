@@ -1,34 +1,31 @@
 //login
-https://fmms-api.vercel.app/login
+http://localhost:2222/login
 //register
-https://fmms-api.vercel.app/register
-//get functions
-https://fmms-api.vercel.app/trucks/status
-https://fmms-api.vercel.app/trucks/?id=
-https://fmms-api.vercel.app/trips/?id=
-https://fmms-api.vercel.app/expenses/monthly/?id=
-https://fmms-api.vercel.app/expenses/yearly/?id=
-https://fmms-api.vercel.app/trips/status/completed/?year=
-https://fmms-api.vercel.app/trips/status/completed/*month*/*year*
-https://fmms-api.vercel.app/trips/status/pending
-https://fmms-api.vercel.app/trips/status/completed
-https://fmms-api.vercel.app/trips
-https://fmms-api.vercel.app/trucks
-https://fmms-api.vercel.app/trips/*truck*/*year*/*month*
-https://fmms-api.vercel.app/expenses/monthly
-https://fmms-api.vercel.app/expenses/yearly
-//post
-https://fmms-api.vercel.app/trips
-https://fmms-api.vercel.app/trucks
-https://fmms-api.vercel.app/expenses/monthly
-https://fmms-api.vercel.app/expenses/yearly
-//put
-https://fmms-api.vercel.app/trucks/?id=
-https://fmms-api.vercel.app/trips/?id=
-https://fmms-api.vercel.app/expenses/monthly/?id=
-https://fmms-api.vercel.app/expenses/yearly/?id=
-//delete
-https://fmms-api.vercel.app/trucks/?id=
-https://fmms-api.vercel.app/trips/?id=
-https://fmms-api.vercel.app/expenses/monthly/?id=
-https://fmms-api.vercel.app/expenses/yearly/?id=
+http://localhost:2222/register
+//trucks
+http://localhost:2222/trucks
+http://localhost:2222/trucks/status
+http://localhost:2222/trucks/*id*
+//trips
+http://localhost:2222/trips
+http://localhost:2222/trips/*id*/
+//for trucks
+http://localhost:2222/trips/*truckId*/*year*/*month*
+//all pending trips
+http://localhost:2222/trips/status/pending
+//all completed trips this year and month
+http://localhost:2222/trips/status/completed/*year*/*month*
+//all completed trips this year
+http://localhost:2222/trips/status/completed/*year*
+//monthly expenses
+http://localhost:2222/expenses/monthly
+http://localhost:2222/expenses/monthly/*id*
+http://localhost:2222/expenses/monthly/*year*/*truckId*
+//yearly expenses
+http://localhost:2222/expenses/yearly
+http://localhost:2222/expenses/yearly/*id*
+http://localhost:2222/expenses/yearly/*truckId*/*year*
+
+
+
+

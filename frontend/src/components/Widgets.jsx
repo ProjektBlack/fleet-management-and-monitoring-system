@@ -111,12 +111,12 @@ export const CardComponent = () => {
         </div>
     );
 }
-
+// BETTER DESIGNS PLS
 export const PendingWidget = () => {
     const [pendingTrips, setPendingTrips] = useState(0);
 
     useEffect(() => {
-        axios.get("https://fmms-api.vercel.app/trips/status/pending")
+        axios.get("http://localhost:2222/trips/status/pending")
             .then((res) => {
                 setPendingTrips(res.data.length);
             })
@@ -126,7 +126,7 @@ export const PendingWidget = () => {
     }, []);
 
     return (
-        <div className='text-center widget pt-3'>
+        <div className='text-center bg-white rounded p-4 infoContainer'>
             <div className='row'>
                 <h1 id="pendingTrips" className='unlogo'>{pendingTrips}</h1>
             </div>
@@ -136,13 +136,13 @@ export const PendingWidget = () => {
         </div>
     );
 }
-
+//CREATE FUNCTIONS TO GET THE CURRENT MONTH AND YEAR
 export const TripsThisYear = () => {
     //create function that gets current year and month
     const [completedTrips, setCompletedTrips] = useState(0);
 
     useEffect(() => {
-        axios.get("https://fmms-api.vercel.app/trips/status/completed/?year=2022")
+        axios.get("http://localhost:2222/trips/status/completed/2022")
             .then((res) => {
                 setCompletedTrips(res.data.length);
             })
@@ -152,7 +152,7 @@ export const TripsThisYear = () => {
     }, []);
 
     return (
-        <div className='text-center widget pt-2'>
+        <div className='text-center bg-white rounded p-4 infoContainer'>
             <div className='row'>
                 <h1><span className='logo'>{completedTrips}</span></h1>
             </div>
@@ -167,9 +167,9 @@ export const TripsThisMonth = () => {
     //create function to get current month and year
     const [trips, setTrips] = useState(0);
     const [loading, setLoading] = useState(true);
-
+    //CREATE A FUNCTION TO GET THE CURRENT MONTH AND YEAR
     useEffect(() => {
-        axios.get("https://fmms-api.vercel.app/trips/status/completed/march/2022")
+        axios.get("http://localhost:2222/trips/status/completed/2023/February")
             .then((res) => {
                 setTrips(res.data.length);
                 setLoading(false);
@@ -180,7 +180,7 @@ export const TripsThisMonth = () => {
     }, []);
 
     return (
-        <div className='text-center widget pt-2'>
+        <div className='text-center bg-white rounded p-4 infoContainer'>
             <div className='row'>
                 <h1><span className='logo'>{trips}</span></h1>
             </div>
@@ -198,41 +198,44 @@ export const Dashboard = () => {
 
     return (
         <div className="p-4">
-            <div id="dashboardHeader" className='container'>
-                <div className="border-start mb-4 bg-white rounded p-3 border-success border-5">
-                    <h1>Dashboard</h1>
+            <div className='row'>
+                <div className='col-3'>
+                    <div id="dashboardHeader" className='border-start mb-4 bg-white rounded p-3 border-success border-5 infoContainer'>
+                        <div className="row ">
+                            <h1>Dashboard</h1>
+                        </div>
+                        <div className='row'>
+                            <h5>Welcome, <span className='logo'>{user.userId}</span>!</h5>
+                            <h7 className="text-muted">{new Date().toDateString()}</h7>
+                        </div>
+                    </div>
                 </div>
-
-            </div>
-            {/*place widgets here*/}
-            <div className='container'>
+                <div className='col'>
+                    <div id='widgets'>
+                        <div className='row'>
+                            <div className='col'>
+                                <PendingWidget />
+                            </div>
+                            <div className='col'>
+                                <TripsThisMonth />
+                            </div>
+                            <div className='col'>
+                                <TripsThisYear />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div >
+            <div id='mainWidgets'>
                 <div className='row'>
-                    <div className='col-7 col-start'>
-                        <div style={{ maxHeight: "50vh" }}>
-                            <RecentTripsTable />
-                        </div>
+                    <div className='col-9'>
+                        <RecentTripsTable />
                     </div>
                     <div className='col'>
-                        <div className='infoContainer'>
-                            <TruckStatusWidget />
-                        </div>
+                        <TruckStatusWidget />
                     </div>
                 </div>
-                {/*update style*/}
-                <div className='row border-start mt-4 bg-white rounded p-3 border-success border-5'>
-                    <div className='col'>
-                        <PendingWidget />
-                    </div>
-                    <div className='col'>
-                        <TripsThisMonth />
-                    </div>
-                    <div className='col'>
-                        <TripsThisYear />
-                    </div>
-                </div>
-
-            </div>
-
+            </div >
         </div >
     );
 }

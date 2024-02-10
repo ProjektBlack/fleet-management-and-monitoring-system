@@ -10,6 +10,10 @@ import { useAuth } from "../context/authProvider";
 import { Spinner, BackButton } from "./Widgets"
 //icons
 import { BsFillTrashFill, BsFillPencilFill, BsEye, BsCheckLg, BsExclamationCircle, BsPrinter, BsPlusCircleFill } from "react-icons/bs";
+//common functions
+import { getTrucks, getPlateNumber, getTrips, getMonthlyExpenses, getYearlyExpenses } from "../functions/functions.jsx";
+
+//components
 
 //truck table
 export const TruckTable = () => {
@@ -27,9 +31,8 @@ export const TruckTable = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const response = await axios.get("https://fmms-api.vercel.app/trucks/status");
-            console.log(response.data);
-            setTrucks(response.data);
+            const trucks = await getTrucks();
+            setTrucks(trucks);
             setLoading(false);
         } catch (error) {
             setLoading(false);
@@ -60,7 +63,7 @@ export const TruckTable = () => {
     const confirmDelete = async () => {
         setLoading(true);
         try {
-            const response = await axios.delete(`https://fmms-api.vercel.app/trucks/?id=${selectedTruckId}`);
+            const response = await axios.delete(`http://localhost:2222/trucks/${selectedTruckId}`);
             enqueueSnackbar('Truck deleted successfully.', { variant: 'success' });
             if (response.status === 204) {
                 const newTrucks = trucks.filter((truck) => truck._id !== selectedTruckId);
@@ -75,7 +78,7 @@ export const TruckTable = () => {
         }
     };
 
-    //fetches data on render and state change
+    //fetches data on render
     useEffect(() => {
         fetchData();
     }, []);
@@ -164,26 +167,20 @@ export const YearlyExpensesTable = () => {
     async function fetchData() {
         try {
             setLoading(true);
-            const allYearlyExpenses = await axios.get("https://fmms-api.vercel.app/expenses/yearly");
-            console.log(allYearlyExpenses.data.data)
-            if (allYearlyExpenses.data.data.length == 1) {
-                const id = allYearlyExpenses.data.data[0].truck;
+            const allYearlyExpenses = await getYearlyExpenses();
+            for (let i = 0; i < allYearlyExpenses.length; i++) {
+                const id = allYearlyExpenses[i].truck;
                 if (id) {
-                    const truck = await axios.get(`https://fmms-api.vercel.app/trucks/?id=${id}`);
-                    allYearlyExpenses.data.data[0].plateNumber = truck.data.data.plateNumber;
-                }
-            } else {
-                for (let i = 0; i < allYearlyExpenses.data.data.length; i++) {
-                    const id = allYearlyExpenses.data.data[i].truck;
-                    if (id) {
-                        const truck = await axios.get(`https://fmms-api.vercel.app/trucks/?id=${id}`);
-                        allYearlyExpenses.data.data[i].plateNumber = truck.data.data.plateNumber;
-                    }
+                    const plateNumber = await getPlateNumber(id);
+                    allYearlyExpenses[i].plateNumber = plateNumber;
                 }
             }
-            setYearlyExpenses(allYearlyExpenses.data.data);
+            setYearlyExpenses(allYearlyExpenses);
+            const totalExpenses = allYearlyExpenses.reduce((acc, curr) => acc + curr.totalExpenses, 0);
+            setTotalExpenses(totalExpenses);
             setLoading(false);
-        } catch (error) {
+        }
+        catch (error) {
             setLoading(false);
             console.log(error);
         }
@@ -304,24 +301,15 @@ export const MonthlyExpensesTable = () => {
     async function fetchData() {
         try {
             setLoading(true);
-            const allMonthlyExpenses = await axios.get("https://fmms-api.vercel.app/expenses/monthly");
-            console.log(allMonthlyExpenses.data.data)
-            if (allMonthlyExpenses.data.data.length == 1) {
-                const id = allMonthlyExpenses.data.data[0].truck;
+            const allMonthlyExpenses = await getMonthlyExpenses();
+            for (let i = 0; i < allMonthlyExpenses.length; i++) {
+                const id = allMonthlyExpenses[i].truck;
                 if (id) {
-                    const truck = await axios.get(`https://fmms-api.vercel.app/trucks/?id=${id}`);
-                    allMonthlyExpenses.data.data[0].plateNumber = truck.data.data.plateNumber;
-                }
-            } else {
-                for (let i = 0; i < allMonthlyExpenses.data.data.length; i++) {
-                    const id = allMonthlyExpenses.data.data[i].truck;
-                    if (id) {
-                        const truck = await axios.get(`https://fmms-api.vercel.app/trucks/?id=${id}`);
-                        allMonthlyExpenses.data.data[i].plateNumber = truck.data.data.plateNumber;
-                    }
+                    const plateNumber = await getPlateNumber(id);
+                    allMonthlyExpenses[i].plateNumber = plateNumber;
                 }
             }
-            setMonthlyExpenses(allMonthlyExpenses.data.data);
+            setMonthlyExpenses(allMonthlyExpenses);
             setLoading(false);
         } catch (error) {
             setLoading(false);
@@ -422,7 +410,7 @@ export const MonthlyExpensesTable = () => {
     )
 };
 
-//trips table
+//trips table - CAN IMPROVE SEARCH
 export const TripsTable = () => {
     const [trips, setTrips] = useState([]);
     const [criteria, setCriteria] = useState('');
@@ -432,16 +420,12 @@ export const TripsTable = () => {
     async function fetchData() {
         try {
             setLoading(true);
-            const allTrips = await axios.get("https://fmms-api.vercel.app/trips");
-            for (let i = 0; i < allTrips.data.data.length; i++) {
-                const id = allTrips.data.data[i].truck;
-                if (id) {
-                    const truck = await axios.get(`https://fmms-api.vercel.app/trucks/?id=${id}`);
-                    allTrips.data.data[i].plateNumber = truck.data.data.plateNumber;
-                }
+            const allTrips = await getTrips();
+            for (let i = 0; i < allTrips.length; i++) {
+                const id = allTrips[i].truck;
+                allTrips[i].plateNumber = await getPlateNumber(id);
             }
-            console.log(allTrips.data.data)
-            setTrips(allTrips.data.data);
+            setTrips(allTrips);
             setLoading(false);
         } catch (error) {
             setLoading(false);
@@ -452,6 +436,7 @@ export const TripsTable = () => {
     useEffect(() => {
         fetchData();
     }, []);
+
     return (
         <div>
             {loading ? (
@@ -539,16 +524,17 @@ export const RecentTripsTable = () => {
     async function fetchData() {
         try {
             setLoading(true);
-            const allTrips = await axios.get("https://fmms-api.vercel.app/trips");
-            for (let i = 0; i < allTrips.data.data.length; i++) {
-                const id = allTrips.data.data[i].truck;
+            //gets trips
+            const allTrips = await getTrips();
+            for (let i = 0; i < allTrips.length; i++) {
+                const id = allTrips[i].truck;
                 if (id) {
-                    const truck = await axios.get(`https://fmms-api.vercel.app/trucks/?id=${id}`);
-                    allTrips.data.data[i].plateNumber = truck.data.data.plateNumber;
+                    //assigns a plate number
+                    const plateNumber = await getPlateNumber(id);
+                    allTrips[i].plateNumber = plateNumber;
                 }
             }
-            console.log(allTrips.data.data)
-            setTrips(allTrips.data.data);
+            setTrips(allTrips);
             setLoading(false);
         } catch (error) {
             setLoading(false);
@@ -567,10 +553,12 @@ export const RecentTripsTable = () => {
                     <Spinner />
                 </div>
             ) : (
-                <div className="p-4 infoContainer rounded border-start border-success border-5" style={{ overflowX: "auto", overflowY: "auto", maxHeight: "50vh" }}>
+                <div className="p-4 infoContainer rounded border-start border-success border-5" style={{ maxHeight: "70vh", minHeight: "70vh" }}>
                     <div className="row">
                         <h4>Recent <span className="logo">Trips</span></h4>
-                        <table className="table table-hover table-small" >
+                    </div>
+                    <div className="row" style={{ overflowY: "auto", }}>
+                        <table className="table table-hover table-small table-striped" >
                             <thead className="">
                                 <tr className="bg-primary">
                                     <th className="text-center">Plate Number</th>
@@ -618,6 +606,8 @@ export const RecentTripsTable = () => {
                             </tbody>
                         </table>
                     </div>
+
+
                 </div>
             )
             }
@@ -625,7 +615,7 @@ export const RecentTripsTable = () => {
     )
 }
 
-//display table
+//display table TRUCK STATUS SHOULDNT BE SCROLLABLE
 export const TruckStatusWidget = () => {
     const [trucks, setTrucks] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -636,7 +626,7 @@ export const TruckStatusWidget = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const response = await axios.get("https://fmms-api.vercel.app/trucks/status");
+            const response = await axios.get("http://localhost:2222/trucks/status");
             console.log(response.data);
             setTrucks(response.data);
             setLoading(false);
@@ -671,27 +661,35 @@ export const TruckStatusWidget = () => {
                     <Spinner />
                 </div>
             ) : (
-                <div className="p-4 rounded border-start border-success border-5" style={{ overflowX: "auto", overflowY: "auto", maxHeight: "50vh" }}>
-                    <h4>Truck <span className="logo">Status</span></h4>
-                    <table className="table table-hover table-sm">
-                        <thead>
-                            <tr>
-                                <th style={{ width: "75%" }}>Plate Number</th>
-                                <th className="text-center" style={{ width: "33%" }}>Availability</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {trucks
-                                .map((truck) => (
-                                    <tr key={truck.plateNumber}>
-                                        <td>{truck.plateNumber}</td>
-                                        <td className="text-center" style={{ color: truckAvailability(truck) === 'Available' ? 'green' : 'red' }}>{truckAvailability(truck)}</td>
-                                    </tr>
-                                ))}
-                        </tbody>
-                    </table>
+                <div className="p-4 rounded border-start border-success border-5 bg-white infoContainer" style={{ maxHeight: "70vh", minHeight: "70vh" }}>
+                    <div className="row" >
+                        <h4>Truck <span className="logo">Status</span></h4>
+                    </div>
+                    <div className="row" style={{ maxHeight: "calc(70vh - 60px)", overflowY: "auto" }}>
+                        <table className="table table-hover table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th style={{ width: "75%", position: "sticky", top: 0, backgroundColor: "#fff" }}>Plate Number</th>
+                                    <th className="text-center" style={{ width: "33%", position: "sticky", top: 0, backgroundColor: "#fff" }}>Availability</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {trucks
+                                    .map((truck) => (
+                                        <tr key={truck.plateNumber}>
+                                            <td>{truck.plateNumber}</td>
+                                            <td className="text-center" style={{ color: truckAvailability(truck) === 'Available' ? 'green' : 'red' }}>{truckAvailability(truck)}</td>
+                                        </tr>
+                                    ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 }
+
+
+

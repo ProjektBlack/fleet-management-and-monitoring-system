@@ -8,7 +8,7 @@ import { BackButton } from "./Widgets";
 
 //MOSTLY NOTIFICATIONS AND PROPER ERROR MESSAGES
 
-//register a new user - not configured yet
+//register a new user
 export const Register = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -37,11 +37,11 @@ export const Register = () => {
                     password,
                     role: PARTY
                 };
-                const response = await axios.post("http://localhost:2222/users", data);
+                const response = await axios.post("http://localhost:2222/register", data);
                 console.log(response.data);
                 setLoading(false);
                 enqueueSnackbar("User created.", { variant: "success" });
-                navigate("/login");
+                navigate("/");
             } catch (error) {
                 setLoading(false);
                 enqueueSnackbar("Error occurred.", { variant: "error" });
@@ -68,7 +68,7 @@ export const Register = () => {
         <div id="loginBackground" className="d-flex align-items-center justify-content-center" style={{ height: "100vh" }}>
             <form id="registrationPanel" className="form-control" onSubmit={handleRegister}>
                 <div className="row">
-                    <h3>Registration</h3>
+                    <h3 className="logo">Registration</h3>
                 </div>
                 <div className="row">
                     <label className="mb-1 mt-1">Username</label>
@@ -86,13 +86,13 @@ export const Register = () => {
                     </select>
                 </div>
 
-                {passwordFilledUp ? (   //if password is filled up, show confirmation field
+                {passwordFilledUp ? ( //if password is filled up, show confirmation field
                     <div className="row">
                         <label className="mb-1 mt-1">Confirm Password</label>
                         <input type="password" className="form-control" value={confirmation} onChange={(e) => setConfirmation(e.target.value)} />
                     </div>
                 ) : null}
-                {error ? (  //if error is not null, show error message}
+                {error ? ( //if error is not null, show error message}
                     <div>
                         <p className="text-danger">{error}</p>
                     </div>
@@ -101,17 +101,16 @@ export const Register = () => {
                     <button className="btn btn-success mx-auto mt-4 ${areFormsFilled() ? '' : 'disabled'}`" type="submit" disabled={!areFormsFilled()}>Register</button>
                 </div>
                 <div className='text-center mt-1'>
-                    <Link to={"/login"} className='text-muted text-decoration-none fw-light'>Already registered?</Link>
+                    <Link to={"/"} className='text-muted text-decoration-none fw-light'>Already registered?</Link>
                 </div>
             </form>
         </div>
     );
 };
 
-//create truck form
+//create truck form - THIS LOOKS UGLY
 export const CreateTruck = () => {
     const navigate = useNavigate();
-
     const [newTruck, setNewTruck] = useState({}) //state for new truck object
     const [plateNumber, setPlateNumber] = useState('')
     const [truckType, setTruckType] = useState('')
@@ -120,7 +119,6 @@ export const CreateTruck = () => {
         yearlyExpenses: [],
         monthlyExpenses: []
     })
-
 
     //function to create a new truck
     const handleCreateTruck = async () => {
@@ -132,7 +130,6 @@ export const CreateTruck = () => {
                 expenses: expenses
             };
             const response = await axios.post('http://localhost:2222/trucks', data) //create new truck
-            console.log(response.data);
             enqueueSnackbar("Truck created.", { variant: "success" })
             navigate(`/trucks`); //navigate to truck details page
         } catch (error) {
@@ -140,6 +137,7 @@ export const CreateTruck = () => {
             console.error(error);
         }
     };
+
     return (
 
         <div className="row">
@@ -177,7 +175,7 @@ export const CreateTrip = () => {
     const [timeDispatched, setTimeDispatched] = useState("");
     const [timeReceived, setTimeReceived] = useState("");
     const [timeReturned, setTimeReturned] = useState("");
-    const [WOWEX, setWOWEX] = useState("Pending");
+    const [status, setStatus] = useState("Pending");
     const [distance, setDistance] = useState("");
     const [dieselCost, setDieselCost] = useState("60");
     const [dieselConsumption, setDieselConsumption] = useState("");
@@ -243,11 +241,7 @@ export const CreateTrip = () => {
         }
     }
 
-
-    //function to create an expense
-    const handleCreateTrip = async () => {
-        event.preventDefault();
-        //construct message body
+    async function postTrip() {
         try {
             const data = {
                 truck: truckId,
@@ -260,7 +254,7 @@ export const CreateTrip = () => {
                 timeDispatched,
                 timeReceived,
                 timeReturned,
-                status: WOWEX,
+                status: status,
                 distance,
                 dieselCost,
                 dieselConsumption,
@@ -268,17 +262,32 @@ export const CreateTrip = () => {
                 pathway,
                 totalTripExpense: totalTripCost
             };
-            setLoading(true);
             const response = await axios.post('http://localhost:2222/trips', data);
-            const newObjectID = response.data._id;
-            //get the truck object
+            return response.data._id;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function updateTruckObject(truckId, newObjectID) {
+        try {
             const getObject = await axios.get(`http://localhost:2222/trucks/${truckId}`);
             getObject.data.trips.push(newObjectID);
             await axios.put(`http://localhost:2222/trucks/${truckId}`, getObject.data);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    //function to create an expense
+    const handleCreateTrip = async () => {
+        event.preventDefault();
+        setLoading(true);
+        try {
+            updateTruckObject(truckId, await postTrip());
             setLoading(false);
-            //use better alerts
             enqueueSnackbar("Trip created.", { variant: "success" })
-            navigate(`/trucks/details/${truckId}`); //navigate to truck details page
+            navigate(`/trucks/details/${truckId}`); //navigate to truck details page 
         } catch (error) {
             setLoading(false);
             enqueueSnackbar("Process failed.", { variant: "error" })
@@ -416,7 +425,7 @@ export const CreateTrip = () => {
                         </div>
                         <div className="row">
                             <label>Status</label>
-                            <select className="form-select" name="status" value={WOWEX} onChange={(e) => setWOWEX(e.target.value)}>
+                            <select className="form-select" name="status" value={status} onChange={(e) => setStatus(e.target.value)}>
                                 <option value={"Pending"}>Pending</option>
                                 <option value={"Done"}>Done</option>
                             </select>
@@ -531,11 +540,17 @@ export const CreateExpense = () => {
 
     //function to get and compute total trips and total fuel costs
     const computeMonthlyTotalTripsAndFuelCosts = async () => {
-
         try {
             const response = await axios.get(`http://localhost:2222/trips/${truckId}/${year}/${month}`);
             const trips = response.data.length;
-            console.log(trips)
+            if (trips === 0) {
+                enqueueSnackbar("No data found.", { variant: "error" })
+                setLoading(false);
+                setTrips(0);
+                setDieselCosts(0);
+                setMonthlyTotalCosts(0);
+                return;
+            }
             let totalFuelCosts = 0;
             for (let i = 0; i < trips; i++) {
                 totalFuelCosts += response.data[i].dieselConsumption;
@@ -545,6 +560,7 @@ export const CreateExpense = () => {
             setTrips(trips);
             setDieselCosts(totalFuelCosts);
             setMonthlyTotalCosts(monthlyTotalCosts);
+            enqueueSnackbar("Calculation successful.", { variant: "success" })
         } catch (error) {
             enqueueSnackbar("Process failed.", { variant: error })
             console.error(error);
@@ -555,10 +571,11 @@ export const CreateExpense = () => {
         try {
             console.log(truckId)
             const response = await axios.get(`http://localhost:2222/expenses/yearly/${truckId}/${year}`);
+            if (response.data.length === 0) {
+                enqueueSnackbar("No data found.", { variant: "error" })
+                return;
+            }
             let totalYearlyTrips = 0;
-            console.log(response.data[0].totalTrips)
-            console.log(response.data[0].maintenance)
-            console.log(response.data[0].dieselConsumption)
             for (let i = 0; i < response.data.length; i++) {
                 totalYearlyTrips += parseFloat(response.data[i].totalTrips);
             }
@@ -577,15 +594,15 @@ export const CreateExpense = () => {
             setTotalDieselConsumption(totalFuelCosts);
             setTotalExpenses(totalFuelCosts + totalMaintenance + parseInt(ltoFees) + parseInt(fcieFees) + parseInt(miscStickerFees))
             console.log("Total expenses:" + totalExpenses)
+            enqueueSnackbar("Calculation successful.", { variant: "success" })
         } catch (error) {
             alert("Error occurred. Please check console.");
             console.error(error);
         }
     }
 
-    //function to create an expense - update this to include the new fields
+    //function to create an expense 
     const handleCreateExpense = async () => {
-        console.log(truckId);
         //checks if selected type is yearly
         if (selectedType === "option1") {
             try {
@@ -607,7 +624,7 @@ export const CreateExpense = () => {
                 truckData.data.expenses.yearlyExpenses.push(newObjectID); //push the yearly expense ID to the truck data
                 await axios.put(`http://localhost:2222/trucks/${truckId}`, truckData.data); //update the truck data
                 setLoading(false);
-                enqueueSnackbar("Yearly expense created.")
+                enqueueSnackbar("Yearly expense created.", { variant: "success" })
                 window.history.back();
             } catch (error) {
                 setLoading(false);
@@ -628,7 +645,7 @@ export const CreateExpense = () => {
                 truckData.data.expenses.monthlyExpenses.push(newObjectID); //push the monthly expense ID to the truck data
                 await axios.put(`http://localhost:2222/trucks/${truckId}`, truckData.data); //update the truck data
                 setLoading(false);
-                alert("Record created.");
+                enqueueSnackbar("Monthly expense created.", { variant: "success" })
                 window.history.back();
             } catch (error) {
                 setLoading(false);
@@ -814,7 +831,7 @@ export const CreateExpense = () => {
     );
 };
 
-//edit truck form -- not yet done
+//edit truck form -- THIS LOOKS UGLY
 export const EditTruck = () => {
     const [newTruck, setNewTruck] = useState({}) //state for new truck object
     const [plateNumber, setPlateNumber] = useState('')
@@ -824,21 +841,17 @@ export const EditTruck = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    //get truck ID from url then set states
-    useEffect(() => {
-        const getTruck = async () => {
-            try {
-                const response = await axios.get(`http://localhost:2222/trucks/${id}`);
-                setNewTruck(response.data);
-                setPlateNumber(response.data.plateNumber);
-                setUnderMaintenance(response.data.underMaintenance);
-                setTruckType(response.data.truckType);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-        getTruck();
-    }, [])
+    async function getTruck() {
+        try {
+            const response = await axios.get(`http://localhost:2222/trucks/${id}`);
+            setNewTruck(response.data);
+            setPlateNumber(response.data.plateNumber);
+            setUnderMaintenance(response.data.underMaintenance);
+            setTruckType(response.data.truckType);
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     //function to create a new truck
     const handleUpdateTruck = async () => {
@@ -851,13 +864,17 @@ export const EditTruck = () => {
             };
             const response = await axios.put(`http://localhost:2222/trucks/${id}`, data) //update truck
             console.log(response.data);
-            alert("Truck updated.");
-            navigate(`/home`); //navigate to truck details page
+            enqueueSnackbar("Truck updated.", { variant: "success" })
+            navigate(`/trucks`);
         } catch (error) {
             alert("Error occurred. Please check console.");
             console.error(error);
         }
     };
+
+    useEffect(() => {
+        getTruck();
+    }, [])
 
     return (
         <div className="d-flex align-items-center justify-content-center vh-100">
@@ -908,17 +925,18 @@ export const EditMonthlyExpense = () => {
     useEffect(() => {
         const getMonthlyExpense = async () => {
             try {
-                const response = await axios.get(`https://fmms-api.vercel.app/expenses/monthly/?id=${id}`);
+                const response = await axios.get(`http://localhost:2222/expenses/monthly/${id}`);
                 console.log(response);
-                setTruckId(response.data.data.truck);
-                setMonth(response.data.data.month);
-                setYear(response.data.data.year);
-                setMonthlyMaintenanceCosts(response.data.data.maintenance);
-                setDieselCosts(response.data.data.dieselConsumption);
-                setTrips(response.data.data.totalTrips);
-                setMonthlyTotalCosts(response.data.data.totalMonthlyExpenses);
+                setTruckId(response.data.truck);
+                setMonth(response.data.month);
+                setYear(response.data.year);
+                setMonthlyMaintenanceCosts(response.data.maintenance);
+                setDieselCosts(response.data.dieselConsumption);
+                setTrips(response.data.totalTrips);
+                setMonthlyTotalCosts(response.data.totalMonthlyExpenses);
+                enqueueSnackbar("Monthly expense retrieved.", { variant: "success" })
             } catch (error) {
-                alert("Error occurred. Please check console.");
+                enqueueSnackbar("Error occurred. Please check console.", { variant: "error" })
                 console.error(error);
             }
         };
@@ -928,7 +946,7 @@ export const EditMonthlyExpense = () => {
     //function to get and compute total trips and total fuel costs
     const computeMonthlyTotalTripsAndFuelCosts = async () => {
         try {
-            const response = await axios.get(`https://fmms-api.vercel.app/trips/${truckId}/${year}/${month}`);
+            const response = await axios.get(`http://localhost:2222/trips/${truckId}/${year}/${month}`);
             const trips = response.data.length;
             console.log(trips)
             let totalFuelCosts = 0;
@@ -940,8 +958,9 @@ export const EditMonthlyExpense = () => {
             setTrips(trips);
             setDieselCosts(totalFuelCosts);
             setMonthlyTotalCosts(monthlyTotalCosts);
+            enqueueSnackbar("Calculation successful.", { variant: "success" })
         } catch (error) {
-            alert("Error occurred. Please check console.");
+            enqueueSnackbar("Process failed.", { variant: "error" })
             console.error(error);
         }
     }
@@ -952,12 +971,12 @@ export const EditMonthlyExpense = () => {
             const data = {
                 month, maintenance: monthlyMaintenanceCosts, dieselConsumption: dieselCosts, totalTrips: trips, year, totalMonthlyExpenses: monthlyTotalCosts
             };
-            const response = await axios.put(`https://fmms-api.vercel.app/expenses/monthly/?id=${id}`, data);
+            const response = await axios.put(`http://localhost:2222/expenses/monthly/${id}`, data);
             console.log(response.data)
-            alert("Monthly expense is updated successfully.");
+            enqueueSnackbar("Monthly expense updated.", { variant: "success" })
             window.history.back();
         } catch (error) {
-            alert("Error occurred. Please check console.");
+            enqueueSnackbar("Process failed.", { variant: "error" })
             console.error(error);
         }
     };
@@ -1053,34 +1072,31 @@ export const EditYearlyExpense = () => {
     //get object id from url
     const { id } = useParams();
 
-    //function to get yearly expense
-    useEffect(() => {
-        const getYearlyExpense = async () => {
-            try {
-                const response = await axios.get(`https://fmms-api.vercel.app/expenses/yearly/?id=${id}`);
-                console.log(response);
-                setTruckId(response.data.data.truck);
-                setYear(response.data.data.year);
-                setLtoFees(response.data.data.ltoReg);
-                setFcieFees(response.data.data.fcieReg);
-                setMiscStickerFees(response.data.data.stickerReg);
-                setMaintenanceCosts(response.data.data.maintenance);
-                setTotalTrips(response.data.data.totalTrips);
-                setTotalDieselConsumption(response.data.data.totalDieselConsumption);
-                setTotalExpenses(response.data.data.totalExpenses);
-            } catch (error) {
-                alert("Error occurred. Please check console.");
-                console.error(error);
-            }
-        };
-        getYearlyExpense();
-    }, [id]);
+    const getYearlyExpense = async () => {
+        try {
+            const response = await axios.get(`http://localhost:2222/expenses/yearly/${id}`);
+            console.log(response);
+            setTruckId(response.data.truck);
+            setYear(response.data.year);
+            setLtoFees(response.data.ltoReg);
+            setFcieFees(response.data.fcieReg);
+            setMiscStickerFees(response.data.stickerReg);
+            setMaintenanceCosts(response.data.maintenance);
+            setTotalTrips(response.data.totalTrips);
+            setTotalDieselConsumption(response.data.totalDieselConsumption);
+            setTotalExpenses(response.data.totalExpenses);
+            enqueueSnackbar("Yearly expense retrieved.", { variant: "success" })
+        } catch (error) {
+            enqueueSnackbar("Error occurred. Please check console.", { variant: "error" })
+            console.error(error);
+        }
+    };
 
     //function to get and compute yearly costs and trips
     const computeYearlyTotalTripsAndFuelCosts = async () => {
         try {
             console.log(truckId)
-            const response = await axios.get(`https://fmms-api.vercel.app/expenses/monthly/${truckId}/${year}`);
+            const response = await axios.get(`http://localhost:2222/expenses/monthly/${year}/${truckId}`);
             console.log(response)
             console.log(response.data)
             let totalYearlyTrips = 0;
@@ -1103,8 +1119,9 @@ export const EditYearlyExpense = () => {
             setTotalDieselConsumption(totalFuelCosts);
             setTotalExpenses(totalFuelCosts + totalMaintenance + parseInt(ltoFees) + parseInt(fcieFees) + parseInt(miscStickerFees))
             console.log(totalExpenses)
+            enqueueSnackbar("Calculation successful.", { variant: "success" })
         } catch (error) {
-            alert("Error occurred. Please check console.");
+            enqueueSnackbar("Process failed.", { variant: "error" })
             console.error(error);
         }
     }
@@ -1123,16 +1140,21 @@ export const EditYearlyExpense = () => {
                 totalDieselConsumption,
                 totalExpenses
             };
-            const response = await axios.put(`https://fmms-api.vercel.app/expenses/yearly/?id=${id}`, data);
+            const response = await axios.put(`http://localhost:2222/expenses/yearly/${id}`, data);
             console.log(response);
             console.log(response.data)
-            alert("Yearly Expense updated.");
+            enqueueSnackbar("Yearly expense updated.", { variant: "success" })
             window.history.back();
         } catch (error) {
-            alert("Error occurred. Please check console.");
+            enqueueSnackbar("Process failed.", { variant: "error" })
             console.error(error);
         }
     };
+
+    //function to get yearly expense
+    useEffect(() => {
+        getYearlyExpense();
+    }, [id]);
 
     return (
         <div className="p-4 mx-auto mt-4" style={{ width: '50%' }}>
@@ -1230,7 +1252,7 @@ export const EditTrip = () => {
     const [timeDispatched, setTimeDispatched] = useState("");
     const [timeReceived, setTimeReceived] = useState("");
     const [timeReturned, setTimeReturned] = useState("");
-    const [WOWEX, setWOWEX] = useState("Pending");
+    const [status, setStatus] = useState("Pending");
     const [distance, setDistance] = useState("");
     const [dieselCost, setDieselCost] = useState("60");
     const [dieselConsumption, setDieselConsumption] = useState("");
@@ -1244,33 +1266,32 @@ export const EditTrip = () => {
     //get truck ID from URL params
     const { id } = useParams();
 
-    //get trip ID from url then set states
+    async function getTrip() {
+        try {
+            const response = await axios.get(`http://localhost:2222/trips/${id}`);
+            setTruckId(response.data.truck);
+            setDriver(response.data.driver);
+            setCustomer(response.data.customer);
+            setHelper(response.data.helper);
+            setYear(response.data.year);
+            setMonth(response.data.month);
+            setDay(response.data.day);
+            setTimeDispatched(response.data.timeDispatched);
+            setTimeReceived(response.data.timeReceived);
+            setTimeReturned(response.data.timeReturned);
+            setStatus(response.data.status);
+            setDistance(response.data.distance);
+            setDieselCost(response.data.dieselCost);
+            setDieselConsumption(response.data.dieselConsumption);
+            setTollFee(response.data.tollFee);
+            setPathway(response.data.pathway);
+            setTotalTripCost(response.data.totalTripExpense);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     useEffect(() => {
-        const getTrip = async () => {
-            try {
-                const response = await axios.get(`https://fmms-api.vercel.app/trips/?id=${id}`);
-                console.log(response.data);
-                setTruckId(response.data.data.truck);
-                setDriver(response.data.data.driver);
-                setCustomer(response.data.data.customer);
-                setHelper(response.data.data.helper);
-                setYear(response.data.data.year);
-                setMonth(response.data.data.month);
-                setDay(response.data.data.day);
-                setTimeDispatched(response.data.data.timeDispatched);
-                setTimeReceived(response.data.data.timeReceived);
-                setTimeReturned(response.data.data.timeReturned);
-                setWOWEX(response.data.data.status);
-                setDistance(response.data.data.distance);
-                setDieselCost(response.data.data.dieselCost);
-                setDieselConsumption(response.data.data.dieselConsumption);
-                setTollFee(response.data.data.tollFee);
-                setPathway(response.data.data.pathway);
-                setTotalTripCost(response.data.data.totalTripExpense);
-            } catch (error) {
-                console.error(error);
-            }
-        };
         getTrip();
     }, [])
 
@@ -1342,7 +1363,7 @@ export const EditTrip = () => {
                 timeDispatched,
                 timeReceived,
                 timeReturned,
-                status: WOWEX,
+                status: status,
                 distance,
                 dieselCost,
                 dieselConsumption,
@@ -1354,10 +1375,11 @@ export const EditTrip = () => {
             axios.put(`https://fmms-api.vercel.app/trips/?id=${id}`, data);
             setLoading(false);
             //use better alerts
-            alert("Trip edited.");
+            enqueueSnackbar("Trip updated.", { variant: "success" })
             navigate(`/trucks/details/${truckId}`); //navigate to truck details page
         } catch (error) {
             setLoading(false);
+            enqueueSnackbar("Error occurred. Please check console.", { variant: "error" })
             console.log(error);
         }
     };
@@ -1492,7 +1514,7 @@ export const EditTrip = () => {
                         </div>
                         <div className="row">
                             <label>Status</label>
-                            <select className="form-select" name="status" value={WOWEX} onChange={(e) => setWOWEX(e.target.value)}>
+                            <select className="form-select" name="status" value={status} onChange={(e) => setStatus(e.target.value)}>
                                 <option value={"Pending"}>Pending</option>
                                 <option value={"Done"}>Done</option>
                             </select>

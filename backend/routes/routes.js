@@ -11,9 +11,24 @@ const router = express.Router();
 //routes for trucks
 router.post("/trucks", (req, res) => createRecord(Truck, req, res));
 router.get("/trucks", (req, res) => getAllRecords(Truck, res));
+router.get('/trucks/status', async (req, res) => {
+    try {
+        const trucks = await Truck.find();
+
+        const trucksWithTrips = await Promise.all(trucks.map(async (truck) => {
+            const trips = await Trip.find({ truck: truck._id });
+            return { ...truck._doc, trips };
+        }));
+
+        res.status(200).json(trucksWithTrips);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 router.get("/trucks/:id", (req, res) => getSingleRecord(Truck, req, res));
 router.put("/trucks/:id", (req, res) => updateRecord(Truck, req, res));
-//power delete for truck
+//deletes truck and its associated trips and expenses
 router.delete("/trucks/:id", async (req, res) => {
     try {
         const { id } = req.params;
@@ -43,12 +58,13 @@ router.delete("/trucks/:id", async (req, res) => {
     }
 });
 
+
 //routes for trips
 router.post("/trips", (req, res) => createRecord(Trip, req, res));
 router.get("/trips", (req, res) => getAllRecords(Trip, res));
 router.get("/trips/:id", (req, res) => getSingleRecord(Trip, req, res));
 router.put("/trips/:id", (req, res) => updateRecord(Trip, req, res));
-//power delete for trips
+//deletes trip and removes it from the truck's trips array
 router.delete("/trips/:id", async (req, res) => {
     try {
         const { id } = req.params;
@@ -71,6 +87,40 @@ router.delete("/trips/:id", async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error." });
+    }
+});
+//route for getting completed trips by year and month
+router.get('/trips/status/completed/:year/:month', async (req, res) => {
+    try {
+        const { year, month } = req.params;
+
+        // Convert first character to uppercase and the rest to lowercase
+        const formattedMonth = month.charAt(0).toUpperCase() + month.slice(1).toLowerCase();
+
+        const trips = await Trip.find({ status: "Completed", month: formattedMonth, year: year });
+
+        if (!trips || trips.length === 0) {
+            return res.status(404).json({ message: `There are no completed trips for ${formattedMonth} ${year}.` });
+        }
+
+        res.status(200).json(trips);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send({ message: error.message });
+    }
+});
+//route for getting all completed trips by year
+router.get("/trips/status/completed/:year", async (req, res) => {
+    try {
+        const { year } = req.params;
+        const trips = await Trip.find({ status: "Completed", year: year });
+        if (!trips || trips.length === 0) {
+            return res.status(404).json({ message: `There are no completed trips for ${year}.` });
+        }
+        res.status(200).json(trips);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send({ message: error.message });
     }
 });
 //route for getting trips by year and month
@@ -100,30 +150,7 @@ router.get("/trips/status/pending", async (req, res) => {
         res.status(500).send({ message: error.message });
     }
 });
-//route for getting completed trips
-router.get("/trips/status/completed", async (req, res) => {
-    try {
-        const trips = await Trip.find({ status: "Done" });
-        if (!trips) {
-            res.status(404).json({ message: "There are no completed trips." });
-        }
-        res.status(200).json(trips);
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).send({ message: error.message });
-    }
-});
-router.get('/trips/status/completed/month', (req, res) => {
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
 
-    const tripsThisMonth = trips.filter(trip => {
-        const tripDate = new Date(trip.date);
-        return tripDate.getMonth() === currentMonth;
-    });
-
-    res.json(tripsThisMonth);
-});
 
 //routes for monthly expenses
 router.post("/expenses/monthly", (req, res) => createRecord(MonthlyExpense, req, res));
@@ -156,7 +183,8 @@ router.delete("/expenses/monthly/:id", async (req, res) => {
         res.status(500).json({ message: "Server error." });
     }
 });
-router.get("/expenses/monthly/:year/:truckId", async (req, res) => { //get monthly expenses by year and truck
+//get monthly expenses by year and truck
+router.get("/expenses/monthly/:year/:truckId", async (req, res) => {
     try {
         const { year, truckId } = req.params;
         const expenses = await MonthlyExpense.find({ truck: truckId, year: year });
@@ -204,7 +232,7 @@ router.delete("/expenses/yearly/:id", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
-
+//get yearly expenses by truck and year
 router.get("/expenses/yearly/:truckId/:year", async (req, res) => {
     try {
         const { truckId, year } = req.params;
@@ -227,7 +255,7 @@ const getSingleRecord = async (model, req, res) => {
         const { id } = req.params;
         const record = await model.findById(id);
         if (!record) {
-            res.status(404).json({ message: `${model.modelName} not found.` });
+            return res.status(404).json({ message: `${model.modelName} not found.` });
         }
         res.status(200).json(record);
     } catch (error) {
@@ -268,20 +296,6 @@ const updateRecord = async (model, req, res) => {
             res.status(404).json({ message: `${model.modelName} not found.` });
         }
         res.status(200).send({ message: `${model.modelName} updated successfully.` });
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).send({ message: error.message });
-    }
-};
-//delete a record
-const deleteRecord = async (model, req, res) => {
-    try {
-        const { id } = req.params;
-        const result = await model.findByIdAndDelete(id);
-        if (!result) {
-            res.status(404).json({ message: `${model.modelName} not found.` });
-        }
-        res.status(204).send({ message: `${model.modelName} deleted successfully.` });
     } catch (error) {
         console.error(error.message);
         res.status(500).send({ message: error.message });
