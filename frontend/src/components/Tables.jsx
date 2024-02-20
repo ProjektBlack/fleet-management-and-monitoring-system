@@ -7,7 +7,7 @@ import { Modal, Button } from 'react-bootstrap'
 //context
 import { useAuth } from "../context/authProvider";
 //import components
-import { Spinner, BackButton } from "./Widgets"
+import { Spinner, BackButton, BackToHome } from "./Widgets"
 //icons
 import { BsFillTrashFill, BsFillPencilFill, BsEye, BsCheckLg, BsExclamationCircle, BsPrinter, BsPlusCircleFill } from "react-icons/bs";
 //common functions

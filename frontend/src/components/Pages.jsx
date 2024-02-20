@@ -6,7 +6,7 @@ import { SnackbarProvider, useSnackbar } from 'notistack';
 import { Modal, Button } from 'react-bootstrap';
 import axios from "axios";
 //components
-import { Spinner, BackButton, Sidebar, Dashboard, CardComponent } from "./Widgets";
+import { Spinner, BackButton, Sidebar, Dashboard, CardComponent, BackToHome, BackToLogin } from "./Widgets";
 import { TruckTable, YearlyExpensesTable, TripsTable, MonthlyExpensesTable } from "./Tables";
 //icons
 import { BsFillFilePlusFill, BsEye, BsFillPencilFill, BsFillTrashFill } from "react-icons/bs";
@@ -135,7 +135,7 @@ export const ManageTruck = () => {
 
 //can split into three separate tables for easier management
 //show truck details
-export const ShowTruck = () => {
+export const ShowTruck = () => { 
     const [loading, setLoading] = useState(false);//loading
     const [truckInfo, setTruckInfo] = useState({}); //info and ids
     const [expenses, setExpenses] = useState([]); //ids
@@ -195,7 +195,7 @@ export const ShowTruck = () => {
             }
         };
         fetchData();
-    }, [id]);
+    }, [trips.length, yearlyExpenses.length, monthlyExpenses.length]);
 
     const handleTripConfirmation = (id) => {
         setSelectedId(id);
@@ -312,7 +312,7 @@ export const ShowTruck = () => {
                                     </div>
                                 )}
                                 <div className="col-4">
-                                    <BackButton />
+                                    <BackToHome />
                                 </div>
                             </div>
                             <div className='row'>

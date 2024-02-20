@@ -19,6 +19,26 @@ export const PrivateRoute = ({ isAuthenticated, children }) => {
     }
 }
 
+export const BackToLogin = () => {
+    return (
+        <div className="text-center">
+            <Link to="/" className="text-decoration-none">
+                <BsArrowReturnLeft size={30} color="#2E8B57" />
+            </Link>
+        </div>
+    );
+}
+
+export const BackToHome = () => {
+    return (
+        <div className="text-center">
+            <Link to="/home" className="text-decoration-none">
+                <BsArrowReturnLeft size={30} color="#2E8B57" />
+            </Link>
+        </div>
+    );
+}
+
 //return button
 //add an icon
 export const BackButton = () => {

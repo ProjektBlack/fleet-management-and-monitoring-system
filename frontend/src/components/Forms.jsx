@@ -182,12 +182,27 @@ export const CreateTrip = () => {
     const [tollFee, setTollFee] = useState(0);
     const [pathway, setPathway] = useState(0);
     const [totalTripCost, setTotalTripCost] = useState("");
+    //truck type
+    const [truckType, setTruckType] = useState(""); //truck type [forward, elf
 
 
     //navigation after creation
     const navigate = useNavigate();
     //get truck ID from URL params
     const { truckId } = useParams();
+    
+    useEffect(() => {
+        const getTruck = async () => {
+            try {
+                const response = await axios.get(`http://localhost:2222/trucks/${truckId}`);
+                setTruckType(response.data.truckType);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        getTruck();
+        console.log(truckType)
+    }, [])
 
     //functions to automatically compute diesel consumption and total trip cost
     function handleDistanceChange(event) {
@@ -223,9 +238,19 @@ export const CreateTrip = () => {
     }
 
     function calculateDieselConsumption(distance, dieselCost) {
-        const fuelConsumption = distance / 6; // assume 10 km/liter
-        const totalFuelCost = fuelConsumption * dieselCost;
-        return totalFuelCost.toFixed(2);
+        if (truckType === "Forward") {
+            const fuelConsumption = distance / 6; //if forward, divide by six, if elf, divide by 7
+            const totalFuelCost = fuelConsumption * dieselCost;
+            return totalFuelCost.toFixed(2);
+        } else if (truckType === "Elf") {
+            const fuelConsumption = distance / 7;
+            const totalFuelCost = fuelConsumption * dieselCost;
+            return totalFuelCost.toFixed(2);
+        } else {
+            const fuelConsumption = distance / 3;
+            const totalFuelCost = fuelConsumption * dieselCost;
+            return totalFuelCost.toFixed(2);
+        }
     }
 
     function calculateTotalTripCost(dieselConsumption, tollFee, pathway) {
@@ -1259,7 +1284,7 @@ export const EditTrip = () => {
     const [tollFee, setTollFee] = useState(0);
     const [pathway, setPathway] = useState(0);
     const [totalTripCost, setTotalTripCost] = useState("");
-
+    const [truckType, setTruckType] = useState("");
 
     //navigation after edit
     const navigate = useNavigate();
@@ -1329,9 +1354,19 @@ export const EditTrip = () => {
     }
 
     function calculateDieselConsumption(distance, dieselCost) {
-        const fuelConsumption = distance / 6; // assume 10 km/liter
-        const totalFuelCost = fuelConsumption * dieselCost;
-        return totalFuelCost.toFixed(2);
+        if (truckType === "Forward") {
+            const fuelConsumption = distance / 6; //if forward, divide by six, if elf, divide by 7
+            const totalFuelCost = fuelConsumption * dieselCost;
+            return totalFuelCost.toFixed(2);
+        } else if (truckType === "Elf") {
+            const fuelConsumption = distance / 7;
+            const totalFuelCost = fuelConsumption * dieselCost;
+            return totalFuelCost.toFixed(2);
+        } else {
+            const fuelConsumption = distance / 3;
+            const totalFuelCost = fuelConsumption * dieselCost;
+            return totalFuelCost.toFixed(2);
+        }
     }
 
     function calculateTotalTripCost(dieselConsumption, tollFee, pathway) {
