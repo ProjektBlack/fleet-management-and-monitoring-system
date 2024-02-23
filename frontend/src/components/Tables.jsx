@@ -90,52 +90,55 @@ export const TruckTable = () => {
                     <Spinner />
                 </div>
             ) : (
-                <div className="p-4" style={{ overflowX: "auto", overflowY: "auto", maxHeight: "70vh" }}>
-                    <div className="row mb-4">
-                        <div className="col-8">
-                        </div>
-                        <div className="col-3">
-                            <input className='form-control' placeholder="Search for plate number.." value={criteria} onChange={(e) => setCriteria(e.target.value)}></input>
-                        </div>
-                        <div className="col-1">
-                            <Link to="/trucks/new" title="Create new truck"><BsPlusCircleFill id="newIcon" size={35} /></Link>
-                        </div>
-
+                <div className="p-4" style={{ maxHeight: "70vh" }}>
+                    <div className="p-4">
+                        <div className="row mb-4">
+                            <div className="col-8">
+                            </div>
+                            <div className="col-3">
+                                <input className='form-control' placeholder="Search for plate number.." value={criteria} onChange={(e) => setCriteria(e.target.value)}></input>
+                            </div>
+                            <div className="col-1">
+                                <Link to="/trucks/new" title="Create new truck"><BsPlusCircleFill id="newIcon" size={35}  className="createButton"/></Link>
+                            </div>
                     </div>
-                    <div className="row">
-                        <table className="table table-hover table-striped">
-                            <thead>
-                                <tr>
-                                    <th className="text-center" scope="row">Plate Number</th>
-                                    <th className="text-center">Truck Type</th>
-                                    <th className="text-center">Availability</th>
-                                    <th className="text-center">Maintenance</th>
-                                    <th className="text-center">Operations</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {trucks
-                                    .filter(truck => truck.plateNumber.includes(criteria))
-                                    .map((truck) => (
-                                        <tr key={truck.plateNumber}>
-                                            <td className="text-center" scope="row">{truck.plateNumber}</td>
-                                            <td className="text-center">{truck.truckType}</td>
-                                            <td className="text-center" style={{ color: truckAvailability(truck) === 'Available' ? 'green' : 'red' }}>{truckAvailability(truck)}</td>
-                                            <td className="text-center" style={{ color: truck.underMaintenance ? 'red' : 'green' }}>{truck.underMaintenance ? <BsExclamationCircle /> : <BsCheckLg />}</td>
-                                            <td className="text-center">
-                                                <Link title="Show all related information" className="showIcon" to={`/trucks/details/${truck._id}`} style={{ marginRight: '2%' }}><BsEye /></Link>
-                                                {user.role === 'Admin' && ( //only admins can delete trucks}
-                                                    <BsFillTrashFill title="Delete this truck" className="trashIcon" onClick={() => handleDelete(truck._id)} style={{ marginRight: '2%', cursor: "pointer" }} />
-                                                )}
-                                                <Link title="Edit this truck" className="editIcon" to={`/trucks/edit/${truck._id}`}><BsFillPencilFill /></Link>
-                                            </td>
-                                        </tr>
-                                    ))}
-                            </tbody>
-                        </table>
+                    <div className="row" >
+                        <div style={{ maxHeight: "50vh", overflowY: "auto" }}>
+                            <table className="table table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th className="text-center" scope="row" style={{ position: "sticky", top: 0, backgroundColor: "#f8f9fa" }}>Plate Number</th>
+                                        <th className="text-center" style={{ position: "sticky", top: 0, backgroundColor: "#f8f9fa" }}>Truck Type</th>
+                                        <th className="text-center" style={{ position: "sticky", top: 0, backgroundColor: "#f8f9fa" }}>Availability</th>
+                                        <th className="text-center" style={{ position: "sticky", top: 0, backgroundColor: "#f8f9fa" }}>Maintenance</th>
+                                        <th className="text-center" style={{ position: "sticky", top: 0, backgroundColor: "#f8f9fa" }}>Operations</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {trucks
+                                        .filter(truck => truck.plateNumber.includes(criteria))
+                                        .map((truck) => (
+                                            <tr key={truck.plateNumber}>
+                                                <td className="text-center" scope="row">{truck.plateNumber}</td>
+                                                <td className="text-center">{truck.truckType}</td>
+                                                <td className="text-center" style={{ color: truckAvailability(truck) === 'Available' ? 'green' : 'red' }}>{truckAvailability(truck)}</td>
+                                                <td className="text-center" style={{ color: truck.underMaintenance ? 'red' : 'green' }}>{truck.underMaintenance ? <BsExclamationCircle /> : <BsCheckLg />}</td>
+                                                <td className="text-center">
+                                                    <Link title="Show all related information" className="showIcon" to={`/trucks/details/${truck._id}`} style={{ marginRight: '2%' }}><BsEye /></Link>
+                                                    {user.role === 'Admin' && ( //only admins can delete trucks}
+                                                        <BsFillTrashFill title="Delete this truck" className="trashIcon" onClick={() => handleDelete(truck._id)} style={{ marginRight: '2%', cursor: "pointer" }} />
+                                                    )}
+                                                    <Link title="Edit this truck" className="editIcon" to={`/trucks/edit/${truck._id}`}><BsFillPencilFill /></Link>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-
                 </div>
+                </div>
+                   
             )}
             <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="gmsModal">
                 <Modal.Header closeButton>
@@ -549,7 +552,7 @@ export const RecentTripsTable = () => {
     return (
         <div>
             {loading ? (
-                <div className="border d-flex justify-content-center align-items-center infoContainer" style={{ height: '50vh' }}>
+                <div className="border d-flex justify-content-center align-items-center infoContainer" style={{ height: '70vh' }}>
                     <Spinner />
                 </div>
             ) : (
@@ -615,7 +618,7 @@ export const RecentTripsTable = () => {
     )
 }
 
-//display table TRUCK STATUS SHOULDNT BE SCROLLABLE
+//display table
 export const TruckStatusWidget = () => {
     const [trucks, setTrucks] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -657,7 +660,7 @@ export const TruckStatusWidget = () => {
     return (
         <div>
             {loading ? (
-                <div className=" d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
+                <div className=" d-flex justify-content-center align-items-center infoContainer" style={{ height: '70vh' }}>
                     <Spinner />
                 </div>
             ) : (
