@@ -55,7 +55,7 @@ export const BackButton = () => {
 
   return (
     <button className="btn btn-secondary" onClick={goBack}>
-      Return
+      <BsArrowReturnLeft />
     </button>
   );
 };

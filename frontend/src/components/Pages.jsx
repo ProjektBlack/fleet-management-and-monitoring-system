@@ -13,7 +13,6 @@ import {
   Sidebar,
   Dashboard,
   CardComponent,
-  BackToHome,
   BackToLogin,
   BackToTrucks,
 } from "./Widgets";
