@@ -327,14 +327,39 @@ export const YearlyExpensesTable = () => {
     const printWindow = window.open("", "_blank");
 
     // Write the table into the new window
-    printWindow.document.write(
-      "<html><head><title>Yearly Expense Report</title></head><body>"
-    );
-    printWindow.document.write("<h1>Yearly Expense Report</h1>");
-    printWindow.document.write(table1.outerHTML);
-    printWindow.document.write("<hr>");
-    printWindow.document.write(table2.outerHTML);
-    printWindow.document.write("</body></html>");
+    printWindow.document.write(`
+    <html>
+        <head>
+            <title>Yearly Expense Report</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                }
+                h1 {
+                    text-align: center;
+                    color: #333;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+                th, td {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                }
+                th {
+                    background-color: #f2f2f2;
+                    color: #333;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>Yearly Expense Report</h1>
+            ${table1.outerHTML}
+            ${table2.outerHTML}
+        </body>
+    </html>
+`);
 
     // Call the print function on the new window
     printWindow.print();
@@ -398,7 +423,11 @@ export const YearlyExpensesTable = () => {
               </thead>
               <tbody>
                 {yearlyExpenses
-                  .filter((expenses) => expenses.plateNumber.includes(criteria))
+                  .filter(
+                    (expenses) =>
+                      expenses.plateNumber.includes(criteria) ||
+                      expenses.year.includes(criteria)
+                  )
                   .sort((a, b) => {
                     if (sort === "Recent") return b.year - a.year;
                     if (sort === "Oldest") return a.year - b.year;
@@ -471,11 +500,38 @@ export const MonthlyExpensesTable = () => {
     // Create a new window
     const printWindow = window.open("", "_blank");
 
-    // Write the table into the new window
-    printWindow.document.write("<html><head><title>Print</title></head><body>");
-    printWindow.document.write("<h1>My Table</h1>");
-    printWindow.document.write(table.outerHTML);
-    printWindow.document.write("</body></html>");
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>Monthly Expense Report</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                    }
+                    h1 {
+                        text-align: center;
+                        color: #333;
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+                    th, td {
+                        border: 1px solid #ddd;
+                        padding: 8px;
+                    }
+                    th {
+                        background-color: #f2f2f2;
+                        color: #333;
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>Monthly Expense Report</h1>
+                ${table.outerHTML}
+            </body>
+        </html>
+    `);
 
     // Call the print function on the new window
     printWindow.print();
@@ -511,7 +567,7 @@ export const MonthlyExpensesTable = () => {
             <div className="col-2">
               <input
                 className="form-control"
-                placeholder="Search for anything"
+                placeholder="Search for criteria"
                 value={criteria}
                 onChange={(e) => setCriteria(e.target.value)}
               ></input>
@@ -538,7 +594,12 @@ export const MonthlyExpensesTable = () => {
               </thead>
               <tbody>
                 {monthlyExpenses
-                  .filter((expenses) => expenses.plateNumber.includes(criteria))
+                  .filter(
+                    (expenses) =>
+                      expenses.plateNumber.includes(criteria) ||
+                      expenses.month.includes(criteria) ||
+                      expenses.year.includes(criteria)
+                  )
                   .sort((a, b) => {
                     if (sort === "Recent") return b.year - a.year;
                     if (sort === "Oldest") return a.year - b.year;
@@ -573,7 +634,7 @@ export const MonthlyExpensesTable = () => {
   );
 };
 
-//trips table - CAN IMPROVE SEARCH
+//trips table
 export const TripsTable = () => {
   const [trips, setTrips] = useState([]);
   const [criteria, setCriteria] = useState("");
@@ -626,7 +687,7 @@ export const TripsTable = () => {
             <div className="col-2">
               <input
                 className="form-control"
-                placeholder="Search for anything"
+                placeholder="Search for criteria"
                 value={criteria}
                 onChange={(e) => setCriteria(e.target.value)}
               ></input>
@@ -653,7 +714,12 @@ export const TripsTable = () => {
               </thead>
               <tbody>
                 {trips
-                  .filter((trip) => trip.plateNumber.includes(criteria))
+                  .filter(
+                    (trip) =>
+                      trip.plateNumber.includes(criteria.to) ||
+                      trip.customer.name.includes(criteria) ||
+                      trip.driver.name.includes(criteria)
+                  )
                   .sort((a, b) => {
                     if (sort === "Recent") return b.year - a.year;
                     if (sort === "Oldest") return a.year - b.year;
