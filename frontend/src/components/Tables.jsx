@@ -350,10 +350,7 @@ export const YearlyExpensesTable = () => {
           <Spinner />
         </div>
       ) : (
-        <div
-          className="p-4 infoContainer rounded border-success border-start border-5"
-          style={{ height: "70vh" }}
-        >
+        <div className="p-4" style={{ height: "70vh" }}>
           <div className="row mb-4">
             <div className="col-7"></div>
             <div className="col-2">
@@ -498,10 +495,7 @@ export const MonthlyExpensesTable = () => {
           <Spinner />
         </div>
       ) : (
-        <div
-          className="p-4 infoContainer rounded border-success border-start border-5"
-          style={{ height: "70vh" }}
-        >
+        <div className="p-4" style={{ height: "70vh" }}>
           <div className="row mb-4">
             <div className="col-7"></div>
             <div className="col-2">
@@ -616,7 +610,7 @@ export const TripsTable = () => {
           <Spinner />
         </div>
       ) : (
-        <div className="p-4 infoContainer rounded border-success border-start border-5">
+        <div className="p-4">
           <div className="row mb-4">
             <div className="col-8"></div>
             <div className="col-2">

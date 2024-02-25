@@ -4,7 +4,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { SnackbarProvider, enqueueSnackbar, useSnackbar } from "notistack";
 import axios from "axios";
 //import components
-import { BackButton } from "./Widgets";
+import { BackButton, BackToTrucks } from "./Widgets";
 
 //MOSTLY NOTIFICATIONS AND PROPER ERROR MESSAGES
 
@@ -145,7 +145,7 @@ export const Register = () => {
   );
 };
 
-//create truck form - THIS LOOKS UGLY
+//create truck form
 export const CreateTruck = () => {
   const navigate = useNavigate();
   const [newTruck, setNewTruck] = useState({}); //state for new truck object
@@ -160,6 +160,7 @@ export const CreateTruck = () => {
 
   //function to create a new truck
   const handleCreateTruck = async () => {
+    event.preventDefault();
     try {
       const data = {
         plateNumber,
@@ -167,9 +168,9 @@ export const CreateTruck = () => {
         underMaintenance,
         expenses: expenses,
       };
-      const response = await axios.post("http://localhost:2222/trucks", data); //create new truck
+      await axios.post("http://localhost:2222/trucks", data); //create new truck
       enqueueSnackbar("Truck created.", { variant: "success" });
-      navigate(`/trucks`); //navigate to truck details page
+      navigate("/trucks"); //navigate to trucks page
     } catch (error) {
       enqueueSnackbar("Process failed.", { variant: "error" });
       console.error(error);
@@ -177,29 +178,48 @@ export const CreateTruck = () => {
   };
 
   return (
-    <div className="row">
-      <div className="p-4 mx-auto mt-4" style={{ width: "50%" }}>
-        <h5>Create New Truck</h5>
-        <label>Plate Number </label>
-        <input
-          type="text"
-          value={plateNumber}
-          onChange={(e) => setPlateNumber(e.target.value)}
-          className="form-control"
-        ></input>
-        <label>Truck Type </label>
-        <input
-          type="text"
-          value={truckType}
-          onChange={(e) => setTruckType(e.target.value)}
-          className="form-control"
-        ></input>
-        <button
-          className="btn btn-success mx-auto d-flex mt-4 mb-4"
-          onClick={handleCreateTruck}
-        >
-          Create
-        </button>
+    <div
+      className="d-flex align-items-center justify-content-center border"
+      style={{ minHeight: "100vh" }}
+    >
+      <div
+        className="p-4 mx-auto border infoContainer rounded"
+        style={{ width: "30%" }}
+      >
+        <div className="row">
+          <div className="col-10">
+            <h3>
+              <span className="logo">Create</span> New Truck
+            </h3>
+          </div>
+          <div className="col text-end">
+            <BackButton />
+          </div>
+        </div>
+        <form onSubmit={handleCreateTruck}>
+          <label className="mb-2">Plate Number </label>
+          <input
+            type="text"
+            value={plateNumber}
+            onChange={(e) => setPlateNumber(e.target.value)}
+            className="form-control"
+            required
+          ></input>
+          <label className="mb-2">Truck Type </label>
+          <input
+            type="text"
+            value={truckType}
+            onChange={(e) => setTruckType(e.target.value)}
+            className="form-control"
+            required
+          ></input>
+          <button
+            type="submit"
+            className="btn btn-success mx-auto d-flex mt-4 mb-4"
+          >
+            Create
+          </button>
+        </form>
       </div>
     </div>
   );
@@ -388,7 +408,8 @@ export const CreateTrip = () => {
   }
 
   //function to create an expense
-  const handleCreateTrip = async () => {
+  const handleCreateTrip = async (event) => {
+    console.log("hey");
     event.preventDefault();
     setLoading(true);
     try {
@@ -406,7 +427,7 @@ export const CreateTrip = () => {
   return (
     <div className="container">
       <div className="infoContainer p-4" style={{ minHeight: "100vh" }}>
-        <form>
+        <form onSubmit={handleCreateTrip}>
           <div className="row">
             <div className="col">
               <h3>
@@ -417,7 +438,6 @@ export const CreateTrip = () => {
               <BackButton />
             </div>
           </div>
-
           <div className="row">
             <div className="col p-4">
               <div className="row">
@@ -433,6 +453,7 @@ export const CreateTrip = () => {
                   onChange={(e) =>
                     setDriver({ ...driver, name: e.target.value })
                   }
+                  required
                 />
               </div>
               <div className="row">
@@ -445,6 +466,7 @@ export const CreateTrip = () => {
                   onChange={(e) =>
                     setHelper({ ...helper, name: e.target.value })
                   }
+                  required
                 />
               </div>
               <div className="row">
@@ -457,6 +479,7 @@ export const CreateTrip = () => {
                   onChange={(e) =>
                     setCustomer({ ...customer, name: e.target.value })
                   }
+                  required
                 />
               </div>
               <div className="row">
@@ -469,12 +492,13 @@ export const CreateTrip = () => {
                   onChange={(e) =>
                     setCustomer({ ...customer, location: e.target.value })
                   }
+                  required
                 />
               </div>
               <div className="row">
                 <label>Year</label>
                 <input
-                  type="string"
+                  type="text"
                   className="form-control"
                   name="year"
                   value={year}
@@ -488,6 +512,7 @@ export const CreateTrip = () => {
                   class="form-select"
                   value={month}
                   onChange={(e) => setMonth(e.target.value)}
+                  required
                 >
                   <option selected>Select month</option>
                   <option value="January">January</option>
@@ -559,6 +584,7 @@ export const CreateTrip = () => {
                   name="status"
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
+                  required
                 >
                   <option value={"Pending"}>Pending</option>
                   <option value={"Done"}>Done</option>
@@ -639,7 +665,7 @@ export const CreateTrip = () => {
           <div className="p-4 mx-auto mt-4" style={{ width: "50%" }}>
             <button
               className="btn btn-success mt-4 mx-auto d-flex"
-              onClick={handleCreateTrip}
+              type="submit"
             >
               Create
             </button>
@@ -1033,7 +1059,7 @@ export const CreateExpense = () => {
   );
 };
 
-//edit truck form -- THIS LOOKS UGLY
+//edit truck form
 export const EditTruck = () => {
   const [newTruck, setNewTruck] = useState({}); //state for new truck object
   const [plateNumber, setPlateNumber] = useState("");
@@ -1085,11 +1111,13 @@ export const EditTruck = () => {
     <div className="d-flex align-items-center justify-content-center vh-100">
       <form id="editTruckForm" className="p-4 mx-auto border-0 rounded">
         <div className="row">
-          <div className="col-11">
-            <h5>Edit Truck</h5>
+          <div className="col-10">
+            <h3>
+              <span className="logo">Edit</span> Truck
+            </h3>
           </div>
-          <div className="col">
-            <BackButton />
+          <div className="col text-end ">
+            <BackToTrucks />
           </div>
         </div>
         <div className="row mb-2">
@@ -1734,6 +1762,7 @@ export const EditTrip = () => {
                   onChange={(e) =>
                     setDriver({ ...driver, name: e.target.value })
                   }
+                  required
                 />
               </div>
               <div className="row">
@@ -1746,6 +1775,7 @@ export const EditTrip = () => {
                   onChange={(e) =>
                     setHelper({ ...helper, name: e.target.value })
                   }
+                  required
                 />
               </div>
               <div className="row">
@@ -1758,6 +1788,7 @@ export const EditTrip = () => {
                   onChange={(e) =>
                     setCustomer({ ...customer, name: e.target.value })
                   }
+                  required
                 />
               </div>
               <div className="row">
@@ -1770,6 +1801,7 @@ export const EditTrip = () => {
                   onChange={(e) =>
                     setCustomer({ ...customer, location: e.target.value })
                   }
+                  required
                 />
               </div>
               <div className="row">

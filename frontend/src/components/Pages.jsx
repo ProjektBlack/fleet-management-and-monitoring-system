@@ -794,13 +794,13 @@ export const ManageYearlyExpenses = () => {
           <Sidebar />
         </div>
         <div className="col-10">
-          <div className="container">
-            <div className="row mb-4 mt-4 infoContainer">
-              <div className="col">
+          <div id="dashboardContainer" className="col border-0 rounded p-4">
+            <div className="row border-start border-success rounded border-5 dsContainer mb-3">
+              <div className="col-10 p-4">
                 <h1>Yearly Expenses</h1>
               </div>
             </div>
-            <div className="row">
+            <div className="row border-start border-success rounded border-5 dsContainer tableContainer">
               <YearlyExpensesTable />
             </div>
           </div>
@@ -818,13 +818,13 @@ export const ManageMonthlyExpenses = () => {
           <Sidebar />
         </div>
         <div className="col-10">
-          <div className="container">
-            <div className="row mb-4 mt-4 infoContainer">
-              <div className="col">
+          <div id="dashboardContainer" className="col border-0 rounded p-4">
+            <div className="row border-start border-success rounded border-5 dsContainer mb-3">
+              <div className="col-10 p-4">
                 <h1>Monthly Expenses</h1>
               </div>
             </div>
-            <div className="row">
+            <div className="row border-start border-success rounded border-5 dsContainer tableContainer">
               <MonthlyExpensesTable />
             </div>
           </div>
@@ -842,12 +842,16 @@ export const ManageTrips = () => {
           <Sidebar />
         </div>
         <div className="col">
-          <div className="row mb-4 mt-4 infoContainer mx-auto">
-            <div className="r">
-              <h1>Trips</h1>
+          <div id="dashboardContainer" className="col border-0 rounded p-4">
+            <div className="row border-start border-success rounded border-5 dsContainer mb-3">
+              <div className="col-10 p-4">
+                <h1>Manage Trips</h1>
+              </div>
+            </div>
+            <div className="row border-start border-success rounded border-5 dsContainer tableContainer">
+              <TripsTable />
             </div>
           </div>
-          <TripsTable />
         </div>
       </div>
     </div>

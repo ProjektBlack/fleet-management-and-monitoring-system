@@ -38,7 +38,7 @@ export const BackToLogin = () => {
 
 export const BackToTrucks = () => {
   return (
-    <div className="text-center">
+    <div>
       <Link to="/trucks" className="btn btn-secondary">
         <BsArrowReturnLeft />
       </Link>
