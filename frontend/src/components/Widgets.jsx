@@ -76,7 +76,7 @@ export const Sidebar = () => {
     logout();
     setIsAuthenticated(false);
     enqueueSnackbar("Logged out successfully.", { variant: "default" });
-    navigate("/");
+    navigate("/login");
   };
 
   return (
