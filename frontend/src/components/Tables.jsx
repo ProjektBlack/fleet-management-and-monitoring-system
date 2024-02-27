@@ -812,7 +812,7 @@ export const RecentTripsTable = () => {
               Recent <span className="logo">Trips</span>
             </h4>
           </div>
-          <div className="row" style={{ overflowY: "auto" }}>
+          <div className="row" style={{ overflowY: "auto", maxHeight: "60vh" }}>
             <table className="table table-hover table-small table-striped">
               <thead className="">
                 <tr className="bg-primary">

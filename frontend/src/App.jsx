@@ -35,7 +35,7 @@ const App = () => {
   return (
     <Routes>
       {/*entry point to the app*/}
-      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
       {/*private routes*/}
       <Route

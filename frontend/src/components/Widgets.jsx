@@ -76,7 +76,7 @@ export const Sidebar = () => {
     logout();
     setIsAuthenticated(false);
     enqueueSnackbar("Logged out successfully.", { variant: "default" });
-    navigate("/login");
+    navigate("/");
   };
 
   return (
@@ -210,7 +210,7 @@ export const TripsThisYear = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:2222/trips/status/completed/2022")
+      .get("http://localhost:2222/trips/status/completed/2024")
       .then((res) => {
         setCompletedTrips(res.data.length);
       })
@@ -240,7 +240,7 @@ export const TripsThisMonth = () => {
   //CREATE A FUNCTION TO GET THE CURRENT MONTH AND YEAR
   useEffect(() => {
     axios
-      .get("http://localhost:2222/trips/status/completed/2023/February")
+      .get("http://localhost:2222/trips/status/completed/2024/February")
       .then((res) => {
         setTrips(res.data.length);
         setLoading(false);
