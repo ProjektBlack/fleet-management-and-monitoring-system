@@ -178,7 +178,7 @@ export const ManageTruck = () => {
           <Sidebar />
         </div>
         <div id="dashboardContainer" className="col border-0 rounded p-4">
-          <div className="row border-start border-success rounded border-5 dsContainer mb-3">
+          <div className="row border-start border-success rounded border-5 dsContainer mb-2">
             <div className="col-10 p-4">
               <h1>Manage Trucks</h1>
             </div>
@@ -192,7 +192,6 @@ export const ManageTruck = () => {
   );
 };
 
-//can split into three separate tables for easier management
 //show truck details
 export const ShowTruck = () => {
   const [loading, setLoading] = useState(false); //loading
@@ -212,6 +211,7 @@ export const ShowTruck = () => {
   const { id } = useParams(); //identify which truck
   const navigate = useNavigate();
   const [tableToShow, setTableToShow] = useState("trips");
+  const [sortType, setSortType] = useState("asc");
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
@@ -277,7 +277,7 @@ export const ShowTruck = () => {
       }
     };
     fetchData();
-  }, [trips.length, yearlyExpenses.length, monthlyExpenses.length]);
+  }, [id]);
 
   const handleTripConfirmation = (id) => {
     setSelectedId(id);
@@ -462,7 +462,7 @@ export const ShowTruck = () => {
           {tableToShow === "monthlyExpenses" && (
             <div className="row">
               <div
-                className="col border rounded p-4 infoContainer"
+                className="col border rounded p-3 infoContainer"
                 style={{ minHeight: "100vh" }}
               >
                 <div className="container">
@@ -548,7 +548,7 @@ export const ShowTruck = () => {
           {tableToShow === "yearlyExpenses" && (
             <div className="row">
               <div
-                className="p-4 rounded infoContainer"
+                className="p-3 rounded infoContainer"
                 style={{ minHeight: "100vh" }}
               >
                 <div className="row mb-1">
@@ -631,7 +631,7 @@ export const ShowTruck = () => {
           {tableToShow === "trips" && (
             <div className="row">
               <div
-                className="p-4 rounded infoContainer"
+                className="p-3 rounded infoContainer"
                 style={{ minHeight: "100vh" }}
               >
                 <div className="row mb-1">
@@ -639,7 +639,16 @@ export const ShowTruck = () => {
                   <div className="col">
                     <h1>Trips</h1>
                   </div>
-                  <div className="col text-end ">
+                  <div className="col-2 d-flex align-items-center justify-content-center">
+                    <select
+                      className="form-select"
+                      onChange={(e) => setSortType(e.target.value)}
+                    >
+                      <option value="asc">Ascending</option>
+                      <option value="desc">Descending</option>
+                    </select>
+                  </div>
+                  <div className="col-1">
                     <Link to={`/newtrips/${id}`} className="btn">
                       <BsFillFilePlusFill
                         size={40}
@@ -677,40 +686,54 @@ export const ShowTruck = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {trips.map((trip) => (
-                        <tr key={trip._id}>
-                          <td>{trip.customer.name}</td>
-                          <td>{trip.customer.location}</td>
-                          <td>{trip.driver.name}</td>
-                          <td>{trip.helper.name}</td>
-                          <td>
-                            {trip.month} {trip.day}, {trip.year}
-                          </td>
-                          <td>{trip.timeDispatched}</td>
-                          <td>{trip.timeReceived}</td>
-                          <td>{trip.timeReturned}</td>
-                          <td>{trip.status}</td>
-                          <td>{trip.distance}</td>
-                          <td>{trip.dieselConsumption}</td>
-                          <td>{trip.tollFee}</td>
-                          <td>{trip.pathway}</td>
-                          <td>{trip.totalTripExpense}</td>
-                          <td className="text-center">
-                            {user.role == "Admin" && (
-                              <BsFillTrashFill
-                                className="trashIcon"
-                                onClick={() => handleTripConfirmation(trip._id)}
-                              />
-                            )}
-                            <Link
-                              to={`/trips/edit/${trip._id}`}
-                              style={{ marginLeft: "2%" }}
-                            >
-                              <BsFillPencilFill className="editIcon" />
-                            </Link>
-                          </td>
-                        </tr>
-                      ))}
+                      {trips
+                        .sort((a, b) => {
+                          const dateA = new Date(
+                            `${a.month} ${a.day}, ${a.year}`
+                          );
+                          const dateB = new Date(
+                            `${b.month} ${b.day}, ${b.year}`
+                          );
+                          return sortType === "asc"
+                            ? dateA - dateB
+                            : dateB - dateA;
+                        })
+                        .map((trip) => (
+                          <tr key={trip._id}>
+                            <td>{trip.customer.name}</td>
+                            <td>{trip.customer.location}</td>
+                            <td>{trip.driver.name}</td>
+                            <td>{trip.helper.name}</td>
+                            <td>
+                              {trip.month} {trip.day}, {trip.year}
+                            </td>
+                            <td>{trip.timeDispatched}</td>
+                            <td>{trip.timeReceived}</td>
+                            <td>{trip.timeReturned}</td>
+                            <td>{trip.status}</td>
+                            <td>{trip.distance}</td>
+                            <td>{trip.dieselConsumption}</td>
+                            <td>{trip.tollFee}</td>
+                            <td>{trip.pathway}</td>
+                            <td>{trip.totalTripExpense}</td>
+                            <td className="text-center">
+                              {user.role == "Admin" && (
+                                <BsFillTrashFill
+                                  className="trashIcon"
+                                  onClick={() =>
+                                    handleTripConfirmation(trip._id)
+                                  }
+                                />
+                              )}
+                              <Link
+                                to={`/trips/edit/${trip._id}`}
+                                style={{ marginLeft: "2%" }}
+                              >
+                                <BsFillPencilFill className="editIcon" />
+                              </Link>
+                            </td>
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
                 </div>
@@ -795,7 +818,7 @@ export const ManageYearlyExpenses = () => {
         </div>
         <div className="col-10">
           <div id="dashboardContainer" className="col border-0 rounded p-4">
-            <div className="row border-start border-success rounded border-5 dsContainer mb-3">
+            <div className="row border-start border-success rounded border-5 dsContainer mb-2">
               <div className="col-10 p-4">
                 <h1>Yearly Expenses</h1>
               </div>
@@ -819,7 +842,7 @@ export const ManageMonthlyExpenses = () => {
         </div>
         <div className="col-10">
           <div id="dashboardContainer" className="col border-0 rounded p-4">
-            <div className="row border-start border-success rounded border-5 dsContainer mb-3">
+            <div className="row border-start border-success rounded border-5 dsContainer mb-2">
               <div className="col-10 p-4">
                 <h1>Monthly Expenses</h1>
               </div>
@@ -843,7 +866,7 @@ export const ManageTrips = () => {
         </div>
         <div className="col">
           <div id="dashboardContainer" className="col border-0 rounded p-4">
-            <div className="row border-start border-success rounded border-5 dsContainer mb-3">
+            <div className="row border-start border-success rounded border-5 dsContainer mb-2">
               <div className="col-10 p-4">
                 <h1>Manage Trips</h1>
               </div>

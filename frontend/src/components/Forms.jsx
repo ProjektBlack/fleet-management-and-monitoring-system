@@ -413,7 +413,7 @@ export const CreateTrip = () => {
     event.preventDefault();
     setLoading(true);
     try {
-      updateTruckObject(truckId, await postTrip());
+      await updateTruckObject(truckId, await postTrip());
       setLoading(false);
       enqueueSnackbar("Trip created.", { variant: "success" });
       navigate(`/trucks/details/${truckId}`); //navigate to truck details page

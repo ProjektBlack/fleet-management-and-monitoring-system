@@ -665,8 +665,8 @@ export const TripsTable = () => {
     <div>
       {loading ? (
         <div
-          className="border d-flex justify-content-center align-items-center"
-          style={{ height: "50vh" }}
+          className="d-flex justify-content-center align-items-center"
+          style={{ height: "70vh" }}
         >
           <Spinner />
         </div>
@@ -693,10 +693,13 @@ export const TripsTable = () => {
               ></input>
             </div>
           </div>
-          <div className="row">
-            <table className="table table-bordered table-hover ">
+          <div className="row" style={{ overflowY: "auto", maxHeight: "60vh" }}>
+            <table className="table table-hover table-striped">
               <thead className="">
-                <tr className="bg-primary">
+                <tr
+                  className="bg-primary"
+                  style={{ position: "sticky", top: 0 }}
+                >
                   <th style={{}}>Plate Number</th>
                   <th style={{}}>Customer Name</th>
                   <th style={{}}>Customer Location</th>
@@ -716,13 +719,42 @@ export const TripsTable = () => {
                 {trips
                   .filter(
                     (trip) =>
-                      trip.plateNumber.includes(criteria.to) ||
+                      trip.plateNumber.includes(criteria) ||
                       trip.customer.name.includes(criteria) ||
                       trip.driver.name.includes(criteria)
                   )
                   .sort((a, b) => {
-                    if (sort === "Recent") return b.year - a.year;
-                    if (sort === "Oldest") return a.year - b.year;
+                    const yearA = parseInt(a.year);
+                    const yearB = parseInt(b.year);
+                    const monthA =
+                      new Date(Date.parse(a.month + " 1, 2012")).getMonth() + 1;
+                    const monthB =
+                      new Date(Date.parse(b.month + " 1, 2012")).getMonth() + 1;
+                    const dayA = parseInt(a.day);
+                    const dayB = parseInt(b.day);
+
+                    if (sort === "Recent") {
+                      if (yearB - yearA === 0) {
+                        if (monthB - monthA === 0) {
+                          return dayB - dayA;
+                        } else {
+                          return monthB - monthA;
+                        }
+                      } else {
+                        return yearB - yearA;
+                      }
+                    }
+                    if (sort === "Oldest") {
+                      if (yearA - yearB === 0) {
+                        if (monthA - monthB === 0) {
+                          return dayA - dayB;
+                        } else {
+                          return monthA - monthB;
+                        }
+                      } else {
+                        return yearA - yearB;
+                      }
+                    }
                     return 0;
                   })
                   .map((trip) => (

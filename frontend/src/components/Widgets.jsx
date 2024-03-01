@@ -61,7 +61,6 @@ export const BackButton = () => {
 };
 
 //sidebar
-//sidebar details should be appropriate to screen size
 export const Sidebar = () => {
   //for logging out
   const { isAuthenticated, setIsAuthenticated } = useAuth();
@@ -80,73 +79,71 @@ export const Sidebar = () => {
   };
 
   return (
-    <div>
-      <div id="sidebar" className="p-4">
-        <div className="row border-bottom pb-2 mb-2 g-4">
-          <div className="col-2 text-center">
-            <BsTruck className="" size={30} color="#2E8B57" />
-          </div>
-          <div className="col">
-            <h4 className="">
-              <span className="logo">Green </span>Movers
-            </h4>
-          </div>
+    <div id="sidebar" className="p-4 d-flex flex-column">
+      <div className="row border-bottom pb-2 mb-2 g-4">
+        <div className="col-4 d-flex align-items-center">
+          <BsTruck className="" size={50} color="#2E8B57" />
         </div>
+        <div className="col">
+          <h4 className="">
+            <span className="logo">Green </span>Movers
+          </h4>
+        </div>
+      </div>
 
-        <div className="row">
-          <ul className="list-group">
-            <Link to={"/home"} className="links text-decoration-none">
-              <BsFillHouseDoorFill
-                className="icons"
-                id="homeIcon"
-              ></BsFillHouseDoorFill>
-              Home
-            </Link>
-            <Link to={"/trucks"} className="links text-decoration-none">
-              <BsFillTruckFrontFill
-                className="icons"
-                id="truckIcon"
-              ></BsFillTruckFrontFill>
-              Trucks
-            </Link>
-            <Link to={"/trips"} className="links text-decoration-none">
-              <BsFillFileSpreadsheetFill
-                className="icons"
-                id="tripsIcon"
-              ></BsFillFileSpreadsheetFill>
-              Trips
-            </Link>
-            <button
-              className="btn links text-decoration-none text-start"
-              data-bs-toggle="collapse"
-              data-bs-target="#home-collapse"
-            >
-              <BsCreditCard2FrontFill className="icons" id="expensesIcon" />
-              Expenses
-            </button>
-            <div className="collapse" id="home-collapse">
-              <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                <Link className="link-dark rounded" to={"/expenses/yearly"}>
-                  Yearly Expenses
-                </Link>
-                <br />
-                <Link className="link-dark rounded" to={"/expenses/monthly"}>
-                  Monthly Expenses
-                </Link>
-              </ul>
-            </div>
-          </ul>
-        </div>
-        <div id="logoutSegment" className="row">
-          <div className="col">
-            <a
-              className="text-decoration-none"
-              id="logout"
-              onClick={handleLogout}
-            >
-              Logout
-            </a>
+      <div className="row">
+        <ul className="list-group">
+          <Link to={"/home"} className="links text-decoration-none">
+            <BsFillHouseDoorFill
+              className="icons"
+              id="homeIcon"
+            ></BsFillHouseDoorFill>
+            Home
+          </Link>
+          <Link to={"/trucks"} className="links text-decoration-none">
+            <BsFillTruckFrontFill
+              className="icons"
+              id="truckIcon"
+            ></BsFillTruckFrontFill>
+            Trucks
+          </Link>
+          <Link to={"/trips"} className="links text-decoration-none">
+            <BsFillFileSpreadsheetFill
+              className="icons"
+              id="tripsIcon"
+            ></BsFillFileSpreadsheetFill>
+            Trips
+          </Link>
+          <button
+            className="btn links text-decoration-none text-start"
+            data-bs-toggle="collapse"
+            data-bs-target="#home-collapse"
+          >
+            <BsCreditCard2FrontFill className="icons" id="expensesIcon" />
+            Expenses
+          </button>
+          <div className="collapse" id="home-collapse">
+            <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+              <Link className="link-dark rounded" to={"/expenses/yearly"}>
+                Yearly Expenses
+              </Link>
+              <br />
+              <Link className="link-dark rounded" to={"/expenses/monthly"}>
+                Monthly Expenses
+              </Link>
+            </ul>
           </div>
+        </ul>
+      </div>
+      <div id="logoutSegment" className="row mt-auto">
+        <div className="col">
+          <a
+            className="text-decoration-none"
+            id="logout"
+            onClick={handleLogout}
+          >
+            Logout
+          </a>
         </div>
       </div>
     </div>
@@ -269,7 +266,7 @@ export const Dashboard = () => {
   const { user } = useAuth();
 
   return (
-    <div className="p-4">
+    <div className="p-2">
       <div className="row">
         <div className="col-3">
           <div
