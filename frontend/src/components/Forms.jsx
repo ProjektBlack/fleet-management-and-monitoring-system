@@ -333,17 +333,29 @@ export const CreateTrip = () => {
   }
 
   function calculateDieselConsumption(distance, dieselCost) {
+    console.log(truckType)
     if (truckType === "Forward") {
-      const fuelConsumption = distance / 6; //if forward, divide by six, if elf, divide by 7
-      const totalFuelCost = fuelConsumption * dieselCost;
+      console.log("forward")
+      const distanceFloat = parseFloat(distance);
+      const dieselCostFloat = parseFloat(dieselCost);
+    
+      const fuelConsumption = distanceFloat / 6; //if forward, divide by six, if elf, divide by 7
+      const totalFuelCost = fuelConsumption * dieselCostFloat;
       return totalFuelCost.toFixed(2);
     } else if (truckType === "Elf") {
-      const fuelConsumption = distance / 7;
-      const totalFuelCost = fuelConsumption * dieselCost;
+      const distanceFloat = parseFloat(distance);
+      const dieselCostFloat = parseFloat(dieselCost);
+    
+      const fuelConsumption = distanceFloat / 7;
+      const totalFuelCost = fuelConsumption * dieselCostFloat;
       return totalFuelCost.toFixed(2);
     } else {
-      const fuelConsumption = distance / 3;
-      const totalFuelCost = fuelConsumption * dieselCost;
+      console.log("hi")
+      const distanceFloat = parseFloat(distance);
+      const dieselCostFloat = parseFloat(dieselCost);
+    
+      const fuelConsumption = distanceFloat / 3;
+      const totalFuelCost = fuelConsumption * dieselCostFloat;
       return totalFuelCost.toFixed(2);
     }
   }
@@ -1072,9 +1084,11 @@ export const EditTruck = () => {
   async function getTruck() {
     try {
       const response = await axios.get(`http://localhost:2222/trucks/${id}`);
+      console.log(id)
       setNewTruck(response.data);
       setPlateNumber(response.data.plateNumber);
       setUnderMaintenance(response.data.underMaintenance);
+      console.log(response.data.truckType)
       setTruckType(response.data.truckType);
     } catch (error) {
       console.error(error);
@@ -1581,10 +1595,24 @@ export const EditTrip = () => {
   //get truck ID from URL params
   const { id } = useParams();
 
+  const getTruck = async (truckId) => {
+    console.log(truckId)
+    try {
+      const response = await axios.get(
+        `http://localhost:2222/trucks/${truckId}`
+      );
+      console.log(response);
+      setTruckType(response.data.truckType);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   async function getTrip() {
     try {
       const response = await axios.get(`http://localhost:2222/trips/${id}`);
       setTruckId(response.data.truck);
+      console.log(response.data.truck);
       setDriver(response.data.driver);
       setCustomer(response.data.customer);
       setHelper(response.data.helper);
@@ -1601,6 +1629,7 @@ export const EditTrip = () => {
       setTollFee(response.data.tollFee);
       setPathway(response.data.pathway);
       setTotalTripCost(response.data.totalTripExpense);
+      getTruck(response.data.truck);
     } catch (error) {
       console.error(error);
     }
@@ -1608,6 +1637,7 @@ export const EditTrip = () => {
 
   useEffect(() => {
     getTrip();
+    console.log(truckType)
   }, []);
 
   //functions to automatically compute diesel consumption and total trip cost
@@ -1666,18 +1696,30 @@ export const EditTrip = () => {
   }
 
   function calculateDieselConsumption(distance, dieselCost) {
+    console.log(truckType)
     if (truckType === "Forward") {
-      const fuelConsumption = distance / 6; //if forward, divide by six, if elf, divide by 7
-      const totalFuelCost = fuelConsumption * dieselCost;
-      return totalFuelCost.toFixed(2);
+      console.log("forward")
+      const distanceFloat = parseFloat(distance);
+      const dieselCostFloat = parseFloat(dieselCost);
+    
+      const fuelConsumption = distanceFloat / 6; //if forward, divide by six, if elf, divide by 7
+      const totalFuelCost = fuelConsumption * dieselCostFloat;
+      return totalFuelCost;
     } else if (truckType === "Elf") {
-      const fuelConsumption = distance / 7;
-      const totalFuelCost = fuelConsumption * dieselCost;
+      const distanceFloat = parseFloat(distance);
+      const dieselCostFloat = parseFloat(dieselCost);
+    
+      const fuelConsumption = distanceFloat / 7;
+      const totalFuelCost = fuelConsumption * dieselCostFloat;
       return totalFuelCost.toFixed(2);
     } else {
-      const fuelConsumption = distance / 3;
-      const totalFuelCost = fuelConsumption * dieselCost;
-      return totalFuelCost.toFixed(2);
+      console.log("hi")
+      const distanceFloat = parseFloat(distance);
+      const dieselCostFloat = parseFloat(dieselCost);
+    
+      const fuelConsumption = distanceFloat / 3;
+      const totalFuelCost = fuelConsumption * dieselCostFloat;
+      return totalFuelCost;
     }
   }
 
