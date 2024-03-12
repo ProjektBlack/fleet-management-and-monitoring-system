@@ -1763,9 +1763,8 @@ export const EditTrip = () => {
         totalTripExpense: totalTripCost,
       };
       setLoading(true);
-      axios.put(`https://fmms-api.vercel.app/trips/?id=${id}`, data);
+      await axios.put(`https://fmms-api.vercel.app/trips/?id=${id}`, data);
       setLoading(false);
-      //use better alerts
       enqueueSnackbar("Trip updated.", { variant: "success" });
       navigate(`/trucks/details/${truckId}`); //navigate to truck details page
     } catch (error) {

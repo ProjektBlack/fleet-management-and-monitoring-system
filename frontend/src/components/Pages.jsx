@@ -398,6 +398,7 @@ export const ShowTruck = () => {
                 <button
                   className="btn btn-success"
                   onClick={() => setTableToShow("monthlyExpenses")}
+                  title="Show Monthly Expenses"
                 >
                   <BsCash />
                 </button>
@@ -406,6 +407,7 @@ export const ShowTruck = () => {
                 <button
                   className="btn btn-success"
                   onClick={() => setTableToShow("yearlyExpenses")}
+                  title="Show Yearly Expenses"
                 >
                   <BsCashStack />
                 </button>
@@ -414,6 +416,7 @@ export const ShowTruck = () => {
                 <button
                   className="btn btn-success"
                   onClick={() => setTableToShow("trips")}
+                  title="Show Trips"
                 >
                   <BsTruck />
                 </button>
@@ -422,7 +425,7 @@ export const ShowTruck = () => {
             <div className="row mb-2">
               <h6>Operations</h6>
               <div className="col-4">
-                <Link className="btn btn-warning" to={`/trucks/edit/${id}`}>
+                <Link className="btn btn-warning" to={`/trucks/edit/${id}`} title="Edit Truck">
                   <BsFillPencilFill />
                 </Link>
               </div>
@@ -431,6 +434,7 @@ export const ShowTruck = () => {
                   <button
                     className="btn btn-danger"
                     onClick={() => handleDelete(selectedId)}
+                    title="Delete Truck"
                   >
                     <BsFillTrashFill />
                   </button>

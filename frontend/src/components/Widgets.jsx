@@ -38,7 +38,7 @@ export const BackToLogin = () => {
 
 export const BackToTrucks = () => {
   return (
-    <div>
+    <div title="Return to Managing Trucks">
       <Link to="/trucks" className="btn btn-secondary">
         <BsArrowReturnLeft />
       </Link>
@@ -172,7 +172,7 @@ export const CardComponent = () => {
     </div>
   );
 };
-// BETTER DESIGNS PLS
+
 export const PendingWidget = () => {
   const [pendingTrips, setPendingTrips] = useState(0);
 
@@ -237,7 +237,7 @@ export const TripsThisMonth = () => {
   //CREATE A FUNCTION TO GET THE CURRENT MONTH AND YEAR
   useEffect(() => {
     axios
-      .get("http://localhost:2222/trips/status/completed/2024/February")
+      .get("http://localhost:2222/trips/status/completed/2024/March")
       .then((res) => {
         setTrips(res.data.length);
         setLoading(false);
