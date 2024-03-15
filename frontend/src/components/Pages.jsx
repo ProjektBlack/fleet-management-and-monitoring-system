@@ -206,6 +206,7 @@ export const ShowTruck = () => {
   const [showModal1, setShowModal1] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
   const [showModal3, setShowModal3] = useState(false);
+  const [showReportQuery, setShowReportQuery] = useState(false); //used for generating reports
   //misc
   const { user } = useAuth();
   const { id } = useParams(); //identify which truck
@@ -379,6 +380,11 @@ export const ShowTruck = () => {
       setShowModal(false);
       console.log(error);
     }
+  };
+
+  //show report query
+  const showReportModal = () => {
+    setShowReportQuery(true);
   };
 
   return (
@@ -660,6 +666,9 @@ export const ShowTruck = () => {
                       />
                     </Link>
                   </div>
+                  <div className="col-1">
+                    <button className="btn" onClick={showReportModal}>Report</button>
+                  </div>
                 </div>
                 <div
                   style={{
@@ -805,6 +814,60 @@ export const ShowTruck = () => {
           </Button>
           <Button variant="danger" onClick={confirmDelete}>
             Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <Modal show={showReportQuery} onHide={() => setShowReportQuery(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Select Time Period</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form>
+            <div className="form-group">
+            <label>
+              Start Year:
+              <input type="number" min="1900" max="2099" step="1" className="form-control"/>
+            </label>
+            <label>
+              Start Month:
+              <input type="number" min="1" max="12" step="1" className="form-control"/>
+            </label>
+            </div>
+            <div className="form-group">
+            <label>
+              End Year:
+              <input type="number" min="1900" max="2099" step="1" className="form-control" />
+            </label>
+            <label>
+              End Month:
+              <input type="number" min="1" max="12" step="1" className="form-control"/>
+            </label>
+            </div>
+            <div className="form-group">
+            <label>
+              Customer location:
+              <input type="text" className="form-control"/>
+            </label>
+            <label>
+              Customer:
+              <input type="text" className="form-control"/>
+            </label>
+            <label>
+              Driver:
+              <input type="text" className="form-control"/>
+            </label>
+            </div>
+            
+            
+            
+          </form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowReportQuery(false)}>
+            Cancel
+          </Button>
+          <Button variant="success">
+            Generate
           </Button>
         </Modal.Footer>
       </Modal>

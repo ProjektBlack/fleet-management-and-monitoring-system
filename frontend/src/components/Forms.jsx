@@ -6,8 +6,6 @@ import axios from "axios";
 //import components
 import { BackButton, BackToTrucks } from "./Widgets";
 
-//MOSTLY NOTIFICATIONS AND PROPER ERROR MESSAGES
-
 //register a new user
 export const Register = () => {
   const [username, setUsername] = useState("");
@@ -734,6 +732,7 @@ export const CreateExpense = () => {
       let monthlyTotalCosts = 0;
       monthlyTotalCosts =
         parseFloat(totalFuelCosts) + parseFloat(monthlyMaintenanceCosts);
+      monthlyTotalCosts.toFixed(2);
       setTrips(trips);
       setDieselCosts(totalFuelCosts);
       setMonthlyTotalCosts(monthlyTotalCosts);
@@ -1719,7 +1718,7 @@ export const EditTrip = () => {
     
       const fuelConsumption = distanceFloat / 3;
       const totalFuelCost = fuelConsumption * dieselCostFloat;
-      return totalFuelCost;
+      return totalFuelCost.toFixed(2);
     }
   }
 
