@@ -175,6 +175,37 @@ router.post("/expenses/monthly", (req, res) =>
 router.get("/expenses/monthly", (req, res) =>
   getAllRecords(MonthlyExpense, res)
 );
+router.get("/expenses/monthly/search", async (req, res) => {
+  try {
+    const { startYear, startMonth, endYear, endMonth } = req.query;
+
+    // Build the query object
+    let query = {};
+
+    if (startYear) {
+      query.year = { $gte: startYear };
+    }
+
+    if (endYear) {
+      query.year = { ...query.year, $lte: endYear };
+    }
+
+    if (startMonth) {
+      query.month = { $gte: startMonth };
+    }
+
+    if (endMonth) {
+      query.month = { ...query.month, $lte: endMonth };
+    }
+
+    const monthlyExpenses = await MonthlyExpense.find(query);
+
+    res.status(200).json(monthlyExpenses);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send({ message: error.message });
+  }
+});
 router.get("/expenses/monthly/:id", (req, res) =>
   getSingleRecord(MonthlyExpense, req, res)
 );

@@ -4,7 +4,7 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 import { useAuth } from "../context/authProvider";
 import { SnackbarProvider, useSnackbar } from "notistack";
 import { Modal, Button } from "react-bootstrap";
-import { BsCash, BsCashStack, BsTruck } from "react-icons/bs";
+import { BsCash, BsCashStack, BsSearch, BsTruck } from "react-icons/bs";
 import axios from "axios";
 //components
 import {
@@ -214,6 +214,27 @@ export const ShowTruck = () => {
   const [tableToShow, setTableToShow] = useState("trips");
   const [sortType, setSortType] = useState("asc");
   const { enqueueSnackbar } = useSnackbar();
+  //filtering monthly reports
+  const [startYear, setStartYear] = useState("");
+  const [startMonth, setStartMonth] = useState("");
+  const [endYear, setEndYear] = useState("");
+  const [endMonth, setEndMonth] = useState("");
+  const [customerLocation, setCustomerLocation] = useState("");
+  const [customer, setCustomer] = useState("");
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   useEffect(() => {
     setLoading(true);
@@ -382,11 +403,6 @@ export const ShowTruck = () => {
     }
   };
 
-  //show report query
-  const showReportModal = () => {
-    setShowReportQuery(true);
-  };
-
   return (
     <div>
       <div className="row" style={{ minHeight: "100vh" }}>
@@ -431,7 +447,11 @@ export const ShowTruck = () => {
             <div className="row mb-2">
               <h6>Operations</h6>
               <div className="col-4">
-                <Link className="btn btn-warning" to={`/trucks/edit/${id}`} title="Edit Truck">
+                <Link
+                  className="btn btn-warning"
+                  to={`/trucks/edit/${id}`}
+                  title="Edit Truck"
+                >
                   <BsFillPencilFill />
                 </Link>
               </div>
@@ -487,6 +507,14 @@ export const ShowTruck = () => {
                           className="createIcon createButton"
                         />
                       </Link>
+                    </div>
+                    <div className="col-1 mx-auto d-flex justify-content-center align-items-center">
+                      <button
+                        className="btn btn-success"
+                        onClick={showReportModal}
+                      >
+                        Report
+                      </button>
                     </div>
                   </div>
                   {loading ? (
@@ -573,6 +601,14 @@ export const ShowTruck = () => {
                       />
                     </Link>
                   </div>
+                  <div className="col-1 mx-auto d-flex justify-content-center align-items-center">
+                    <button
+                      className="btn btn-success"
+                      onClick={showReportModal}
+                    >
+                      Report
+                    </button>
+                  </div>
                 </div>
                 <div
                   style={{
@@ -649,7 +685,7 @@ export const ShowTruck = () => {
                   <div className="col">
                     <h1>Trips</h1>
                   </div>
-                  <div className="col-2 d-flex align-items-center justify-content-center">
+                  <div className="col-1 d-flex align-items-center justify-content-center">
                     <select
                       className="form-select"
                       onChange={(e) => setSortType(e.target.value)}
@@ -658,6 +694,60 @@ export const ShowTruck = () => {
                       <option value="desc">Descending</option>
                     </select>
                   </div>
+
+                  <div className="col d-flex align-items-center justify-content-center">
+                    <input
+                      type="number"
+                      className="form-control"
+                      placeholder="Start Year"
+                      onChange={(e) => setStartYear(e.target.value)}
+                    />
+                  </div>
+                  <div className="col d-flex align-items-center justify-content-center">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Start Month"
+                      onChange={(e) => setStartMonth(e.target.value)}
+                    />
+                  </div>
+                  <div className="col d-flex align-items-center justify-content-center">
+                    <input
+                      type="number"
+                      className="form-control"
+                      placeholder="End Year"
+                      onChange={(e) => setEndYear(e.target.value)}
+                    />
+                  </div>
+                  <div className="col d-flex align-items-center justify-content-center">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="End Month"
+                      onChange={(e) => setEndMonth(e.target.value)}
+                    />
+                  </div>
+                  <div className="col d-flex align-items-center justify-content-center">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Customer Location"
+                      onChange={(e) => setCustomerLocation(e.target.value)}
+                    />
+                  </div>
+                  <div className="col d-flex align-items-center justify-content-center">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Customer"
+                      onChange={(e) => setCustomer(e.target.value)}
+                    />
+                  </div>
+                  <div className="col d-flex align-items-center justify-content-center">
+                    <button className="btn btn-success align-items-center d-flex ">
+                      Search
+                    </button>
+                  </div>
                   <div className="col-1">
                     <Link to={`/newtrips/${id}`} className="btn">
                       <BsFillFilePlusFill
@@ -665,9 +755,6 @@ export const ShowTruck = () => {
                         className="createIcon createButton"
                       />
                     </Link>
-                  </div>
-                  <div className="col-1">
-                    <button className="btn" onClick={showReportModal}>Report</button>
                   </div>
                 </div>
                 <div
@@ -710,6 +797,30 @@ export const ShowTruck = () => {
                           return sortType === "asc"
                             ? dateA - dateB
                             : dateB - dateA;
+                        })
+                        .filter((trip) => {
+                          const tripMonthNumber =
+                            monthNames.indexOf(trip.month) + 1;
+                          const startMonthNumber = startMonth
+                            ? monthNames.indexOf(startMonth) + 1
+                            : null;
+                          const endMonthNumber = endMonth
+                            ? monthNames.indexOf(endMonth) + 1
+                            : null;
+
+                          return (
+                            (!startYear || trip.year >= startYear) &&
+                            (!startMonthNumber ||
+                              tripMonthNumber >= startMonthNumber) &&
+                            (!endYear || trip.year <= endYear) &&
+                            (!endMonthNumber ||
+                              tripMonthNumber <= endMonthNumber) &&
+                            (!customerLocation ||
+                              trip.customer.location.includes(
+                                customerLocation
+                              )) &&
+                            (!customer || trip.customer.name.includes(customer))
+                          );
                         })
                         .map((trip) => (
                           <tr key={trip._id}>
@@ -819,56 +930,65 @@ export const ShowTruck = () => {
       </Modal>
       <Modal show={showReportQuery} onHide={() => setShowReportQuery(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Select Time Period</Modal.Title>
+          <Modal.Title>Generate Report</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <form>
             <div className="form-group">
-            <label>
-              Start Year:
-              <input type="number" min="1900" max="2099" step="1" className="form-control"/>
-            </label>
-            <label>
-              Start Month:
-              <input type="number" min="1" max="12" step="1" className="form-control"/>
-            </label>
+              <label>
+                Start Year:
+                <input
+                  type="number"
+                  min="1900"
+                  max="2099"
+                  step="1"
+                  className="form-control"
+                  value={startYear}
+                />
+              </label>
+              <label>
+                Start Month:
+                <input
+                  type="number"
+                  min="1"
+                  max="12"
+                  step="1"
+                  className="form-control"
+                  value={startMonth}
+                />
+              </label>
             </div>
             <div className="form-group">
-            <label>
-              End Year:
-              <input type="number" min="1900" max="2099" step="1" className="form-control" />
-            </label>
-            <label>
-              End Month:
-              <input type="number" min="1" max="12" step="1" className="form-control"/>
-            </label>
+              <label>
+                End Year:
+                <input
+                  type="number"
+                  min="1900"
+                  max="2099"
+                  step="1"
+                  className="form-control"
+                  value={endYear}
+                />
+              </label>
+              <label>
+                End Month:
+                <input
+                  type="number"
+                  min="1"
+                  max="12"
+                  step="1"
+                  className="form-control"
+                  value={endMonth}
+                />
+              </label>
             </div>
-            <div className="form-group">
-            <label>
-              Customer location:
-              <input type="text" className="form-control"/>
-            </label>
-            <label>
-              Customer:
-              <input type="text" className="form-control"/>
-            </label>
-            <label>
-              Driver:
-              <input type="text" className="form-control"/>
-            </label>
-            </div>
-            
-            
-            
           </form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowReportQuery(false)}>
             Cancel
           </Button>
-          <Button variant="success">
-            Generate
-          </Button>
+          <Button variant="success">Generate</Button>
         </Modal.Footer>
       </Modal>
     </div>
