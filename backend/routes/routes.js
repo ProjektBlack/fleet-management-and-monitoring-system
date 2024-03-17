@@ -175,32 +175,47 @@ router.post("/expenses/monthly", (req, res) =>
 router.get("/expenses/monthly", (req, res) =>
   getAllRecords(MonthlyExpense, res)
 );
-router.get("/expenses/monthly/search", async (req, res) => {
+router.get("/expenses/monthly/generate", async (req, res) => {
   try {
-    const { startYear, startMonth, endYear, endMonth } = req.query;
+    const report = await MonthlyExpense.aggregate([
+      {
+        $group: {
+          _id: { month: "$month", year: "$year" },
+          totalMaintenance: { $sum: "$maintenance" },
+          totalDieselConsumption: { $sum: "$dieselConsumption" },
+          totalTrips: { $sum: "$totalTrips" },
+          totalMonthlyExpenses: { $sum: "$totalMonthlyExpenses" },
+        },
+      },
+      {
+        $project: {
+          month: "$_id.month",
+          year: "$_id.year",
+          averageMaintenance: { $divide: ["$totalMaintenance", "$totalTrips"] },
+          averageDieselConsumption: {
+            $divide: ["$totalDieselConsumption", "$totalTrips"],
+          },
+          totalMonthlyExpenses: 1,
+        },
+      },
+      { $sort: { year: 1, month: 1 } },
+    ]);
 
-    // Build the query object
-    let query = {};
+    res.json(report);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
-    if (startYear) {
-      query.year = { $gte: startYear };
+//get monthly expenses by year and truck
+router.get("/expenses/monthly/:year/:truckId", async (req, res) => {
+  try {
+    const { year, truckId } = req.params;
+    const expenses = await MonthlyExpense.find({ truck: truckId, year: year });
+    if (!expenses) {
+      res.status(404).json({ message: "Record not found." });
     }
-
-    if (endYear) {
-      query.year = { ...query.year, $lte: endYear };
-    }
-
-    if (startMonth) {
-      query.month = { $gte: startMonth };
-    }
-
-    if (endMonth) {
-      query.month = { ...query.month, $lte: endMonth };
-    }
-
-    const monthlyExpenses = await MonthlyExpense.find(query);
-
-    res.status(200).json(monthlyExpenses);
+    res.status(200).json(expenses);
   } catch (error) {
     console.error(error.message);
     res.status(500).send({ message: error.message });
@@ -238,20 +253,6 @@ router.delete("/expenses/monthly/:id", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error." });
-  }
-});
-//get monthly expenses by year and truck
-router.get("/expenses/monthly/:year/:truckId", async (req, res) => {
-  try {
-    const { year, truckId } = req.params;
-    const expenses = await MonthlyExpense.find({ truck: truckId, year: year });
-    if (!expenses) {
-      res.status(404).json({ message: "Record not found." });
-    }
-    res.status(200).json(expenses);
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send({ message: error.message });
   }
 });
 

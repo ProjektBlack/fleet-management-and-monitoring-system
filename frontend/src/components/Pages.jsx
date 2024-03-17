@@ -215,6 +215,7 @@ export const ShowTruck = () => {
   const [sortType, setSortType] = useState("asc");
   const { enqueueSnackbar } = useSnackbar();
   //filtering monthly reports
+  const [showFilters, setShowFilters] = useState(false);
   const [startYear, setStartYear] = useState("");
   const [startMonth, setStartMonth] = useState("");
   const [endYear, setEndYear] = useState("");
@@ -235,6 +236,17 @@ export const ShowTruck = () => {
     "November",
     "December",
   ];
+
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  };
+
+  async function getReport() {
+    const response = await axios.get(
+      `http://localhost:2222/expenses/monthly/generate`
+    );
+    console.log(response.data);
+  }
 
   useEffect(() => {
     setLoading(true);
@@ -299,6 +311,7 @@ export const ShowTruck = () => {
       }
     };
     fetchData();
+    getReport();
   }, [id]);
 
   const handleTripConfirmation = (id) => {
@@ -685,7 +698,7 @@ export const ShowTruck = () => {
                   <div className="col">
                     <h1>Trips</h1>
                   </div>
-                  <div className="col-1 d-flex align-items-center justify-content-center">
+                  <div className="col d-flex align-items-center justify-content-center">
                     <select
                       className="form-select"
                       onChange={(e) => setSortType(e.target.value)}
@@ -694,7 +707,6 @@ export const ShowTruck = () => {
                       <option value="desc">Descending</option>
                     </select>
                   </div>
-
                   <div className="col d-flex align-items-center justify-content-center">
                     <input
                       type="number"
@@ -743,11 +755,16 @@ export const ShowTruck = () => {
                       onChange={(e) => setCustomer(e.target.value)}
                     />
                   </div>
+
                   <div className="col d-flex align-items-center justify-content-center">
-                    <button className="btn btn-success align-items-center d-flex ">
+                    <button
+                      className="btn btn-success align-items-center d-flex "
+                      onClick={toggleFilters}
+                    >
                       Search
                     </button>
                   </div>
+
                   <div className="col-1">
                     <Link to={`/newtrips/${id}`} className="btn">
                       <BsFillFilePlusFill
