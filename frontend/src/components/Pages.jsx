@@ -4,7 +4,14 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 import { useAuth } from "../context/authProvider";
 import { SnackbarProvider, useSnackbar } from "notistack";
 import { Modal, Button } from "react-bootstrap";
-import { BsCash, BsCashStack, BsSearch, BsTruck } from "react-icons/bs";
+import {
+  BsCash,
+  BsCashStack,
+  BsSearch,
+  BsTruck,
+  BsPlusCircleFill,
+  BsArrowReturnLeft,
+} from "react-icons/bs";
 import axios from "axios";
 //components
 import {
@@ -515,19 +522,14 @@ export const ShowTruck = () => {
                     </div>
                     <div className="col text-end">
                       <Link to={`/expenses/new/${id}`} className="btn">
-                        <BsFillFilePlusFill
+                        <BsPlusCircleFill
                           size={40}
                           className="createIcon createButton"
                         />
                       </Link>
                     </div>
                     <div className="col-1 mx-auto d-flex justify-content-center align-items-center">
-                      <button
-                        className="btn btn-success"
-                        onClick={showReportModal}
-                      >
-                        Report
-                      </button>
+                      <button className="btn btn-success">Search</button>
                     </div>
                   </div>
                   {loading ? (
@@ -608,19 +610,14 @@ export const ShowTruck = () => {
                   </div>
                   <div className="col text-end">
                     <Link to={`/expenses/new/${id}`} className="btn">
-                      <BsFillFilePlusFill
+                      <BsPlusCircleFill
                         size={40}
                         className="createIcon createButton"
                       />
                     </Link>
                   </div>
                   <div className="col-1 mx-auto d-flex justify-content-center align-items-center">
-                    <button
-                      className="btn btn-success"
-                      onClick={showReportModal}
-                    >
-                      Report
-                    </button>
+                    <button className="btn btn-success">Search</button>
                   </div>
                 </div>
                 <div
@@ -707,54 +704,90 @@ export const ShowTruck = () => {
                       <option value="desc">Descending</option>
                     </select>
                   </div>
-                  <div className="col d-flex align-items-center justify-content-center">
-                    <input
-                      type="number"
-                      className="form-control"
-                      placeholder="Start Year"
-                      onChange={(e) => setStartYear(e.target.value)}
-                    />
-                  </div>
-                  <div className="col d-flex align-items-center justify-content-center">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Start Month"
-                      onChange={(e) => setStartMonth(e.target.value)}
-                    />
-                  </div>
-                  <div className="col d-flex align-items-center justify-content-center">
-                    <input
-                      type="number"
-                      className="form-control"
-                      placeholder="End Year"
-                      onChange={(e) => setEndYear(e.target.value)}
-                    />
-                  </div>
-                  <div className="col d-flex align-items-center justify-content-center">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="End Month"
-                      onChange={(e) => setEndMonth(e.target.value)}
-                    />
-                  </div>
-                  <div className="col d-flex align-items-center justify-content-center">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Customer Location"
-                      onChange={(e) => setCustomerLocation(e.target.value)}
-                    />
-                  </div>
-                  <div className="col d-flex align-items-center justify-content-center">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Customer"
-                      onChange={(e) => setCustomer(e.target.value)}
-                    />
-                  </div>
+                  {showFilters && (
+                    <div className="form-container">
+                      <div className="row  mb-2">
+                        <div className="col">
+                          <h2>Filter</h2>
+                        </div>
+                        <div className="col text-end">
+                          <button onClick={toggleFilters} className="btn ">
+                            <BsArrowReturnLeft size={20} />
+                          </button>
+                        </div>
+                      </div>
+                      <form>
+                        <div className="row mb-2">
+                          <div className="col">
+                            <label>Starting Year</label>
+                            <input
+                              type="number"
+                              className="form-control"
+                              placeholder="Start Year"
+                              onChange={(e) => setStartYear(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className="row mb-2">
+                          <div className="col">
+                            <label>Starting Month</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Start Month"
+                              onChange={(e) => setStartMonth(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className="row mb-2">
+                          <div className="col">
+                            <label>End Year</label>
+                            <input
+                              type="number"
+                              className="form-control"
+                              placeholder="End Year"
+                              onChange={(e) => setEndYear(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className="row mb-2">
+                          <div className="col">
+                            <label>End Month</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="End Month"
+                              onChange={(e) => setEndMonth(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className="row mb-2">
+                          <div className="col">
+                            <label>Customer Location</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Customer Location"
+                              onChange={(e) =>
+                                setCustomerLocation(e.target.value)
+                              }
+                            />
+                          </div>
+                        </div>
+                        <div className="row mb-2">
+                          <div className="col">
+                            <label>Customer Name</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Customer"
+                              onChange={(e) => setCustomer(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  )}
 
                   <div className="col d-flex align-items-center justify-content-center">
                     <button
@@ -767,7 +800,7 @@ export const ShowTruck = () => {
 
                   <div className="col-1">
                     <Link to={`/newtrips/${id}`} className="btn">
-                      <BsFillFilePlusFill
+                      <BsPlusCircleFill
                         size={40}
                         className="createIcon createButton"
                       />

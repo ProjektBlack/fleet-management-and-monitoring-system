@@ -182,3 +182,16 @@ body {
 .gmsModal .modal-content {
   border: none;
 }
+
+.form-container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100%;
+  overflow: auto;
+  background-color: #fff;
+  padding: 20px;
+  box-sizing: border-box;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
