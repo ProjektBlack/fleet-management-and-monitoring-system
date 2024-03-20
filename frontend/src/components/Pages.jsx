@@ -274,12 +274,15 @@ export const ShowTruck = () => {
         ) {
           const yearlyExpensesData = await Promise.all(
             truckData.expenses.yearlyExpenses.map(async (expense) => {
+              console.log(expense);
               const response = await axios.get(
                 `http://localhost:2222/expenses/yearly/${expense}`
               );
+              console.log(response.data);
               return response.data;
             })
           );
+          console.log(yearlyExpensesData);
           setYearlyExpenses(yearlyExpensesData);
         }
         if (
@@ -616,8 +619,48 @@ export const ShowTruck = () => {
                       />
                     </Link>
                   </div>
+                  {showFilters && (
+                    <div className="form-container">
+                      <div className="row  mb-2">
+                        <div className="col">
+                          <h2>Filter</h2>
+                        </div>
+                        <div className="col text-end">
+                          <button onClick={toggleFilters} className="btn ">
+                            <BsArrowReturnLeft size={20} />
+                          </button>
+                        </div>
+                      </div>
+                      <form>
+                        <div className="row mb-2">
+                          <div className="col">
+                            <label>Starting Year</label>
+                            <input
+                              type="number"
+                              className="form-control"
+                              placeholder="Start Year"
+                              onChange={(e) => setStartYear(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className="row mb-2">
+                          <div className="col">
+                            <label>End Year</label>
+                            <input
+                              type="number"
+                              className="form-control"
+                              placeholder="End Year"
+                              onChange={(e) => setEndYear(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  )}
                   <div className="col-1 mx-auto d-flex justify-content-center align-items-center">
-                    <button className="btn btn-success">Search</button>
+                    <button className="btn btn-success" onClick={toggleFilters}>
+                      Search
+                    </button>
                   </div>
                 </div>
                 <div
@@ -641,43 +684,57 @@ export const ShowTruck = () => {
                       <th>Operations</th>
                     </thead>
                     <tbody>
-                      {yearlyExpenses.map((expense) => (
-                        <tr key={expense._id}>
-                          <td>{expense.year}</td>
-                          <td>{expense.ltoReg}</td>
-                          <td>{expense.fcieReg}</td>
-                          <td>{expense.stickerReg}</td>
-                          <td>{expense.maintenance}</td>
-                          <td>{expense.totalTrips}</td>
-                          <td>{expense.totalDieselConsumption}</td>
-                          <td>{expense.totalExpenses}</td>
-                          <td className="text-center">
-                            <Link
-                              id="showIcon"
-                              to={`/expenses/yearly/edit/${expense._id}/${id}`}
-                              className="showIcon"
-                              style={{ marginRight: "2%" }}
-                            >
-                              <BsEye />
-                            </Link>
-                            {user.role == "Admin" && (
-                              <BsFillTrashFill
-                                className="trashIcon"
-                                onClick={() =>
-                                  handleYEConfirmation(expense._id)
-                                }
-                              />
-                            )}
-                            <Link
-                              to={`/expenses/yearly/edit/${expense._id}`}
-                              style={{ marginLeft: "2%" }}
-                              className="editIcon"
-                            >
-                              <BsFillPencilFill />
-                            </Link>
-                          </td>
-                        </tr>
-                      ))}
+                      {yearlyExpenses
+                        .filter((expense) => {
+                          const expenseYear = expense.year;
+                          const sYear = startYear;
+                          const eYear = endYear;
+
+                          // If start year or end year is empty, return true to include all expenses
+                          if (!sYear || !eYear) {
+                            return true;
+                          }
+
+                          // Check if the expense year is within the start and end years
+                          return expenseYear >= sYear && expenseYear <= eYear;
+                        })
+                        .map((expense) => (
+                          <tr key={expense._id}>
+                            <td>{expense.year}</td>
+                            <td>{expense.ltoReg}</td>
+                            <td>{expense.fcieReg}</td>
+                            <td>{expense.stickerReg}</td>
+                            <td>{expense.maintenance}</td>
+                            <td>{expense.totalTrips}</td>
+                            <td>{expense.totalDieselConsumption}</td>
+                            <td>{expense.totalExpenses}</td>
+                            <td className="text-center">
+                              <Link
+                                id="showIcon"
+                                to={`/expenses/yearly/edit/${expense._id}/${id}`}
+                                className="showIcon"
+                                style={{ marginRight: "2%" }}
+                              >
+                                <BsEye />
+                              </Link>
+                              {user.role == "Admin" && (
+                                <BsFillTrashFill
+                                  className="trashIcon"
+                                  onClick={() =>
+                                    handleYEConfirmation(expense._id)
+                                  }
+                                />
+                              )}
+                              <Link
+                                to={`/expenses/yearly/edit/${expense._id}`}
+                                style={{ marginLeft: "2%" }}
+                                className="editIcon"
+                              >
+                                <BsFillPencilFill />
+                              </Link>
+                            </td>
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
                 </div>
