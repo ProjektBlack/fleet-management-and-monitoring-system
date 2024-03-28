@@ -199,7 +199,7 @@ export const ManageTruck = () => {
   );
 };
 
-//show truck details
+//show truck details - NOTE: yearly and monthly expenses report listing all trucks, ascending and descending for monthly and yearly, sort manage trucks
 export const ShowTruck = () => {
   const [loading, setLoading] = useState(false); //loading
   const [truckInfo, setTruckInfo] = useState({}); //info and ids
@@ -433,21 +433,41 @@ export const ShowTruck = () => {
     const totalTable = document.getElementById(totalTableId);
 
     const removeColumn = (table, columnIndex) => {
-      for (let i = 0; i < table.rows.length; i++) {
-        table.rows[i].deleteCell(columnIndex);
+      // Handle the header
+      const thead = table.tHead;
+      if (thead && thead.rows[0]) {
+        thead.rows[0].deleteCell(columnIndex);
+      }
+
+      // Handle the body rows
+      const tbody = table.tBodies[0];
+      if (tbody) {
+        for (let i = 0; i < tbody.rows.length; i++) {
+          tbody.rows[i].deleteCell(columnIndex);
+        }
       }
     };
 
-    removeColumn(mainTable, 14);
+    if (mainTableId == "tripsTable") {
+      removeColumn(mainTable, 14);
+    }
+
+    if (mainTableId == "meTable") {
+      removeColumn(mainTable, 6);
+    }
+    console.log(mainTableId, totalTableId);
+    if (mainTableId == "yeTable") {
+      removeColumn(mainTable, 8);
+    }
 
     const printWindow = window.open(
-      "data:text/html,<html><head><title>Total Trip Expenses Report</title></head><body></body></html>",
+      "data:text/html,<html><head><title>Expenses Report</title></head><body></body></html>",
       "_blank"
     );
     printWindow.document.write(`
     <html>
         <head>
-            <title>Total Trip Expenses Report</title>
+            <title>Expenses Report</title>
             <style>
             body {
               font-family: 'Courier New', monospace;
@@ -473,7 +493,8 @@ export const ShowTruck = () => {
         </head>
         <body>
           <center>
-            <p>Total Trip Expenses Report </p>
+            <p>Expenses Report </p>
+            <p>Green Movers Services - FCIE Compound, Brgy. Langkaan, Dasmariñas, Cavite</p>
             <p>Truck: ${truckInfo.plateNumber}</p>
             <p>Time Period: ${startMonth} ${startYear} - ${endMonth} ${endYear}</p>
             <p>Generated on: ${new Date().toLocaleString()}</p>
@@ -489,6 +510,13 @@ export const ShowTruck = () => {
 
 `);
     printWindow.print();
+    setCustomer("");
+    setCustomerLocation("");
+    setEndMonth("");
+    setEndYear("");
+    setStartMonth("");
+    setStartYear("");
+    setStatus("");
   };
 
   return (
@@ -588,16 +616,93 @@ export const ShowTruck = () => {
                     <div className="col-10">
                       <h1>Monthly Expenses</h1>
                     </div>
-                    <div className="col text-end">
+                    {showFilters && (
+                      <div className="form-container">
+                        <div className="row mb-2">
+                          <div className="col">
+                            <h2>Filter</h2>
+                          </div>
+                          <div className="col text-end">
+                            <button onClick={toggleFilters} className="btn ">
+                              <BsArrowReturnLeft size={20} />
+                            </button>
+                          </div>
+                        </div>
+                        <form>
+                          <div className="row mb-2">
+                            <div className="col">
+                              <label>Starting Year</label>
+                              <input
+                                type="number"
+                                className="form-control"
+                                placeholder="Start Year"
+                                onChange={(e) => setStartYear(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          <div className="row mb-2">
+                            <div className="col">
+                              <label>Starting Month</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Start Month"
+                                onChange={(e) => setStartMonth(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          <div className="row mb-2">
+                            <div className="col">
+                              <label>End Year</label>
+                              <input
+                                type="number"
+                                className="form-control"
+                                placeholder="End Year"
+                                onChange={(e) => setEndYear(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          <div className="row mb-2">
+                            <div className="col">
+                              <label>End Month</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="End Month"
+                                onChange={(e) => setEndMonth(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          <div className="row mb-2">
+                            <div className="col d-flex justify-content-center">
+                              <button
+                                className="btn btn-success mt-2"
+                                onClick={() =>
+                                  printTripReport("meTable", "tmeTable")
+                                }
+                              >
+                                Generate Report
+                              </button>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    )}
+                    <div className="col-1 mx-auto d-flex justify-content-center align-items-center">
+                      <button
+                        className="btn btn-success"
+                        onClick={toggleFilters}
+                      >
+                        Search
+                      </button>
+                    </div>
+                    <div className="col-1 text-end">
                       <Link to={`/expenses/new/${id}`} className="btn">
                         <BsPlusCircleFill
                           size={40}
                           className="createIcon createButton"
                         />
                       </Link>
-                    </div>
-                    <div className="col-1 mx-auto d-flex justify-content-center align-items-center">
-                      <button className="btn btn-success">Search</button>
                     </div>
                   </div>
                   {loading ? (
@@ -609,59 +714,139 @@ export const ShowTruck = () => {
                       style={{
                         overflowX: "auto",
                         overflowY: "auto",
-                        minHeight: "85vh",
-                        maxHeight: "85vh",
+                        minHeight: "80vh",
+                        maxHeight: "80vh",
                       }}
                     >
-                      <table className="table table-bordered table-hover table-striped">
+                      <table
+                        id="meTable"
+                        className="table table-bordered table-hover table-striped"
+                      >
                         <thead className="">
-                          <th>Month</th>
-                          <th>Year</th>
-                          <th>Maintenance Cost</th>
-                          <th>Total Trips</th>
-                          <th>Diesel Consumption</th>
-                          <th>Total Monthly Expenses</th>
-                          <th>Operations</th>
+                          <tr>
+                            <th>Month</th>
+                            <th>Year</th>
+                            <th>Maintenance Cost</th>
+                            <th>Total Trips</th>
+                            <th>Diesel Consumption</th>
+                            <th>Total Monthly Expenses</th>
+                            <th>Operations</th>
+                          </tr>
                         </thead>
                         <tbody>
-                          {monthlyExpenses.map((expense) => (
-                            <tr key={expense._id}>
-                              <td>{expense.month}</td>
-                              <td>{expense.year}</td>
-                              <td>{expense.maintenance}</td>
-                              <td>{expense.totalTrips}</td>
-                              <td>{expense.dieselConsumption}</td>
-                              <td>{expense.totalMonthlyExpenses}</td>
-                              <td className="text-center">
-                                <Link
-                                  id="showIcon"
-                                  to={`/expenses/monthly/edit/${expense._id}/${id}`}
-                                  style={{ marginRight: "2%" }}
-                                >
-                                  <BsEye className="showIcon" />
-                                </Link>
-                                {user.role == "Admin" && (
-                                  <BsFillTrashFill
-                                    className="trashIcon"
-                                    onClick={() =>
-                                      handleMEConfirmation(expense._id)
-                                    }
-                                  />
-                                )}
-                                <Link
-                                  to={`/expenses/monthly/edit/${expense._id}`}
-                                  style={{ marginLeft: "2%" }}
-                                  className="editIcon"
-                                >
-                                  <BsFillPencilFill />
-                                </Link>
-                              </td>
-                            </tr>
-                          ))}
+                          {monthlyExpenses
+                            .filter((expense) => {
+                              const expenseYear = expense.year;
+                              const expenseMonth =
+                                monthNames.indexOf(expense.month) + 1; // Convert month name to month number
+                              const sYear = startYear;
+                              const sMonth = startMonth
+                                ? monthNames.indexOf(startMonth) + 1
+                                : null; // Convert month name to month number
+                              const eYear = endYear;
+                              const eMonth = endMonth
+                                ? monthNames.indexOf(endMonth) + 1
+                                : null; // Convert month name to month number
+
+                              // If there's no filter, return true to include all expenses
+                              if (!sYear && !eYear) {
+                                return true;
+                              }
+
+                              // If only years are specified, ignore the month in comparison
+                              if (sYear && !sMonth && eYear && !eMonth) {
+                                return (
+                                  expenseYear >= sYear && expenseYear <= eYear
+                                );
+                              }
+
+                              return (
+                                (expenseYear > sYear ||
+                                  (expenseYear === sYear &&
+                                    expenseMonth >= sMonth)) &&
+                                (expenseYear < eYear ||
+                                  (expenseYear === eYear &&
+                                    expenseMonth <= eMonth))
+                              );
+                            })
+                            .map((expense) => (
+                              <tr key={expense._id}>
+                                <td>{expense.month}</td>
+                                <td>{expense.year}</td>
+                                <td>{expense.maintenance}</td>
+                                <td>{expense.totalTrips}</td>
+                                <td>{expense.dieselConsumption}</td>
+                                <td>{expense.totalMonthlyExpenses}</td>
+                                <td className="text-center">
+                                  <Link
+                                    id="showIcon"
+                                    to={`/expenses/monthly/edit/${expense._id}/${id}`}
+                                    style={{ marginRight: "2%" }}
+                                  >
+                                    <BsEye className="showIcon" />
+                                  </Link>
+                                  {user.role == "Admin" && (
+                                    <BsFillTrashFill
+                                      className="trashIcon"
+                                      onClick={() =>
+                                        handleMEConfirmation(expense._id)
+                                      }
+                                    />
+                                  )}
+                                  <Link
+                                    to={`/expenses/monthly/edit/${expense._id}`}
+                                    style={{ marginLeft: "2%" }}
+                                    className="editIcon"
+                                  >
+                                    <BsFillPencilFill />
+                                  </Link>
+                                </td>
+                              </tr>
+                            ))}
                         </tbody>
                       </table>
                     </div>
                   )}
+                  <div className="mt-2">
+                    <table id="tmeTable">
+                      <tr>
+                        <td colSpan={13}>
+                          <strong>Total Expenses: </strong>
+                        </td>
+                        <td colSpan={2}>
+                          {monthlyExpenses
+                            .filter((expense) => {
+                              const expenseYear = expense.year;
+                              const expenseMonth = expense.month;
+                              const sYear = startYear;
+                              const sMonth = startMonth;
+                              const eYear = endYear;
+                              const eMonth = endMonth;
+
+                              // If start year/month or end year/month is empty, return true to include all expenses
+                              if (!sYear || !sMonth || !eYear || !eMonth) {
+                                return true;
+                              }
+
+                              // Check if the expense year/month is within the start and end years/months
+                              return (
+                                (expenseYear > sYear ||
+                                  (expenseYear === sYear &&
+                                    expenseMonth >= sMonth)) &&
+                                (expenseYear < eYear ||
+                                  (expenseYear === eYear &&
+                                    expenseMonth <= eMonth))
+                              );
+                            })
+                            .reduce(
+                              (acc, expense) =>
+                                acc + expense.totalMonthlyExpenses,
+                              0
+                            )}
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -676,7 +861,12 @@ export const ShowTruck = () => {
                   <div className="col-10">
                     <h1>Yearly Expenses</h1>
                   </div>
-                  <div className="col text-end">
+                  <div className="col-1 mx-auto d-flex justify-content-center align-items-center">
+                    <button className="btn btn-success" onClick={toggleFilters}>
+                      Search
+                    </button>
+                  </div>
+                  <div className="col-1 text-end">
                     <Link to={`/expenses/new/${id}`} className="btn">
                       <BsPlusCircleFill
                         size={40}
@@ -720,44 +910,45 @@ export const ShowTruck = () => {
                           </div>
                         </div>
                         <div className="row mb-2">
-                          <div className="col">
-                            <label>Status</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Status"
-                              onChange={(e) => setStatus(e.target.value)}
-                            />
+                          <div className="col d-flex justify-content-center">
+                            <button
+                              className="btn btn-success mt-2"
+                              onClick={() =>
+                                printTripReport("yeTable", "tyeTable")
+                              }
+                            >
+                              Generate Report
+                            </button>
                           </div>
                         </div>
                       </form>
                     </div>
                   )}
-                  <div className="col-1 mx-auto d-flex justify-content-center align-items-center">
-                    <button className="btn btn-success" onClick={toggleFilters}>
-                      Search
-                    </button>
-                  </div>
                 </div>
                 <div
                   style={{
                     overflowX: "auto",
                     overflowY: "auto",
-                    minHeight: "85vh",
-                    maxHeight: "85vh",
+                    minHeight: "80vh",
+                    maxHeight: "80vh",
                   }}
                 >
-                  <table className="table table-bordered table-hover table-striped">
+                  <table
+                    id="yeTable"
+                    className="table table-bordered table-hover table-striped"
+                  >
                     <thead className="">
-                      <th>Year</th>
-                      <th>LTO Fees</th>
-                      <th>FCIE Fees</th>
-                      <th>Sticker Fees</th>
-                      <th>Maintenance Costs</th>
-                      <th>Total Trips</th>
-                      <th>Total Diesel Consumption</th>
-                      <th>Total Expenses</th>
-                      <th>Operations</th>
+                      <tr>
+                        <th>Year</th>
+                        <th>LTO Fees</th>
+                        <th>FCIE Fees</th>
+                        <th>Sticker Fees</th>
+                        <th>Maintenance Costs</th>
+                        <th>Total Trips</th>
+                        <th>Total Diesel Consumption</th>
+                        <th>Total Expenses</th>
+                        <th>Operations</th>
+                      </tr>
                     </thead>
                     <tbody>
                       {yearlyExpenses
@@ -812,6 +1003,35 @@ export const ShowTruck = () => {
                           </tr>
                         ))}
                     </tbody>
+                  </table>
+                </div>
+                <div className="mt-2">
+                  <table id="tyeTable">
+                    <tr>
+                      <td colSpan={13}>
+                        <strong>Total Expenses: </strong>
+                      </td>
+                      <td colSpan={2}>
+                        {yearlyExpenses
+                          .filter((expense) => {
+                            const expenseYear = expense.year;
+                            const sYear = startYear;
+                            const eYear = endYear;
+
+                            // If start year or end year is empty, return true to include all expenses
+                            if (!sYear || !eYear) {
+                              return true;
+                            }
+
+                            // Check if the expense year is within the start and end years
+                            return expenseYear >= sYear && expenseYear <= eYear;
+                          })
+                          .reduce(
+                            (acc, expense) => acc + expense.totalExpenses,
+                            0
+                          )}
+                      </td>
+                    </tr>
                   </table>
                 </div>
               </div>
