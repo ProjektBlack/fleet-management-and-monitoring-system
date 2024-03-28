@@ -427,11 +427,68 @@ export const ShowTruck = () => {
     }
   };
 
-  const printTripReport = () => {
-    const mainTable = document.getElementById("");
-    const totalTable = document.getElementById("");
+  const printTripReport = (mainTableId, totalTableId) => {
+    event.preventDefault();
+    const mainTable = document.getElementById(mainTableId);
+    const totalTable = document.getElementById(totalTableId);
 
-    const printWindow = window.open("", "_blank");
+    const removeColumn = (table, columnIndex) => {
+      for (let i = 0; i < table.rows.length; i++) {
+        table.rows[i].deleteCell(columnIndex);
+      }
+    };
+
+    removeColumn(mainTable, 14);
+
+    const printWindow = window.open(
+      "data:text/html,<html><head><title>Total Trip Expenses Report</title></head><body></body></html>",
+      "_blank"
+    );
+    printWindow.document.write(`
+    <html>
+        <head>
+            <title>Total Trip Expenses Report</title>
+            <style>
+            body {
+              font-family: 'Courier New', monospace;
+            }
+            h1 {
+              text-align: center;
+              color: #333;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+            }
+            th, td {
+              /* border: 1px solid #ddd; */ /* Commented out to remove borders */
+              padding: 8px;
+              text-align: right;
+            }
+            th {
+              color: #333;
+              font-weight: normal; 
+            }
+            </style>
+        </head>
+        <body>
+          <center>
+            <p>Total Trip Expenses Report </p>
+            <p>Truck: ${truckInfo.plateNumber}</p>
+            <p>Time Period: ${startMonth} ${startYear} - ${endMonth} ${endYear}</p>
+            <p>Generated on: ${new Date().toLocaleString()}</p>
+          </center
+          <p class="divider">===========================================================================================================================================</p>            
+          ${mainTable.outerHTML}
+          <p class="divider">===========================================================================================================================================</p>            
+          ${totalTable.outerHTML}
+          <p class="divider">===========================================================================================================================================</p>            
+        </body>
+    </html>
+    
+
+`);
+    printWindow.print();
   };
 
   return (
@@ -771,7 +828,7 @@ export const ShowTruck = () => {
                   <div className="col">
                     <h1>Trips</h1>
                   </div>
-                  <div className="col d-flex align-items-center justify-content-center">
+                  <div className="col-2 d-flex align-items-center justify-content-center">
                     <select
                       className="form-select"
                       onChange={(e) => setSortType(e.target.value)}
@@ -877,7 +934,12 @@ export const ShowTruck = () => {
 
                         <div className="row mb-2">
                           <div className="col d-flex justify-content-center">
-                            <button className="btn btn-success mt-2">
+                            <button
+                              className="btn btn-success mt-2"
+                              onClick={() =>
+                                printTripReport("tripsTable", "tteTable")
+                              }
+                            >
                               Generate Report
                             </button>
                           </div>
@@ -886,7 +948,7 @@ export const ShowTruck = () => {
                     </div>
                   )}
 
-                  <div className="col d-flex align-items-center justify-content-center">
+                  <div className="col-1 d-flex align-items-center justify-content-center">
                     <button
                       className="btn btn-success align-items-center d-flex "
                       onClick={toggleFilters}
@@ -912,7 +974,10 @@ export const ShowTruck = () => {
                     maxHeight: "80vh",
                   }}
                 >
-                  <table className="table table-bordered table-hover table-striped">
+                  <table
+                    id="tripsTable"
+                    className="table table-bordered table-hover table-striped"
+                  >
                     <thead className="">
                       <tr className="bg-primary">
                         <th style={{}}>Customer</th>
@@ -1011,7 +1076,7 @@ export const ShowTruck = () => {
                   </table>
                 </div>
                 <div className="mt-2">
-                  <table>
+                  <table id="tteTable">
                     <tr>
                       <td colSpan={13}>
                         <strong>Total Expenses: </strong>
