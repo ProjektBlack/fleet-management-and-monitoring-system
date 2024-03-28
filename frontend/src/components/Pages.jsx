@@ -229,6 +229,7 @@ export const ShowTruck = () => {
   const [endMonth, setEndMonth] = useState("");
   const [customerLocation, setCustomerLocation] = useState("");
   const [customer, setCustomer] = useState("");
+  const [status, setStatus] = useState("");
   const monthNames = [
     "January",
     "February",
@@ -424,6 +425,13 @@ export const ShowTruck = () => {
       setShowModal(false);
       console.log(error);
     }
+  };
+
+  const printTripReport = () => {
+    const mainTable = document.getElementById("");
+    const totalTable = document.getElementById("");
+
+    const printWindow = window.open("", "_blank");
   };
 
   return (
@@ -654,6 +662,17 @@ export const ShowTruck = () => {
                             />
                           </div>
                         </div>
+                        <div className="row mb-2">
+                          <div className="col">
+                            <label>Status</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Status"
+                              onChange={(e) => setStatus(e.target.value)}
+                            />
+                          </div>
+                        </div>
                       </form>
                     </div>
                   )}
@@ -776,6 +795,19 @@ export const ShowTruck = () => {
                       <form>
                         <div className="row mb-2">
                           <div className="col">
+                            <label>Status</label>
+                            <select
+                              className="form-control"
+                              onChange={(e) => setStatus(e.target.value)}
+                            >
+                              <option value="">None</option>
+                              <option value="Pending">Pending</option>
+                              <option value="Done">Done</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div className="row mb-2">
+                          <div className="col">
                             <label>Starting Year</label>
                             <input
                               type="number"
@@ -842,6 +874,14 @@ export const ShowTruck = () => {
                             />
                           </div>
                         </div>
+
+                        <div className="row mb-2">
+                          <div className="col d-flex justify-content-center">
+                            <button className="btn btn-success mt-2">
+                              Generate Report
+                            </button>
+                          </div>
+                        </div>
                       </form>
                     </div>
                   )}
@@ -868,8 +908,8 @@ export const ShowTruck = () => {
                   style={{
                     overflowX: "auto",
                     overflowY: "auto",
-                    minHeight: "85vh",
-                    maxHeight: "85vh",
+                    minHeight: "80vh",
+                    maxHeight: "80vh",
                   }}
                 >
                   <table className="table table-bordered table-hover table-striped">
@@ -926,7 +966,9 @@ export const ShowTruck = () => {
                               trip.customer.location.includes(
                                 customerLocation
                               )) &&
-                            (!customer || trip.customer.name.includes(customer))
+                            (!customer ||
+                              trip.customer.name.includes(customer)) &&
+                            (!status || trip.status === status)
                           );
                         })
                         .map((trip) => (
@@ -966,6 +1008,48 @@ export const ShowTruck = () => {
                           </tr>
                         ))}
                     </tbody>
+                  </table>
+                </div>
+                <div className="mt-2">
+                  <table>
+                    <tr>
+                      <td colSpan={13}>
+                        <strong>Total Expenses: </strong>
+                      </td>
+                      <td colSpan={2}>
+                        {trips
+                          .filter((trip) => {
+                            const tripMonthNumber =
+                              monthNames.indexOf(trip.month) + 1;
+                            const startMonthNumber = startMonth
+                              ? monthNames.indexOf(startMonth) + 1
+                              : null;
+                            const endMonthNumber = endMonth
+                              ? monthNames.indexOf(endMonth) + 1
+                              : null;
+
+                            return (
+                              (!startYear || trip.year >= startYear) &&
+                              (!startMonthNumber ||
+                                tripMonthNumber >= startMonthNumber) &&
+                              (!endYear || trip.year <= endYear) &&
+                              (!endMonthNumber ||
+                                tripMonthNumber <= endMonthNumber) &&
+                              (!customerLocation ||
+                                trip.customer.location.includes(
+                                  customerLocation
+                                )) &&
+                              (!customer ||
+                                trip.customer.name.includes(customer)) &&
+                              (!status || trip.status === status)
+                            );
+                          })
+                          .reduce(
+                            (acc, trip) => acc + trip.totalTripExpense,
+                            0
+                          )}
+                      </td>
+                    </tr>
                   </table>
                 </div>
               </div>
